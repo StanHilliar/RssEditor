@@ -1,0 +1,125 @@
+.dndelement
+{
+	border: 1px dashed grey;
+	padding: 1px;
+}
+
+.dndelement:hover
+{
+	cursor: move!important;
+}
+
+.ui-state-highlight
+{
+	border: 1px solid #000;
+	min-height: 80px;
+	background: repeating-linear-gradient(
+	  -45deg,
+	  #ddd,
+	  #ddd 10px,
+	  #eee 10px,
+	  #eee 20px
+	);
+}
+
+.clickableElement 
+{
+	position: relative;
+	padding: 1px;
+	border: 1px dashed grey;
+	/*
+	padding-right:  3px;
+	padding-left:   3px;*/
+}
+.clickableElement:hover 
+{
+	padding: -1px;
+	cursor: pointer;
+	/*padding-right:  0px;
+	padding-left:   0px;*/
+	/*border-left: 1px solid #000;
+    border-right: 1px solid #000;*/
+    border: 1px solid #000;
+}
+
+.emailModule
+{
+	position: relative;
+	z-index: 10;
+}
+
+.clickableElement.inactiveEmailEntry
+{
+	height:25px;
+	overflow: hidden;
+}
+
+.emailModule.inactiveEmailModule
+{
+	height:60px;
+	overflow: hidden;
+}
+
+.inactiveEmailModuleOverlay
+{
+	position: absolute;
+    top:1px;
+    left:2px;
+    z-index: 20;
+    height: calc(100% - 2px);
+	width: calc(100% - 4px);
+    
+    background-color: rgba(10,10,10,0.9);
+}
+
+.inactiveEmailModuleOverlayColor
+{
+	position: relative;
+	margin: 10px;
+	z-index: 25;
+}
+
+.emailModuleSelector:hover
+{
+	cursor: pointer;
+}
+
+.emailModuleSelector
+{
+	width: 50px;
+	height: 50px;
+	background-color: rgba(80, 80, 80, 0.9);
+    border: 1px solid #000;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	padding: 2px 0 6px 11px;	
+	font-size: 45px;
+	visibility: hidden;
+	color: #ddd;
+	z-index: 30;
+}
+
+.emailModule:hover > .emailModuleSelector
+{
+	visibility: visible;
+}
+
+/*
+.clickableElement:hover 
+{
+  filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
+  filter: gray; 
+  -webkit-filter: grayscale(50%); 
+}
+
+.clickableElement 
+{
+  filter: none;
+  -webkit-filter: grayscale(0%);
+}*/
+
+.ng-hide
+{
+	display:none;
+}

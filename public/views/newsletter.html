@@ -1,0 +1,179 @@
+<div class="" data-ng-controller="NewsletterEditController">
+	<div class="alert alert-danger alert-dismissible" role="alert" data-ng-repeat="error in errorMsgs">
+	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	  <strong>{{error.param}}</strong> {{error.msg}} 
+	</div>
+	<div class="row rowSpaced">
+		<div class="col-md-4">
+			<h2>Newsletter Entity</h2>
+		</div>
+	</div>
+	<div class="row rowSpaced">
+		<div class="col-md-10">
+		 	<label for="">Name</label>
+			<input type="text" class="form-control" placeholder="" ng-model="entity.name" name="">
+		</div>
+	</div>
+ 	<div class="row rowSpaced">
+		<div class="col-xs-6 col-md-4">
+		  	available segments
+		  	<select multiple class="form-control" ng-model="available" ng-options="segment as segment.name for segment in availableSegments">
+			</select>
+		</div>
+		<div class="col-xs-6 col-md-2">
+			<br/>
+		  	<A href="#"  ng-click="moveAll(availableSegments, entity.segments)">
+		  		<span class=" glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+		  		<span class=" glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+		  	</A><br/>
+
+		  	<A href="#"  ng-click="moveItem(available[0], availableSegments, entity.segments)">
+		  		<span class=" glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+		  	</A><br/><br/>
+
+		  	<A href="#"  ng-click="moveItem(selected[0], entity.segments, availableSegments)">
+		  		<span class=" glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+		  	</A><br/>
+		  	
+			<A href="#"  ng-click="moveAll(entity.segments, availableSegments)">
+				<span class=" glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+				<span class=" glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+			</A><br/>
+		</div>
+		<div class="col-xs-6 col-md-4">
+		    selected segments
+		  	<select multiple class="form-control" ng-model="selected" ng-options="segment as segment.name for segment in entity.segments">
+			</select>
+			{{entity.segments}}
+		</div>
+	</div>
+	<div class="row rowSpaced">
+		<div class="col-xs-6 col-md-4">
+		  	available security circles
+		  	<select multiple class="form-control" ng-model="availableCircle" ng-options="circle for circle in availableSecurityCircles">
+			</select>
+		</div>
+		<div class="col-xs-6 col-md-2">
+			<br/>
+		  	<A href="#"  ng-click="moveAll(availableSecurityCircles, entity.circles)">
+		  		<span class=" glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+		  		<span class=" glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+		  	</A><br/>
+
+		  	<A href="#"  ng-click="moveItem(availableCircle[0], availableSecurityCircles, entity.circles)">
+		  		<span class=" glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+		  	</A><br/><br/>
+
+		  	<A href="#"  ng-click="moveItem(selectedCircle[0], entity.circles, availableSecurityCircles)">
+		  		<span class=" glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+		  	</A><br/>
+		  	
+			<A href="#"  ng-click="moveAll(entity.circles, availableSecurityCircles)">
+				<span class=" glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+				<span class=" glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+			</A><br/>
+		</div>
+		<div class="col-xs-6 col-md-4">
+		    selected circles
+		  	<select multiple class="form-control" ng-model="selectedCircle" ng-options="circle for circle in entity.circles">
+			</select>
+			{{entity.circles}}
+		</div>
+	</div> 	
+	<div class="row rowSpaced">
+		<div class="col-xs-6 col-md-4">
+		  	emailGroup {{entity.eloquaEmailGroup}}
+		  	<select class="form-control" ng-model="entity.eloquaEmailGroup" ng-options="group.id as group.name for group in availableSEmailGroups">
+			</select>
+		</div>
+	</div>	
+
+	<div class="row rowSpaced">
+		<div class="col-md-10">
+		 	<label for="">eloquaCampaignFolder</label>
+			<input type="text" class="form-control" placeholder="" ng-model="entity.eloquaCampaignFolder"><br>
+			<label for="">eloquaFolder</label>
+			<input type="text" class="form-control" placeholder="" ng-model="entity.eloquaFolder"><br>
+			<label for="">eloquaFooter</label>
+			<input type="text" class="form-control" placeholder="" ng-model="entity.eloquaFooter"><br>
+			<label for="">eloquaHeader</label>
+			<input type="text" class="form-control" placeholder="" ng-model="entity.eloquaHeader">
+		</div>
+	</div>
+
+
+	<div class="row rowSpaced bigEditor">
+		<div class="col-md-10">
+			template
+			<div ui-ace="{
+			  useWrapMode : true,
+			  showGutter: true,
+			  theme:'idle_fingers',
+			  mode: 'html',
+			  firstLineNumber: 1,
+			  vscroll: true
+			      }" ng-model="template">
+			</div>
+			<br/>
+			<button ng-click="processTemplate()"  class="btn btn-warning">
+	    			processTemplate   
+			</button>
+		</div>
+	</div>
+	<div class="row" data-ng-repeat="module in entity.modules">	
+		<div class="col-md-6" >	
+			<label for="module_$index">Module {{module.moduleIdentifier}}</label>
+			<select class="form-control" ng-model="module._id" ng-options="element._id as element.name for element in availableModules" name="module_$index"></select>
+		</div>
+		<div class="col-md-4">	
+			<label>
+		      <input type="checkbox" ng-model="module.removeable"> Can be deactivated/removed?
+		    </label>
+		</div>
+	</div>
+	<!--
+	<div class="row rowSpaced">
+		<div class="col-md-10">
+		header
+		<div ui-ace="{
+		  useWrapMode : true,
+		  showGutter: true,
+		  theme:'idle_fingers',
+		  mode: 'html',
+		  firstLineNumber: 1,
+		  vscroll: true
+		      }" ng-model="entity.header"></div>
+		</div>
+	</div>
+	<div class="row rowSpaced">
+		<div class="col-xs-6 col-md-10">
+			footer
+			<div ui-ace="{
+			  useWrapMode : true,
+			  showGutter: true,
+			  theme:'idle_fingers',
+			  mode: 'html',
+			  firstLineNumber: 1,
+			  vscroll: true
+			      }" ng-model="entity.footer"></div>
+		 </div>
+	</div> -->
+
+	<div class="row rowSpaced">
+		<div class="col-md-10">
+			<br/>
+			<button data-ng-if="!newsletterExsists && !saveInProgress"  ng-click="save()"  class="btn btn-warning">
+    			save   
+			</button>
+			<button data-ng-if="newsletterExsists && !saveInProgress"  ng-click="update()"  class="btn btn-warning">
+    			Update   
+			</button>
+			<button data-ng-if="saveInProgress" class="btn btn-warning">
+    			<span class="glyphicon glyphicon-refresh spinning"></span> Loading...    
+			</button>
+
+			<a ng-if="entity._id" href="/emaileditor/email/create/{{entity._id}}">create email</a
+		</div>
+	</div>
+</div>
+

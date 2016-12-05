@@ -1,0 +1,54 @@
+<div class="" data-ng-controller="EmailModuleOverviewController">
+	<div class="row">
+		<div class="col-sm-12 col-md-12">
+		 	<h1>EmailModule Overview</h1>
+		 	
+		 	<table class="table table-condensed">
+		 	<thead>
+		 	<tr>
+		 	<th> name
+		 	</th>
+		 	<th> 
+		 		created by
+		 	</th>
+		 	<th> 
+		 		created at
+		 	</th>
+		 	<th> 
+		 		updated by
+		 	</th>
+		 	<th> 
+		 		updated at
+		 	</th>
+		 	<th> edit
+		 	</th>
+		 	<th> delete
+		 	</th>
+		 	</tr>
+		 	</thead>
+		 	<tbody>
+			 	<tr  data-ng-repeat="module in modules">
+			 		<td>
+			 			{{module.name}} 
+			 		</td>
+			 		<td> {{module.createdBy }} </td>
+			 		<td> {{module.createdAt | date:'dd.MM.yyyy HH:mm'}} </td>
+			 		<td> {{module.updatedBy }} </td>
+			 		<td> {{module.updatedAt | date:'dd.MM.yyyy HH:mm'}} </td>
+			 		<td>
+			 			<a href="/emaileditor/module/edit/{{module._id}}">edit</a>
+			 		</td>
+			 		<td>
+			 			<a href="#" ng-click="destroyModule(module._id)">delete</a>
+			 		</td> 
+			 		
+			 	
+			 	</tr>
+		 	</tbody>
+		 	</table>
+		 	
+		 	<a href="/emaileditor/module/edit/">create new Module</a>
+		</div>
+	</div>
+</div>
+

@@ -1,0 +1,8 @@
+{
+  "name": "emaileditor",
+  "version": "0.0.1",
+  "dependencies": {
+  	"ngWYSIWYG": "0.1.0",
+  	"angular-ui-ace": "0.2.3"
+  }
+}

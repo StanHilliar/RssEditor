@@ -1,0 +1,326 @@
+<div class="" data-ng-controller="EmailModuleEditController">
+	<div class="alert alert-danger alert-dismissible" role="alert" data-ng-repeat="error in errorMsgs">
+	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	  <strong>{{error.param}}</strong> {{error.msg}} 
+	</div>
+	<div class="row rowSpaced">
+		<div class="col-md-4">
+			<h2>EmailModule</h2>
+		</div>
+	</div>
+	<div class="row rowSpaced">
+		<div class="col-xs-6 col-md-8">
+		 	<label for="">Name</label>
+			<input type="text" class="form-control" placeholder="" ng-model="module.name" name="">
+		</div>
+		<div class="col-xs-6 col-md-2">
+			<label for="">Type</label>
+			<select class="form-control" ng-model="module.type" ng-options="type._id as type.name for type in availableTypes">
+			</select>
+		</div>
+	</div>
+	
+	<div class="row rowSpaced">
+		<div class="col-xs-6 col-md-8"  ng-if="module.type == '1' || module.type == '2'">
+			<label for="">default URL</label>
+			<input type="text" class="form-control" placeholder="" ng-model="module.defaultURL" name="">
+		</div>
+
+		<div class="col-xs-4 col-md-2">
+			<label for="">defaultNumberOfEntries =  {{module.defaultNumberOfEntries}}</label>
+			<select class="form-control" ng-model="selecteddefaultNumberOfEntries" ng-options="noentries._id as noentries.name for noentries in numberOfEntries">
+			</select>
+		</div>
+	</div>
+	<div class="row rowSpaced">
+		<div class="col-xs-6 col-md-5">
+			<div>created by {{module.createdBy}}</div>
+			<div>createdAt  {{module.createdAt | date:'dd.MM.yyyy HH:mm'}}</div>
+		</div>
+		<div class="col-xs-6 col-md-5">
+			<div>updatedBy {{module.updatedBy}}</div>
+			<div>updatedAt {{module.updatedAt | date:'dd.MM.yyyy HH:mm'}}</div>
+		</div>
+	</div>
+
+
+		<!--
+	 	<div class="row">
+		  <div class="col-xs-6 col-md-4">
+		  	available ads
+		  	<select multiple class="form-control" ng-model="available" ng-options="segment as segment.name for segment in availableSegments">
+			</select>
+		  </div>
+		  <div class="col-xs-6 col-md-4">
+		  	<A href="#"  ng-click="moveAll(availableSegments, entity.segments)">- - ></A>	<br/>
+		  	<A href="#"  ng-click="moveItem(available[0], availableSegments, entity.segments)">-></A>	<br/><br/>
+		  	<A href="#"  ng-click="moveItem(selected[0], entity.segments, availableSegments)"><-</A>	<br/>
+			<A href="#"  ng-click="moveAll(entity.segments, availableSegments)"><--</A>	<br/>
+			</div>
+		  <div class="col-xs-6 col-md-4">
+		    selected segments
+		  	<select multiple class="form-control" ng-model="selected" ng-options="segment as segment.name for segment in entity.segments">
+			</select>
+		  </div>
+		</div>-->
+
+		<!--header
+		<textarea ng-model="module.header"></textarea> <br/>-->
+	<div class="row rowSpaced">
+		<div class="col-xs-6 col-md-10">
+		before body
+		<!--<textarea ng-model="module.preBody"></textarea>-->
+		<div ui-ace="{
+		  useWrapMode : true,
+		  showGutter: true,
+		  theme:'idle_fingers',
+		  mode: 'html',
+		  firstLineNumber: 1,
+		  vscroll: true
+		      }" ng-model="module.preBody"></div>
+		</div>
+	</div>
+		<!--
+		<div class="row">
+		  <div class="col-xs-6 col-md-4">
+		  	available views
+		  <select multiple class="form-control" ng-model="availableModule" ng-options="element as element.name for element in availableModules">
+			</select>
+		  </div>
+		  <div class="col-xs-6 col-md-4">
+		  	<A href="#"  ng-click="moveAll(availableModules, entity.modules)">- - ></A>	<br/>
+		  	<A href="#"  ng-click="moveItem(availableModule[0], availableModules, entity.modules)">-></A>	<br/><br/>
+		  	<A href="#"  ng-click="moveItem(selectedModule[0], entity.modules, availableModules)"><-</A>	<br/>
+			<A href="#"  ng-click="moveAll(entity.modules, availableModules)"><--</A>	<br/>
+			</div>
+		  <div class="col-xs-6 col-md-4">
+		    selected modules
+		  	<select multiple class="form-control" ng-model="selectedModule" ng-options="element as element.name for element in entity.modules">
+			</select>
+		</div>-->
+		<div class="row rowSpaced">
+			<div class="col-md-4">
+				<h2>Views</h2>
+			</div>
+
+			<ng-Simon-Test>
+			123
+			</ng-Simon-Test>		
+
+		</div>
+		<div data-ng-repeat="view in module.views">
+			<div class="row rowSpaced">
+				<div class="col-md-1">
+					<h3>{{$index + 1}} // {{view._id}}</h3>
+				</div>
+		  		<div class="col-md-4">
+		  			<label for="view_name_{{$index}}" >name</label>
+		  			<input type="text" id="view_name_{{$index}}" name="view_name_{{$index}}" ng-model="view.name" class="form-control" >
+		  		</div>
+		  		<div class="col-md-2">
+		  			<button type="button" class="btn btn-primary btn-sm" ng-click="removeView($index)">
+					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> remove
+					</button>
+		  		</div>
+		  		<div class="col-md-2">
+		  			<button type="button" class="btn btn-primary btn-sm" ng-click="parse($index)">
+					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> parse
+					</button>
+		  		</div>
+		 	</div>
+			<div class="row rowSpaced">
+				<div class="col-md-1">
+				
+				</div>
+			  	<div class="col-md-9">
+			  		<label for="view_source_{{$index}}">source</label>
+			  		<!--<textarea  id="view_name_{{$index}}" name="view_name_{{$index}}"  ng-model="view.source"></textarea>-->
+			  		<div ui-ace="{
+					  useWrapMode : true,
+					  showGutter: true,
+					  theme:'idle_fingers',
+					  mode: 'html',
+					  firstLineNumber: 1,
+					  vscroll: true
+					      }" ng-model="view.source" class="form-control"></div>
+					<div>
+						<span ng-show="module.type==2">
+						available xml variables: <span data-ng-repeat="var in module.xmlVariables">{{var.label}} </span> 
+						<br/>
+						</span>
+						custom variables: <span data-ng-repeat="var in view.variables">{{var.label}} </span> <br/>
+						childTagName: {{view.childTagName}}
+							
+					</div>
+			  	</div>
+			</div>
+		</div>
+		<div class="row rowSpaced">
+		    <div class="col-md-1">
+				
+			</div>
+			<div class="col-md-9">
+			  	<button type="button" class="btn btn-primary btn-sm" ng-click="addView()">
+				  <span class="glyphicon glyphicon-plus" aria-hidden="true" ></span> add View
+				</button>
+		  	</div>
+		</div>
+		<div class="row rowSpaced">
+		  	<div class="col-md-9">
+				after body
+				<!--<textarea ng-model="module.postBody"></textarea><br/>-->
+				<div ui-ace="{
+				  useWrapMode : true,
+				  showGutter: true,
+				  theme:'idle_fingers',
+				  mode: 'html',
+				  firstLineNumber: 1,
+				  vscroll: true
+				      }" ng-model="module.postBody"></div>
+
+			</div>
+		</div>
+		<!--
+		footer
+		<textarea ng-model="module.footer"></textarea>-->
+
+		<div class="row rowSpaced">
+			<div class="col-md-4">
+				<h2>Ads</h2>
+			</div>
+		</div>
+
+	
+		<div data-ng-repeat="ad in module.ads">
+			<div class="row rowSpaced">
+				<div class="col-md-1">
+				<h3>{{$index + 1}}</h3>
+				</div>
+		  		<div class="col-md-1">
+		  			<label for="ad_pos_{{$index}}" >pos</label>
+		  			<input type="text" id="ad_pos_{{$index}}" name="ad_pos_{{$index}}" ng-model="ad.pos" class="form-control" >
+		  		</div>
+		  		<div class="col-md-4">
+		  			<label for="ad_img_{{$index}}" >Image</label>
+		  			<input type="text" id="ad_img_{{$index}}" name="ad_img_{{$index}}" ng-model="ad.img" class="form-control" >
+		  		</div>
+		  		<div class="col-md-4">
+		  			<label for="ad_link_{{$index}}" >Link</label>
+		  			<input type="text" id="ad_link_{{$index}}" name="ad_link_{{$index}}" ng-model="ad.link" class="form-control" >
+		  		</div>
+		  		<div class="col-md-1">
+		  			<button type="button" class="btn btn-primary btn-sm" ng-click="removeAd($index)">
+					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> remove
+					</button>
+		  		</div>
+		 	</div>
+
+			
+		</div>
+		<div class="row rowSpaced">
+		   
+			<div class="col-md-10">
+			  	<button type="button" class="btn btn-primary btn-sm" ng-click="addAd()">
+				  <span class="glyphicon glyphicon-plus" aria-hidden="true" ></span> add Ad
+				</button>
+		  	</div>
+		</div>
+		<div class="row rowSpaced" data-ng-repeat="view in adViews">
+		  	<div class="col-md-9">
+		  		<label for="ad_source">source</label>
+		  		<!--<textarea  id="view_name_{{$index}}" name="view_name_{{$index}}"  ng-model="view.source"></textarea>-->
+		  		<div ui-ace="{
+				  useWrapMode : true,
+				  showGutter: true,
+				  theme:'idle_fingers',
+				  mode: 'html',
+				  firstLineNumber: 1,
+				  vscroll: true
+				      }" ng-model="view.source" class="form-control"></div>
+		  	</div>
+		</div>
+
+		<div data-ng-repeat="view in module.adViews">
+			<!--<div class="row rowSpaced">
+				<div class="col-md-1">
+					<h3>{{$index + 1}}</h3>
+				</div>
+		  		<div class="col-md-4">
+		  			<label for="view_name_{{$index}}" >name</label>
+		  			<input type="text" id="view_name_{{$index}}" name="view_name_{{$index}}" ng-model="view.name" class="form-control" >
+		  		</div>
+		  		<div class="col-md-2">
+		  			<button type="button" class="btn btn-primary btn-sm" ng-click="removeView($index)">
+					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> remove
+					</button>
+		  		</div>
+		 	</div> -->
+			<div class="row rowSpaced">
+				<div class="col-md-1">
+				
+				</div>
+			  	<div class="col-md-9">
+			  		<label for="view_source_{{$index}}">source</label>
+			  		<!--<textarea  id="view_name_{{$index}}" name="view_name_{{$index}}"  ng-model="view.source"></textarea>-->
+			  		<div ui-ace="{
+					  useWrapMode : true,
+					  showGutter: true,
+					  theme:'idle_fingers',
+					  mode: 'html',
+					  firstLineNumber: 1,
+					  vscroll: true
+					      }" ng-model="view.source" class="form-control"></div>
+			  	</div>
+			</div>
+		</div>
+
+		<div class="row rowSpaced">
+					all custom variables: 
+		</div>
+		<div class="row" data-ng-repeat="var in module.variables">
+			<div class="col-md-8">
+				<div class="col-xs-4 col-md-2">
+					{{var.name}} 
+				</div>
+				<div class="col-xs-4 col-md-2">
+					<label for="defaultValue_$index">default Value</label>
+					<input type="text" ng-model="var.defaultValue" name="defaultValue_$index">
+				</div>
+				<div class="col-xs-4 col-md-2">
+						fieldType <select class="form-control" ng-model="var.fieldType" ng-options="type._id as type.name for type in availableFieldTypes"></select>
+				</div>
+				<div class="col-xs-4 col-md-2" data-ng-if="!var.inUse">
+		  			<button type="button" class="btn btn-primary btn-sm" ng-click="removeVariable(var.name)">
+					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> remove
+					</button>
+		  		</div>
+			</div>
+		</div>		
+
+		<div class="row rowSpaced">
+			<div class="col-md-8">
+				childTagName: {{module.childTagName}}
+			</div>
+		</div>
+
+		<div class="row rowSpaced">
+		<div class="col-md-8">
+			<button ng-click="parseAll()"  class="btn btn-lg btn-link">
+    			parse   
+			</button>
+			<button data-ng-if="!moduleExsists && !saveInProgress"  ng-click="save()"  class="btn btn-lg btn-warning">
+    			save   
+			</button>
+			<button data-ng-if="moduleExsists && !saveInProgress"  ng-click="update()"  class="btn btn-lg btn-warning">
+    			Update   
+			</button>
+			<button data-ng-if="saveInProgress" class="btn btn-lg btn-warning">
+    			<span class="glyphicon glyphicon-refresh spinning"></span> Loading...    
+			</button>
+		</div>
+
+	</div>
+
+	</div>
+</div>
+
