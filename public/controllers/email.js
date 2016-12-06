@@ -1,8 +1,8 @@
 'use strict';
 
 /* jshint -W098 */
-angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scope','$compile', '$interpolate', '$sce', '$location', 'Global', 'NewsletterEntity', 'Email',
-  function($scope, $compile, $interpolate, $sce, $location, Global, NewsletterEntity, Email) {
+angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scope','$compile', '$interpolate', '$sce', '$location', 'Global', 'NewsletterEntity', 'Email', 'MeanUser',
+  function($scope, $compile, $interpolate, $sce, $location, Global, NewsletterEntity, Email, MeanUser) {
     $scope.global = Global;
     $scope.package = 
     {
@@ -20,16 +20,16 @@ angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scop
 
     $scope.destroyEntity = function(newsletterId, entityId)
     {
-      console.log('destroyEntity');
+      //console.log('destroyEntity');
 
-      console.log(entityId);
+      //console.log(entityId);
 
       //EmailModule.find({ moduleId: moduleId }).remove().exec();
       
-      Email.remove({emailId: entityId}, function(_newsletterEntity)
+      Email.remove({company: MeanUser.company.id, emailId: entityId}, function(_newsletterEntity)
       {
-        console.log('destroyModule callback');
-        console.log(_newsletterEntity);
+        //console.log('destroyModule callback');
+        //console.log(_newsletterEntity);
         var _newsletterEntity = -1;
         for(var i  = 0; i < $scope.emails[newsletterId].length; i++)
         {
@@ -46,12 +46,12 @@ angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scop
 
     $scope.listEntities = function()
     {
-      console.log('listNewsletterEntitiy');
+      //console.log('listNewsletterEntitiy');
 
-      NewsletterEntity.query({},function(response)
+      NewsletterEntity.query({company: MeanUser.company.id}, function(response)
       {
-        console.log('list callback');
-        console.log(response);
+        //console.log('list callback');
+        //console.log(response);
         for(var i = 0; i < response.length; i++)
         {
           response[i].open = false;
@@ -62,12 +62,12 @@ angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scop
 
     $scope.list = function()
     {
-      console.log('listNewsletterEntitiy');
+      //console.log('listNewsletterEntitiy');
 
-      Email.query({},function(response)
+      Email.query({company: MeanUser.company.id},function(response)
       {
-        console.log('list callback');
-        console.log(response);
+        //console.log('list callback');
+        //console.log(response);
 
         for(var i = 0; i < response.length; i++)
         {
@@ -85,7 +85,7 @@ angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scop
 
     $scope.go = function ( path ) 
     {
-      console.log(path);
+      //console.log(path);
       $location.path('/emaileditor/email/create/'+path );
     };
 

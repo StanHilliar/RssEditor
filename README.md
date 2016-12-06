@@ -1,1 +1,1 @@
-# RssApp
+README: emaileditor

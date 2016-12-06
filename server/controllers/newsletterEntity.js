@@ -14,7 +14,7 @@ var mongoose = require('mongoose'),
 
 
 
-module.exports = function(MeanUser) {
+module.exports = function(circles) {
     return {
         /**
          * Create user
@@ -27,6 +27,7 @@ module.exports = function(MeanUser) {
             // because we set our user.provider to local our models/user.js validation will always be true
             req.assert('name', 'You must enter a name').notEmpty();
             req.assert('type', 'You must enter a type').notEmpty();
+            req.assert('eloquaFooter', 'You must set a email Footer in Eloqua').notEmpty();
 
             var errors = req.validationErrors();
             if (errors) {
@@ -37,7 +38,7 @@ module.exports = function(MeanUser) {
             newsletterEntity.updatedBy = req.user.username;
 
             console.log('newsletter entity create 1');
-            newsletterEntity.save(function(err) 
+            newsletterEntity.save(function(err, savedNewsletterEntity) 
             {
                 console.log('newsletter entity create 222');
                 if (err) 
@@ -76,7 +77,7 @@ module.exports = function(MeanUser) {
                 }
 
                     console.log('newsletter entity create 999');
-                return res.status(200).json({success: true});
+                return res.status(200).json(savedNewsletterEntity);
             });
         },
       
@@ -215,6 +216,15 @@ module.exports = function(MeanUser) {
         },
         update: function(req, res) 
         {
+            req.assert('name', 'You must enter a name').notEmpty();
+            req.assert('type', 'You must enter a type').notEmpty();
+            req.assert('eloquaFooter', 'You must set a email Footer in Eloqua').notEmpty();
+
+            var errors = req.validationErrors();
+            if (errors) {
+                return res.status(400).send(errors);
+            }
+            
             NewsletterEntity.findOne(
             {
                 _id: req.params.entityId
@@ -232,8 +242,11 @@ module.exports = function(MeanUser) {
         {
             console.log('list');
             console.log(req.user.roles);
-            var roles = req.user.roles;
-            if(_.contains("LT_RSSAPP", roles))
+            console.log(req.params.company);
+            /*
+            var roles = getCompnayRoles(req);
+
+            if(_.contains("Company_Admin", roles))
             {      
                 NewsletterEntity.find(
                 {
@@ -257,11 +270,58 @@ module.exports = function(MeanUser) {
                 {
                    res.jsonp(newsletterEntities);
                 });
-            }
-        },
+            }*/
 
+            NewsletterEntity.find(
+                {},
+                'name createdBy createdAt updatedBy updatedAt'
+            )
+            .lean()
+            .exec(function(err, newsletterEntities) 
+            {
+                if(circles.hasCompanyCircleBoolean(req, 'Company_Admin'))
+                {
+                    res.jsonp(newsletterEntities);
+                }
+                else
+                {
+                    var returnme = [];
+                    for(var i = 0; i < newsletterEntities.length; i++)
+                    {
+                        for(var x = 0; x < newsletterEntities[i].circles.length; x++)
+                        {
+                            if(circles.hasCompanyCircleBoolean(req, newsletterEntities[i].circles[x]))
+                            {
+                                returnme.push(newsletterEntities[i]);
+                                break;
+                            }
+                        }
+                    }
 
-     
+                    res.jsonp(returnme);
+                }
+            });
+            
+        }
     };
+
+    function getCompnayRoles(req)
+    {
+        var roles = [];
+        if(req.params.company && req.user && req.user.companies)
+        {
+            for(var i = 0; i < req.user.companies.length; i++)
+            {
+                if(req.params.company == req.user.companies[i].id)
+                {
+                    roles = req.user.companies[i].roles;
+                }
+            }
+        }
+
+        return roles;
+    }
+
+
 }
 

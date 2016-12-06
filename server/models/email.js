@@ -18,6 +18,11 @@ var EmailSchema = new Schema(
     unique: true,
     required: true
   },
+  company:
+  {
+    type: String,
+    required:  true
+  }, 
   createdAt:
   {
     type: Date
@@ -89,11 +94,37 @@ var EmailSchema = new Schema(
     type: String,
     required:  true
   },
+  bounceBackAddress:
+  {
+    type: String,
+    required:  true
+  },     
+  replyToName:
+  {
+    type: String,
+    required:  true
+  },     
+  replyToEmail:
+  {
+    type: String,
+    required:  true
+  },    
+  fromAddress:
+  {
+    type: String,
+    /*required:  true*/
+  },   
+  senderName:
+  {
+    type: String,
+    /*required:  true*/
+  },
   data:
   [{
      state: String,
      numberOfEntries: String, 
-     data: Array
+     data: Array,
+     bodyData: {}
   }],
   positions:
   {

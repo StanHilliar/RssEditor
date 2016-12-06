@@ -34,6 +34,10 @@
 						<button type="button" class="btn btn-danger">Danger</button>	
 						<button type="button" class="btn btn-link">Link</button> -->
 					</div>
+				</div>
+		  	</div>
+		  	<div class="row" ng-show="errorMsgs.length > 0">
+		  		<div class="col-sm-8 col-md-8 col-lg-6">
 					<div class="alert alert-danger alert-dismissible" role="alert" data-ng-repeat="error in errorMsgs">
 					  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					  <strong>{{error.param}}</strong> {{error.msg}} 
@@ -50,26 +54,26 @@
 				<div class="row">
 			    	<div class="col-md-12">
 					<h3>sending options</h3>
-						<label for="EmailNamefield">internal name</label>		     
+						<label for="EmailNamefield" class="dark">internal name</label>		     
 			      		<input type="text" class="form-control" placeholder="" ng-model="EmailName" name="EmailNamefield">   		
 		      		</div>
 		      	</div>
 		      	<div class="row">
 			    	<div class="col-md-12">
-						<label for="EmailSegment">segment {{segment}}</label>
+						<label for="EmailSegment" class="dark">segment <!--{{segment}}--></label>
 		      			<select class="form-control" ng-options="segment.id as segment.name for segment in entity.segments" ng-model="segment" name="EmailSegment">
 				</select>
 					</div>
 		      	</div>
 		      	<div class="row">
 			    	<div class="col-md-12">
-						<label for="EmailSubject">email subject</label>
+						<label for="EmailSubject" class="dark">email subject</label>
 		      			<input type="text" class="form-control" placeholder="Subject." ng-model="EmailSubject" id="EmailSubject" name="EmailSubject">
 		      		</div>
 		      	</div>
 			    <div class="row ">
 			        <div class="col-lg-6">
-						<label class="control-label" for="scheduleDate">set date and time for sending</label>
+						<label class="control-label dark" for="scheduleDate">set date and time for sending</label>
 					</div>
 				</div>
 				<div class="row">
@@ -100,12 +104,12 @@
 				</div><!-- /.row -->
 				</fieldset>
 				<div class="row">
-					<div class="col-md-12">
-						<label for="testEmailAddresses">email addresses</label>
+					<div class="col-md-8">
+						<label for="testEmailAddresses" class="dark">email addresses</label>
 		      			<input type="text" class="form-control" placeholder="emails" ng-model="testEmailAddresses" id="testEmailAddresses" name="testEmailAddresses">
 					</div>
-			    	<div class="col-md-12">	
-			    		
+			    	<div class="col-md-4">	
+			    		<br/>
 			  			<button type="button" data-ng-hide="testSendingInProgress" class="btn btn-primary" ng-click="sendTestEmail()">send Test</button>
 
 			  			<button type="button" data-ng-show="testSendingInProgress" class="btn btn-primary">
@@ -117,8 +121,8 @@
 			    <div class="row">
 			    	<div class="col-md-12">	
 			    		<br/>
-			    		elqEmail: {{storedEmail.eloquaEmail}}<br>
-			    		eloquaCampaign: {{storedEmail.eloquaCampaign}}
+			    		<!--elqEmail: {{storedEmail.eloquaEmail}}<br>
+			    		eloquaCampaign: {{storedEmail.eloquaCampaign}}-->
 			  			<button type="button" ng-if="storedEmail.status=='draft'" data-ng-hide="scheduleInProgress" class="btn btn-primary" ng-click="scheduleEmail()">schedule</button>
 
 			  			<button type="button" ng-if="storedEmail.status=='draft'" data-ng-hide="scheduleInProgress" class="btn btn-primary" ng-click="sendEmailRightNow()">send right now</button>
@@ -134,21 +138,21 @@
 
 			</div>
 			<div data-ng-show="!isEmailModuleSelected && !showSendingOptions && isEditMode">
-		  		<label for="currentEntryView">View</label>
+		  		<label for="currentEntryView" class="dark">View</label>
 		  		<select class="form-control" ng-model="rssData[currentEntry.moduleId].data[currentEntry.id]._view" ng-options="item as item.name for item in currentViews track by item._id" name="currentEntryView" ng-change="updateViewforEntry()">
 				</select> 
 
 				<div data-ng-show="entity.modules[currentEntry.moduleId].type == '1'">
-			  		<label for="currentEntryTitle">Title</label>
+			  		<label for="currentEntryTitle" class="dark">Title</label>
 			  		<input type="text" class="form-control" placeholder="" ng-model="rssData[currentEntry.moduleId].data[currentEntry.id].title" name="currentEntryTitle">	 
 
-			  		<label for="currentEntryLink">Link</label>
+			  		<label for="currentEntryLink" class="dark">Link</label>
 			  		<input type="text" class="form-control" placeholder="" ng-model="rssData[currentEntry.moduleId].data[currentEntry.id].link" name="currentEntryLink">
 
-			  		<label for="currentEntryImage">Image</label>
+			  		<label for="currentEntryImage" class="dark">Image</label>
 			  		<input type="text" class="form-control" placeholder="" ng-model="rssData[currentEntry.moduleId].data[currentEntry.id].image" name="currentEntryImage">
 
-			  		<label for="currentEntryContent">Content</label>
+			  		<label for="currentEntryContent" class="dark">Content</label>
 			  		<textarea  placeholder="Content" rows="4" class="form-control" id="" name="currentEntryContent"  ng-model="rssData[currentEntry.moduleId].data[currentEntry.id].content" ></textarea>
 			  			<!--
 			  		<label for="currentEntryTitleContentSnippet">ContentSnippet</label>
@@ -160,13 +164,15 @@
 					</div>-->
 				</div>
 				
-				<div data-ng-repeat="(key, value) in rssData[currentEntry.moduleId].data[currentEntry.id].data">
-					<label for="">{{rssData[currentEntry.moduleId].data[currentEntry.id].variables[key].label}}</label>
-					<input type="text" class="form-control" placeholder="" ng-model="rssData[currentEntry.moduleId].data[currentEntry.id].data[key]" name="">					
-				</div>
-				<div data-ng-repeat="xmlVar in emailTemplates.modules[currentEmailModule].xmlVariables">
-					<label for="">{{xmlVar.label}}</label>
+			
+				<div data-ng-repeat="xmlVar in emailTemplates.modules[currentEntry.moduleId].xmlVariables">
+					<label for="" class="dark">{{xmlVar.label}}</label>
 					<input type="text" class="form-control" placeholder="" ng-model="rssData[currentEntry.moduleId].data[currentEntry.id][xmlVar.name]" name="">					
+				</div>
+
+				<div data-ng-repeat="(key, value) in rssData[currentEntry.moduleId].data[currentEntry.id].data">
+					<label for="" class="dark">{{rssData[currentEntry.moduleId].data[currentEntry.id].variables[key].label}}</label>
+					<input type="text" class="form-control" placeholder="" ng-model="rssData[currentEntry.moduleId].data[currentEntry.id].data[key]" name="">					
 				</div>
 
 		  		<!--<button type="button" class="btn btn-primary" ng-click="deleteEntry()">Delete</button>-->
@@ -183,7 +189,7 @@
 	    		</div>
 		  		<br/>
 	  		</div>
-	  		<div data-ng-show="isEmailModuleSelected && isEditMode">
+	  		<div data-ng-show="isEmailModuleSelected && !showSendingOptions && isEditMode">
 	  			<div class="row">
 		  			<div class="col-xs-12 col-md-12">
 	  					<h3>email module options</h3>
@@ -193,6 +199,11 @@
 						</button>
 		  			</div>
 	  			</div>
+
+	  			<div data-ng-repeat="(key, value) in emailTemplates.modules[currentEmailModule].bodyVariables">		
+					<label for="" class="dark">{{value.label}}</label>
+					<input type="text" class="form-control" placeholder="" ng-model="rssData[currentEmailModule].bodyData[value.name]" name="">	
+				</div>
 
 	  			<div class="row">
 		  			<div class="col-xs-12 col-md-12">

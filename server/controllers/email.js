@@ -16,8 +16,8 @@ var mongoose = require('mongoose'),
 
 function _getEmailById(id, cb)
 {
-    console.log('_getEmailById');
-    console.log(id);
+    // console.log('_getEmailById');
+    // console.log(id);
 
     Email.findOne(
     {
@@ -26,12 +26,12 @@ function _getEmailById(id, cb)
     {
         if (err) 
         {
-            console.error('error1');
+            // console.error('error1');
             return cb(err, null);
         }
         if (!email)
         {
-            console.error('error2');
+            // console.error('error2');
             return cb('Failed to load email ' + id, null);
         }    
 
@@ -52,6 +52,16 @@ module.exports = function() {
 
             // because we set our user.provider to local our models/user.js validation will always be true
             req.assert('name', 'You must enter a name').notEmpty();
+            req.assert('segment', 'You must enter a segment').notEmpty();
+            req.assert('subject', 'You must enter a subject').notEmpty();
+            req.assert('eloquaFolder', 'the email must have  a eloquaFolder - contact an admin').notEmpty();
+            req.assert('eloquaCampaignFolder', 'the email must have a eloquaCampaignFolder - contact an admin').notEmpty();
+            req.assert('eloquaFooter', 'the email must have a eloquaFooter - contact an admin').notEmpty();
+            req.assert('eloquaHeader', 'the email must have a eloquaHeader - contact an admin').notEmpty();
+            req.assert('eloquaEmailGroup', 'the email must have a eloquaEmailGroup - contact an admin').notEmpty();
+            req.assert('bounceBackAddress', 'the email must have a bounceBackAddress - contact an admin').notEmpty();
+            req.assert('replyToName', 'the email must have a replyToName - contact an admin').notEmpty();
+            req.assert('replyToEmail', 'the email must have a replyToEmail - contact an admin').notEmpty();
 
             var errors = req.validationErrors();
             if (errors) 
@@ -114,19 +124,19 @@ module.exports = function() {
          */
         get: function(req, res) 
         {
-            console.log('email get');
-            console.log(req.params);
+            // console.log('email get');
+            // console.log(req.params);
             
             _getEmailById(req.params.emailId, function(err, email)
             {
                 if (err) 
                 {
-                    console.error('error1');
+                    // console.error('error1');
                     return res.status(500).send(err);
                 }
                 if (!email)
                 {
-                    console.error('error2');
+                    // console.error('error2');
                     return res.status(500).send('Failed to load email ' + req.params.moduleId);
                 }    
                
@@ -169,14 +179,32 @@ module.exports = function() {
         },
         update: function(req, res) 
         {
-            console.log('update email');
+            // console.log('update email');
+
+            req.assert('segment', 'You must enter a segment').notEmpty();
+            req.assert('subject', 'You must enter a subject').notEmpty();
+            req.assert('eloquaFolder', 'the email must have  a eloquaFolder - contact an admin').notEmpty();
+            req.assert('eloquaCampaignFolder', 'the email must have a eloquaCampaignFolder - contact an admin').notEmpty();
+            req.assert('eloquaFooter', 'the email must have a eloquaFooter - contact an admin').notEmpty();
+            req.assert('eloquaHeader', 'the email must have a eloquaHeader - contact an admin').notEmpty();
+            req.assert('eloquaEmailGroup', 'the email must have a eloquaEmailGroup - contact an admin').notEmpty();
+            req.assert('bounceBackAddress', 'the email must have a bounceBackAddress - contact an admin').notEmpty();
+            req.assert('replyToName', 'the email must have a replyToName - contact an admin').notEmpty();
+            req.assert('replyToEmail', 'the email must have a replyToEmail - contact an admin').notEmpty();
+            
+            var errors = req.validationErrors();
+            if (errors) 
+            {
+                return res.status(400).send(errors);
+            }
+          
             Email.findOne(
             {
                 _id: req.params.emailId
             }).exec(function(err, email) 
             {
                 email = _.extend(email, req.body);
-                 console.log('update email cb');
+                console.log('update email cb');
             
                 email.updatedBy = req.user.username;
 
@@ -193,9 +221,13 @@ module.exports = function() {
         },
         list: function(req, res, next) 
         {
-            Email.find(
-            {
-            }, function(err, email) 
+            Email.find
+            (
+                {},
+                'name company createdAt createdBy updatedAt updatedBy segment scheduledDate newsletterEntity status' 
+            ).lean()
+            .exec(
+            function(err, email) 
             {
                res.jsonp(email);
             });

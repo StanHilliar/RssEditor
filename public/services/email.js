@@ -3,9 +3,10 @@
 angular.module('mean.emaileditor').factory("Email", ['$resource',
     function($resource) 
     {
-        return $resource('/api/emaileditor/email/:emailId', 
+        return $resource('/api/:company/emaileditor/email/:emailId', 
         {
-            emailId: '@_id'
+            emailId: '@_id',
+            company: '@company'
         }, 
         {
             update: 

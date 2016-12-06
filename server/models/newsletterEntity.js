@@ -19,6 +19,36 @@ var NewsletterEntitySchema = new Schema(
     unique: true,
     required: true
   },
+  company:
+  {
+    type: String,
+    required:  true
+  },   
+  bounceBackAddress:
+  {
+    type: String,
+    required:  true
+  },      
+  replyToName:
+  {
+    type: String,
+    required:  true
+  },    
+  replyToEmail:
+  {
+    type: String,
+    required:  true
+  },    
+  fromAddress:
+  {
+    type: String,
+    /*required:  true*/
+  },   
+  senderName:
+  {
+    type: String,
+    /*required:  true*/
+  }, 
   type:   
   {
     type: String,

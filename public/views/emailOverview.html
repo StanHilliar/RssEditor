@@ -1,6 +1,7 @@
 <div class="" data-ng-controller="EmailOverviewController">
 	<div class="row">
 		<div class="col-sm-12 col-md-12">
+			<h3>Newsletters</h3>
 		 	<div class="panel panel-default" ng-repeat="newsletter in newsletters">
 			  	<div class="panel-heading">
 			        <a class="dark" href="#" ng-click="newsletter.open=!newsletter.open">{{newsletter.name}}</a> <span class="badge">{{emails[newsletter._id].length}}</span>

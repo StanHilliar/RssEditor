@@ -5,9 +5,10 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
     {   
         function getEmailModule()
         {
-            return $resource('/api/emaileditor/emailmodule/:moduleId/', 
+            return $resource('/api/:company/emaileditor/emailmodule/:moduleId/', 
             {
-                moduleId: '@_id'
+                moduleId: '@_id',
+                company: '@company'
             }, 
             {
                 update: 
@@ -19,42 +20,52 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
 
         function getSegments()
         {
-           return $resource('/api/emaileditor/segments/:id',
+           return $resource('/api/:company/emaileditor/segments/:id',
             {
-                id: '@_id'
+                id: '@_id',
+                company: '@company'
             });
         }   
 
         function getEmailGroups()
         {
-           return $resource('/api/emaileditor/emailgroups/');
+            return $resource('/api/:company/emaileditor/emailgroups/',
+            {
+                company: '@company'
+            });
         }
 
         function eloquaEmail()
         {
-           return $resource('/api/emaileditor/eloquaemail/:eloquaEmailId/', 
+           return $resource('/api/:company/emaileditor/eloquaemail/:eloquaEmailId/', 
             {
-                eloquaEmailId: '@id'
+                eloquaEmailId: '@id',
+                company: '@company'
             });
         }    
 
         function eloquaTestEmail()
         {
-           return $resource('/api/emaileditor/sendtestemail/');
+           return $resource('/api/:company/emaileditor/sendtestemail/',
+            {
+                company: '@company'
+            });
         }      
 
         function eloquaCampaign()
         {
-           return $resource('/api/emaileditor/scheduleemail/:eloquaCampaignId/', 
+           return $resource('/api/:company/emaileditor/scheduleemail/:eloquaCampaignId/', 
             {
-                eloquaCampaignId: '@id'
+                eloquaCampaignId: '@id',
+                company: '@company'
             });
         }   
         function eloquaCampaignUnschedule()
         {
-           return $resource('/api/emaileditor/unscheduleemail/:eloquaCampaignId/', 
+           return $resource('/api/:company/emaileditor/unscheduleemail/:eloquaCampaignId/', 
             {
-                eloquaCampaignId: '@id'
+                eloquaCampaignId: '@id',
+                company: '@company'
             });
         }
 

@@ -1,8 +1,8 @@
 'use strict';
 
 /* jshint -W098 */
-angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope', '$q', '$stateParams', '$compile', '$interpolate', '$sce', 'Global', 'Emaileditor', 'NewsletterEntity', 'Email', 'Eloqua', 'XMLFeed',
-  function($scope, $q,  $stateParams, $compile, $interpolate, $sce, Global, Emaileditor, NewsletterEntity, Email, Eloqua, XMLFeed) 
+angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope', '$q', '$stateParams', '$compile', '$interpolate', '$sce', 'Global', 'Emaileditor', 'NewsletterEntity', 'Email', 'Eloqua', 'XMLFeed', 'MeanUser',
+  function($scope, $q,  $stateParams, $compile, $interpolate, $sce, Global, Emaileditor, NewsletterEntity, Email, Eloqua, XMLFeed, MeanUser) 
   {
     $scope.global = Global;
     $scope.package = 
@@ -22,6 +22,8 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     var EloquaCampaignUnschedule = Eloqua.eloquaCampaignUnschedule();
     var storedEloquaEmail = null;
     var storedEloquaCampaign = null;
+
+    var sendRightNow = false;
  
 
     var emailId = null;
@@ -43,6 +45,8 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     $scope.feedPositions  = [];
     $scope.skipedEntries  = [];
     $scope.skipedEmailModules  = {};
+
+    $scope.errorMsgs = [];
 
     $scope.firstInit = true;
     $scope.loading = false;
@@ -90,14 +94,43 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     $scope.setinXDays = function(days) 
     {
-      var oldDateObj = new Date();
+      var oldDateObj = $scope.dt;
+      if(oldDateObj == null || oldDateObj == undefined)
+      {
+        oldDateObj = new Date();
+      }
+
+      var now = new Date();
+      oldDateObj.setDate(now.getDate());
+      oldDateObj.setMonth(now.getMonth());
+      oldDateObj.setFullYear(now.getFullYear());
+
+      var now = new Date();
+
       $scope.dt = new Date(oldDateObj.getTime() + days*86400000);;
     };    
 
     $scope.setTimeinXMinutes = function(minutes) 
     {
       var oldDateObj = $scope.dt;
-      $scope.dt = new Date(oldDateObj.getTime() + minutes*60000);
+      if(oldDateObj == null || oldDateObj == undefined)
+      {
+        oldDateObj = new Date();
+      }
+      var now = new Date();
+      oldDateObj.setHours(now.getHours());
+      oldDateObj.setMinutes(now.getMinutes());
+      oldDateObj.setSeconds(now.getSeconds());
+      oldDateObj.setMilliseconds(now.getMilliseconds());
+
+      if(minutes > 0)
+      {
+        $scope.dt = new Date(oldDateObj.getTime() + minutes*60000);
+      }
+      else
+      {
+        $scope.dt = new Date(oldDateObj.getTime());
+      }
       //$scope.dt = (newDateObj.getHours()<10?'0':'')+newDateObj.getHours()+':'+ (newDateObj.getMinutes()<10?'0':'')+ newDateObj.getMinutes();
     };
 
@@ -112,53 +145,55 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         scope: $scope
     }
 
-    $scope.emailTemplates = Emaileditor.getEmailTemplate().query({entityId: $stateParams.newsletterid}, function(newsletterEntityArray)
+    $scope.emailTemplates = Emaileditor.getEmailTemplate().query({company: MeanUser.company.id, entityId: $stateParams.newsletterid}, function(newsletterEntityArray)
     {
-      console.log('entity loaded');
+      //console.log('entity loaded');
       $scope.entity =newsletterEntityArray[0];
 
       if($scope.segment == '')
       {
         $scope.segment = $scope.entity.segments[0].id;
       }
-      $scope.emailTemplates =newsletterEntityArray[0];
+      $scope.emailTemplates = newsletterEntityArray[0];
 
       $scope.emailTemplates.header = $scope.emailTemplates.header.replace(/(\r\n|\n|\r)/gm,"");
       $scope.emailTemplates.footer = $scope.emailTemplates.footer.replace(/(\r\n|\n|\r)/gm,"");
 
 
       $scope.your_variable = $scope.emailTemplates.header + $scope.emailTemplates.footer;
-    //  console.log( $scope.your_variable);
+      // console.log( $scope.your_variable);
       if($stateParams.emailid != null)
       {
         emailId = $stateParams.emailid;
-        Email.query({emailId: $stateParams.emailid}, function(emails)
+        Email.query({company: MeanUser.company.id, emailId: $stateParams.emailid}, function(emails)
         {
           var email = emails[0];
           $scope.storedEmail = emails[0];
 
-          console.log('load email cb');
+          //console.log('load email cb');
           if(email !=  null)
           {
             $scope.EmailName = email.name;
             $scope.EmailSubject = email.subject;
-            $scope.dt = new Date(email.scheduledDate);
+            if(email.scheduledDate)
+            {
+              $scope.dt = new Date(email.scheduledDate);
+            }
             //$scope.dt = email.scheduledTime
             $scope.rssData = email.data;
             $scope.feedPositions = email.positions;
             // status: 'draft'
           }
 
-          console.log($scope.storedEmail);
-          console.log($scope.storedEmail.eloquaEmail);
-
+          //console.log($scope.storedEmail);
+          //console.log($scope.storedEmail.eloquaEmail);
 
           $scope.initAfterLoad();
         });
       }
       else
       {
-        $scope.EmailName = $scope.entity.name+'_'+($scope.minDate.getYear()-100)+''+($scope.minDate.getMonth()<9?'0':'')+''+($scope.minDate.getMonth()+1)+''+($scope.minDate.getDate()<9?'0':'')+''+($scope.minDate.getDate()+1)+'_Username';
+        $scope.EmailName = $scope.entity.name+'_'+($scope.minDate.getYear()-100)+''+($scope.minDate.getMonth()<9?'0':'')+''+($scope.minDate.getMonth()+1)+''+($scope.minDate.getDate()<9?'0':'')+''+($scope.minDate.getDate())+'_Username';
         $scope.EmailName = $scope.EmailName.replace(/ /gm, '');
 
         $scope.init();
@@ -193,44 +228,34 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           $scope.your_variable  = $scope.generateEmail($scope.isEditMode);
         });
       }
-    }
+    };
 
-    //depricated
-    $scope.previewEmail = function()
-    {
-      console.log('previewEmail');
-      var _previewEmail = $scope.emailTemplates.header;
-
-      _previewEmail += $scope.emailTemplates.footer;
-
-      //var w = window.open();
-      scope.checkAds(function()
-      {
-        $scope.api.setMode(false);
-        $scope.your_variable  = $scope.generateEmail(false);
-      });
-    };  
-
+    /***
+     saves the email in the apps database
+    ***/
     $scope.saveEmail = function(cb)
     {
-      console.log('saveEmail');
-      console.log($scope.rssData);
+      //console.log('saveEmail');
+      //console.log($scope.rssData);
       $scope.saveInProgress = true;
 
       var myData = [];
       for(var i = 0; i < $scope.rssData.length; i++)
       {
+        //console.log($scope.rssData[i].bodyData);
         myData[i] = {};
         myData[i].state =  $scope.rssData[i].state;
         myData[i].numberOfEntries =  $scope.rssData[i].numberOfEntries;
         myData[i].data = $scope.rssData[i].data;
+        myData[i].bodyData = $scope.rssData[i].bodyData;
+        //console.log(myData[i]);
       }
       
-      console.log($scope.storedEmail);
+      //console.log($scope.storedEmail);
 
       if($scope.storedEmail != null)
       {
-        console.log('storedEmail NOT null');
+        //console.log('storedEmail NOT null');
         $scope.storedEmail.name = $scope.EmailName;
         $scope.storedEmail.subject = $scope.EmailSubject;
         $scope.storedEmail.scheduledDate = $scope.dt;
@@ -239,12 +264,17 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         $scope.storedEmail.data = myData;
         $scope.storedEmail.eloquaFolder         = $scope.entity.eloquaFolder;  
         $scope.storedEmail.eloquaCampaignFolder = $scope.entity.eloquaCampaignFolder; 
-        $scope.storedEmail.eloquaFooter= $scope.entity.eloquaFooter;
-        $scope.storedEmail.eloquaHeader= $scope.entity.eloquaHeader;
+        $scope.storedEmail.eloquaFooter = $scope.entity.eloquaFooter;
+        $scope.storedEmail.eloquaHeader = $scope.entity.eloquaHeader;
+        $scope.storedEmail.bounceBackAddress = $scope.entity.bounceBackAddress;
+        $scope.storedEmail.replyToName = $scope.entity.replyToName;
+        $scope.storedEmail.replyToEmail = $scope.entity.replyToEmail;
+        $scope.storedEmail.fromAddress = $scope.entity.fromAddress;
+        $scope.storedEmail.senderName = $scope.entity.senderName;
       }
       else
       {
-        console.log('storedEmail == null');
+        //console.log('storedEmail == null');
         $scope.storedEmail = new Email(
         {
           name: $scope.EmailName,        
@@ -259,19 +289,24 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           eloquaFooter: $scope.entity.eloquaFooter,  
           eloquaHeader: $scope.entity.eloquaHeader,  
           eloquaEmailGroup: $scope.entity.eloquaEmailGroup,  
+          bounceBackAddress: $scope.entity.bounceBackAddress,  
+          replyToName: $scope.entity.replyToName,  
+          replyToEmail: $scope.entity.replyToEmail,  
+          fromAddress: $scope.entity.fromAddress,  
+          senderName: $scope.entity.senderName,  
           positions: $scope.feedPositions,
           status: 'draft'
         });
-        console.log($scope.storedEmail);
+        //console.log($scope.storedEmail);
       }
 
+      $scope.storedEmail.company = MeanUser.company.id;
       $scope.storedEmail.$save(function(data, headers) 
       {
         $scope.module = data;
-        $scope.errorMsgs = null;
+        $scope.errorMsgs = [];
         $scope.moduleExsists = true;
-        saveEloquaEmail(cb);
-       
+        saveEloquaEmail(cb); 
       }, 
       function(data, headers) 
       {
@@ -283,40 +318,58 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     function saveEloquaEmail(cb)
     {
+      $scope.checkAds(function()
+      {
+         
         if(storedEloquaEmail == null)
         {
-            storedEloquaEmail = new EloquaEmail(
-            {
-              name: $scope.EmailName,        
-              emailId: $scope.storedEmail._id,            
-              id: $scope.storedEmail.eloquaEmail,  
-              eloquaFolder: $scope.storedEmail.eloquaFolder,
-              eloquaHeader: $scope.storedEmail.eloquaHeader,
-              eloquaFooter: $scope.storedEmail.eloquaFooter,
-              eloquaEmailGroup: $scope.storedEmail.eloquaEmailGroup,
-              subject: $scope.storedEmail.subject,
-              html: $scope.generateEmail(false)
-            });
+          storedEloquaEmail = new EloquaEmail(
+          {
+            name: $scope.EmailName,        
+            emailId: $scope.storedEmail._id,            
+            id: $scope.storedEmail.eloquaEmail,  
+            eloquaFolder: $scope.storedEmail.eloquaFolder,
+            eloquaHeader: $scope.storedEmail.eloquaHeader,
+            eloquaFooter: $scope.storedEmail.eloquaFooter,
+            eloquaEmailGroup: $scope.storedEmail.eloquaEmailGroup,
+            bounceBackAddress: $scope.storedEmail.bounceBackAddress,
+            replyToName: $scope.storedEmail.replyToName,
+            replyToEmail: $scope.storedEmail.replyToEmail,
+            fromAddress: $scope.storedEmail.fromAddress,
+            senderName: $scope.storedEmail.senderName,
+            subject: $scope.storedEmail.subject,
+            html: $scope.generateEmail(false)
+          });
         }
         else
         {
-            storedEloquaEmail.name = $scope.EmailName;        
-            storedEloquaEmail.emailId = $scope.storedEmail._id;        
-            storedEloquaEmail.id = $scope.storedEmail.eloquaEmail;  
-            storedEloquaEmail.eloquaFolder = $scope.storedEmail.eloquaFolder;
-            storedEloquaEmail.eloquaHeader = $scope.storedEmail.eloquaHeader;
-            storedEloquaEmail.eloquaFooter = $scope.storedEmail.eloquaFooter;
-            storedEloquaEmail.eloquaEmailGroup = $scope.storedEmail.eloquaEmailGroup;
-            storedEloquaEmail.subject = $scope.storedEmail.subject;
-            storedEloquaEmail.html = $scope.generateEmail(false);
+          storedEloquaEmail.name = $scope.EmailName;        
+          storedEloquaEmail.emailId = $scope.storedEmail._id;        
+          storedEloquaEmail.id = $scope.storedEmail.eloquaEmail;  
+          storedEloquaEmail.eloquaFolder = $scope.storedEmail.eloquaFolder;
+          storedEloquaEmail.eloquaHeader = $scope.storedEmail.eloquaHeader;
+          storedEloquaEmail.eloquaFooter = $scope.storedEmail.eloquaFooter;
+          storedEloquaEmail.eloquaEmailGroup = $scope.storedEmail.eloquaEmailGroup;
+          storedEloquaEmail.bounceBackAddress = $scope.storedEmail.bounceBackAddress;
+          storedEloquaEmail.replyToName = $scope.storedEmail.replyToName;
+          storedEloquaEmail.replyToEmail = $scope.storedEmail.replyToEmail;
+          storedEloquaEmail.fromAddress = $scope.storedEmail.fromAddress;
+          storedEloquaEmail.senderName = $scope.storedEmail.senderName;
+          storedEloquaEmail.subject = $scope.storedEmail.subject;
+          storedEloquaEmail.html = $scope.generateEmail(false);
         }
 
+
+
+       // console.log(storedEloquaEmail.html);
+
+        storedEloquaEmail.company = MeanUser.company.id;
         storedEloquaEmail.$save(function(data, headers) 
         {
-          console.log('storeCB');
-          console.log(data);
+          //console.log('storeCB');
+          //console.log(data);
           $scope.module = data;
-          $scope.errorMsgs = null;
+          $scope.errorMsgs = [];
           $scope.moduleExsists = true;
           $scope.saveInProgress = false;
           $scope.storedEmail.eloquaEmail = data.id;
@@ -325,10 +378,14 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         }, 
         function(data, headers) 
         {
-          $scope.errorMsgs = data.data;
+
+          $scope.errorMsgs = [];
+          $scope.errorMsgs.push({param: 'email', msg:'couldnt save email in Eloqua'});
+
           $scope.saveInProgress = false;
           if(cb) return cb();
         });
+      });
     }
     
 
@@ -336,7 +393,9 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     {
       console.log('sendEmailRightNow');
       $scope.setinXDays(0);
-      $scope.setTimeinXMinutes(1);
+      $scope.setTimeinXMinutes(0);
+      sendRightNow = true;
+
       $scope.scheduleEmail();
       /*if($scope.storedEmail.modified)
       {
@@ -374,13 +433,16 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
         storedEloquaCampaign.startAt        = Math.ceil(startAt.getTime() / 1000); 
         storedEloquaCampaign.endAt          = Math.ceil(endAt.getTime()   / 1000); 
+        storedEloquaCampaign.sendRightNow          = sendRightNow; 
 
+        storedEloquaCampaign.company = MeanUser.company.id;
         storedEloquaCampaign.$save(function(data, headers) 
         {
-          console.log('storeCampaignCB');
-          console.log(data);
+          console.log('scheduleEmail CB - success');
+          //console.log(data);
+          //console.log(headers);
           $scope.module = data;
-          $scope.errorMsgs = null;
+          $scope.errorMsgs = [];
           $scope.scheduleInProgress = false;
           $scope.storedEmail.eloquaCampaign = data.id;
           $scope.storedEmail.status = 'active';
@@ -388,6 +450,9 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         }, 
         function(data, headers) 
         {
+          console.log('scheduleEmail CB - error');
+          //console.log(data);
+          //console.log(headers);
           $scope.errorMsgs = data.data;
           $scope.scheduleInProgress = false;
         });
@@ -417,17 +482,19 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       $scope.scheduleInProgress = true;
       var campaign =  new EloquaCampaignUnschedule();
       campaign.id = $scope.storedEmail.eloquaCampaign; 
-      campaign.emailId   = $scope.storedEmail._id;    
+      campaign.emailId   = $scope.storedEmail._id;
+      campaign.company = MeanUser.company.id;    
       campaign.$save(function(data, headers) 
       {
-        console.log('storeCampaignCB');
+        console.log('unscheduleEmail CB - success');
  
-        $scope.errorMsgs = null;
+        $scope.errorMsgs = [];
         $scope.scheduleInProgress = false;
         $scope.storedEmail.status = 'draft';
       }, 
       function(data, headers) 
       {
+        console.log('unscheduleEmail CB - error');
         $scope.errorMsgs = data.data;
         $scope.scheduleInProgress = false;
         });
@@ -435,23 +502,32 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     $scope.sendTestEmail = function()
     {
-      $scope.testSendingInProgress = true;
-      var campaign =  new EloquaTestEmail();
-      campaign.emailAddresses = $scope.testEmailAddresses; 
-      campaign.eloquaEmailId   = $scope.storedEmail.eloquaEmail;    
-      campaign.$save(function(data, headers) 
+      if($scope.storedEmail == null)
       {
-        console.log('EloquaTestEmail');
- 
-        $scope.errorMsgs = null;
-        $scope.testSendingInProgress = false;
-        $scope.storedEmail.status = 'draft';
-      }, 
-      function(data, headers) 
+        $scope.errorMsgs = [];
+        $scope.errorMsgs.push({param:'send Test email', msg:'email needs to be saved before you can send a test email'});
+      }
+      else
       {
-        $scope.errorMsgs = data.data;
-        $scope.testSendingInProgress = false;
+        $scope.testSendingInProgress = true;
+
+        var campaign =  new EloquaTestEmail();
+        campaign.emailAddresses = $scope.testEmailAddresses; 
+        campaign.eloquaEmailId   = $scope.storedEmail.eloquaEmail;    
+        campaign.company = MeanUser.company.id;  
+        campaign.$save(function(data, headers) 
+        {
+          // console.log('EloquaTestEmail');
+   
+          $scope.errorMsgs = [];
+          $scope.testSendingInProgress = false;
+        }, 
+        function(data, headers) 
+        {
+          $scope.errorMsgs = data.data;
+          $scope.testSendingInProgress = false;
         });
+      }
     };
 
 
@@ -471,32 +547,32 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     $scope.closeSendEmail = function()
     {
       console.log('closeSendEmail');
-      console.log(modalInstance);
+      //console.log(modalInstance);
       modalInstance.dismiss('cancel');
     };
 
     $scope.updateFeedPositions = function(data) 
     {
-        console.log("updateFeedPositions");
-        console.log(data);
-        var _data = data;
+        //console.log("updateFeedPositions");
+        //console.log(data);
+        var _data = data.slice(0);
         var modulePos = 0;
-        for(var i = 0; i < data.length; i++)
+        for(var i = 0; i < _data.length; i++)
         {
 
-          var posIdentifier = data[i].replace(dndElementIdentifier+'_', '').split('_');
+          var posIdentifier = _data[i].replace(dndElementIdentifier+'_', '').split('_');
           _data[i] = posIdentifier[1];
           modulePos = posIdentifier[0];
 
         }
-        console.log(_data);
+        //console.log(_data);
         $scope.feedPositions[modulePos]  = _data;
     };    
 
     $scope.clickOnElement = function(elementID) 
     {
-        console.log("clickOnElement");
-        console.log(elementID);
+        //console.log("clickOnElement");
+        //console.log(elementID);
 
         $scope.isEmailModuleSelected = false;
         $scope.showSendingOptions = false;
@@ -510,17 +586,17 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         $scope.currentEntry = {};
         $scope.currentEntry.moduleId = _moduleID;
         $scope.currentEntry.id = _id;
-        console.log($scope.currentEntry);
+        //console.log($scope.currentEntry);
         $scope.currentViews = $scope.entity.modules[_moduleID].views;
-        console.log(_id);
-        console.log($scope.currentViews);
+        //console.log(_id);
+        //console.log($scope.currentViews);
         $scope.$apply();
     };     
 
     $scope.clickOnEmailModule = function(elementID) 
     {
-        console.log("clickOnElement");
-        console.log(elementID);
+        //console.log("clickOnElement");
+        //console.log(elementID);
      
         var _id = elementID.replace('emailModuleSelector_', '');
         
@@ -534,7 +610,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     $scope.addEntry = function(moduleIndex)
     {
-      console.log("addEntry("+moduleIndex+")");
+      //console.log("addEntry("+moduleIndex+")");
       var _module = $scope.emailTemplates.modules[moduleIndex];
       //_module.type;
       if(_module.type == "3")
@@ -563,7 +639,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     $scope.deleteEntry = function() 
     {
-        console.log("deleteEntry");
+        //console.log("deleteEntry");
 
         $scope.skipedEntries[$scope.currentEntry.moduleId][$scope.currentEntry.id] = true;
         $scope.your_variable  = $scope.generateEmail(true);
@@ -572,7 +648,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     $scope.updateEntryState = function() 
     {
-      console.log("updateEntryState");
+      //console.log("updateEntryState");
 
       $scope.your_variable  = $scope.generateEmail(true);
       $scope.api.reinitSortable();
@@ -603,7 +679,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     $scope.updateViewforEntry = function()
     {
-      console.log('updateViewforEntry');
+      //console.log('updateViewforEntry');
       $scope.your_variable  = $scope.generateEmail(true);
       $scope.api.reinitSortable();
     };
@@ -612,11 +688,10 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     {
       //console.log('generateEmail');
       var formatedEntries = '';
-      var noSkippedEntries = 0;
-
       for(var moduleCounter = 0; moduleCounter < $scope.entity.modules.length; moduleCounter++)
       {
         //console.log('module '+moduleCounter);
+        var noSkippedEntries = 0;
         var moduleState = $scope.rssData[moduleCounter].state;
         //console.log( $scope.entity.modules[moduleCounter].childTagName);
 
@@ -631,7 +706,14 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
             _moduleData += '<div class="emailModuleSelector" id="emailModuleSelector_'+moduleCounter+'"><i class="fa fa-cog fa-3"></i></div>'; 
           } 
 
-          _moduleData += $scope.emailTemplates.modules[moduleCounter].preBody;
+          var preBody = $scope.emailTemplates.modules[moduleCounter].preBody;
+          for(var varCounter= 0; varCounter < $scope.emailTemplates.modules[moduleCounter].bodyVariables.length; varCounter++)
+          {
+            var variableName = $scope.emailTemplates.modules[moduleCounter].bodyVariables[varCounter].name;
+             preBody = preBody.replace("{{"+variableName+"}}", '{{rssData['+moduleCounter+'].bodyData.'+variableName+'}}');
+             preBody = preBody.replace("{{"+variableName+"}}", '{{rssData['+moduleCounter+'].bodyData.'+variableName+'}}');
+          }
+          _moduleData += preBody;
 
           if(isEdit && isDraggable)
           {
@@ -659,7 +741,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
                 if($scope.rssData != null)
                 {
                   //console.log('rssData !=  null');
-                 // console.log($scope.rssData.length);
+                  //console.log($scope.rssData.length);
 
                   if($scope.rssData.length > 0 && $scope.rssData[moduleCounter] != null)
                   {
@@ -681,26 +763,30 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
                 //console.log($scope.rssData[moduleCounter][x]._view);
                 //var _entryView = $scope.emailTemplates.modules[moduleCounter].views[$scope.rssData[moduleCounter][i]._view.id].source;
       
-                _entryView = _entryView.replace("[[title]]",   '{{rssData['+moduleCounter+'].data['+i+'].title}}');
-                //_entryView = _entryView.replace("[[htmlContent]]", 'rssData['+moduleCounter+'].data['+i+'].htmlContent');
-                _entryView = _entryView.replace("[[content]]", '{{rssData['+moduleCounter+'].data['+i+'].content}}');
-                _entryView = _entryView.replace("[[image]]", '{{rssData['+moduleCounter+'].data['+i+'].image}}');
-                _entryView = _entryView.replace("[[link]]", '{{rssData['+moduleCounter+'].data['+i+'].link}}');
-               // _entryView = _entryView.replace("[[contentSnippet]]", '{{rssData['+moduleCounter+'].data['+i+'].contentSnippet}}');
+                _entryView = _entryView.replace(/\[\[title\]\]/g,   '{{rssData['+moduleCounter+'].data['+i+'].title}}');
+                //_entryView = _entryView.replace("[[htmlContent\]\]/g", 'rssData['+moduleCounter+'].data['+i+'].htmlContent');
+                _entryView = _entryView.replace(/\[\[content\]\]/g, '{{rssData['+moduleCounter+'].data['+i+'].content}}');
+                _entryView = _entryView.replace(/\[\[image\]\]/g, '{{rssData['+moduleCounter+'].data['+i+'].image}}');
+                _entryView = _entryView.replace(/\[\[link\]\]/g, '{{rssData['+moduleCounter+'].data['+i+'].link}}');
+                _entryView = _entryView.replace(/\[\[enclosure\]\]/g, '{{rssData['+moduleCounter+'].data['+i+'].enclosure}}');
+               // _entryView = _entryView.replace("/\[\[contentSnippet\]\]/g", '{{rssData['+moduleCounter+'].data['+i+'].contentSnippet}}');
 
 
                 for(var varCounter= 0; varCounter < $scope.emailTemplates.modules[moduleCounter].variables.length; varCounter++)
                 {
                   var variableName = $scope.emailTemplates.modules[moduleCounter].variables[varCounter].name;
-                   _entryView = _entryView.replace("{{"+variableName+"}}", '{{rssData['+moduleCounter+'].data['+i+'].data.'+variableName+'}}');
-                   _entryView = _entryView.replace("{{"+variableName+"}}", '{{rssData['+moduleCounter+'].data['+i+'].data.'+variableName+'}}');
+                   _entryView = _entryView.replace( new RegExp("\{\{"+variableName+"\}\}",'g'), '{{rssData['+moduleCounter+'].data['+i+'].data.'+variableName+'}}');
+                  // _entryView = _entryView.replace("/\{\{"+variableName+"\}\}/g", '{{rssData['+moduleCounter+'].data['+i+'].data.'+variableName+'}}');
                 }
 
                 if($scope.emailTemplates.modules[moduleCounter].type==2)
                 {
                     for(var xmlVarCounter = 0; xmlVarCounter < $scope.emailTemplates.modules[moduleCounter].xmlVariables.length; xmlVarCounter++)
                     {
-                      _entryView = _entryView.replace("[["+$scope.emailTemplates.modules[moduleCounter].xmlVariables[xmlVarCounter].label+"]]", '{{rssData['+moduleCounter+'].data['+i+'].'+$scope.emailTemplates.modules[moduleCounter].xmlVariables[xmlVarCounter].name+'}}');
+                      //var re = new RegExp("[["+$scope.emailTemplates.modules[moduleCounter].xmlVariables[xmlVarCounter].label+"]]");
+                      _entryView = _entryView.replace( "[["+$scope.emailTemplates.modules[moduleCounter].xmlVariables[xmlVarCounter].label+"]]", '{{rssData['+moduleCounter+'].data['+i+'].'+$scope.emailTemplates.modules[moduleCounter].xmlVariables[xmlVarCounter].name+'}}');
+                      _entryView = _entryView.replace( "[["+$scope.emailTemplates.modules[moduleCounter].xmlVariables[xmlVarCounter].label+"]]", '{{rssData['+moduleCounter+'].data['+i+'].'+$scope.emailTemplates.modules[moduleCounter].xmlVariables[xmlVarCounter].name+'}}');
+                      _entryView = _entryView.replace( "[["+$scope.emailTemplates.modules[moduleCounter].xmlVariables[xmlVarCounter].label+"]]", '{{rssData['+moduleCounter+'].data['+i+'].'+$scope.emailTemplates.modules[moduleCounter].xmlVariables[xmlVarCounter].name+'}}');
                     }
                 }
 
@@ -756,7 +842,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
               var _adIndex = -1;
               for(var adCounter=0; adCounter < $scope.emailTemplates.modules[moduleCounter].ads.length; adCounter++)
               { 
-                //console.log('CHECK AD _pos:'+$scope.emailTemplates.modules[moduleCounter].ads[adCounter].pos);
+                //console.log('CHECK AD _pos:'+$scope.emailTemplates.modules[moduleCounter].ads[adCounter].pos + ' == '+(parseInt(x)-parseInt(noSkippedEntries)+1));
                 if($scope.emailTemplates.modules[moduleCounter].ads[adCounter].pos == (parseInt(x)-parseInt(noSkippedEntries)+1)+'')
                 {
                   //console.log('ADD FOUND');
@@ -769,36 +855,8 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
               }
 
               if(_addAd)
-              {
-                var _adview = '';
-                if(isEdit)
-                {
-                  _adview += '<div class="static">';
-                }
-                
-
-                _adview += $scope.emailTemplates.modules[moduleCounter].adViews[0].source;
-
-                _adview = _adview.replace("[[adLink]]",   '{{adData['+moduleCounter+']['+_adIndex+'].link}}');
-                _adview = _adview.replace("[[adImage]]",   '{{adData['+moduleCounter+']['+_adIndex+'].img}}');
-
-                if(isEdit)
-                {
-                  _adview += '</div>';
-                }
-
-
-                if(isEdit)
-                {
-                  _tmpData += _adview;
-                }
-                else
-                {
-                  if($scope.adData[moduleCounter][_adIndex].booked == true)
-                  {
-                    _tmpData += _adview;
-                  }
-                }
+              {      
+                _tmpData += _getAdView(isEdit, moduleCounter, _adIndex);
               }
               
               //console.log(_tmpData);
@@ -806,12 +864,37 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
               _moduleData +=_tmpData;
           }
 
+          var _addAd = false;
+          var _adIndex = -1;
+          var x = Math.min($scope.feedPositions[moduleCounter].length, $scope.rssData[moduleCounter].numberOfEntries);
+          //console.log(x);
+          for(var adCounter=0; adCounter < $scope.emailTemplates.modules[moduleCounter].ads.length; adCounter++)
+          { 
+            //console.log('CHECK AD _pos:'+$scope.emailTemplates.modules[moduleCounter].ads[adCounter].pos+ ' >= '+(parseInt(x)-parseInt(noSkippedEntries)+1));
+            if(parseInt($scope.emailTemplates.modules[moduleCounter].ads[adCounter].pos) >= (parseInt(x)-parseInt(noSkippedEntries)+1)+'')
+            {
+              //console.log('ADD FOUND1');
+
+              _adIndex = adCounter;
+  
+              _moduleData += _getAdView(isEdit, moduleCounter, _adIndex);
+            }
+          }
+
           if(isEdit && isDraggable)
           {
             _moduleData += '</div>';  //div.sortable1
           }
 
-          _moduleData += $scope.emailTemplates.modules[moduleCounter].postBody;
+        
+          var postBody = $scope.emailTemplates.modules[moduleCounter].postBody;
+          for(var varCounter= 0; varCounter < $scope.emailTemplates.modules[moduleCounter].bodyVariables.length; varCounter++)
+          {
+            var variableName = $scope.emailTemplates.modules[moduleCounter].bodyVariables[varCounter].name;
+             postBody = postBody.replace("{{"+variableName+"}}", '{{rssData['+moduleCounter+'].bodyData.'+variableName+'}}');
+             postBody = postBody.replace("{{"+variableName+"}}", '{{rssData['+moduleCounter+'].bodyData.'+variableName+'}}');
+          }
+          _moduleData += postBody;
 
           if(isEdit)
           {
@@ -835,12 +918,51 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           }
         }
       }
+
       //console.log($scope.emailTemplates.header + formatedEntries + $scope.emailTemplates.footer);
       //console.log($scope.adData);
 
       //console.log('generateEmail done');
       return $scope.emailTemplates.header + formatedEntries + $scope.emailTemplates.footer;
     };
+
+    function _getAdView(isEdit, moduleCounter, _adIndex )
+    {
+      var _adview = '';
+      if(isEdit)
+      {
+        _adview += '<div class="static">';
+      }
+      
+
+      _adview += $scope.emailTemplates.modules[moduleCounter].adViews[0].source;
+
+      _adview = _adview.replace("[[adLink]]",   '{{adData['+moduleCounter+']['+_adIndex+'].link}}');
+      _adview = _adview.replace("[[adImage]]",   '{{adData['+moduleCounter+']['+_adIndex+'].img}}');
+
+      if(isEdit)
+      {
+        _adview += '</div>';
+      }
+
+
+      if(isEdit)
+      {
+        return _adview;
+      }
+      else
+      {
+        if($scope.adData[moduleCounter][_adIndex].booked == true)
+        {
+          return _adview;
+        }
+        else
+        {
+          return '';
+        }
+      }
+    }
+
 
     $scope.initAfterLoad = function()
     {
@@ -865,13 +987,13 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
             {
               promises.push($scope.loadRSSModule(_module, moduleCounter));
             });*/
-            promises.push(loadRssFeed(_module, moduleCounter));
+            promises.push(loadRssFeed(_module.defaultURL, moduleCounter));
           }
           else
           {
             if(_module.type == "2")
             {
-              //promises.push($scope.loadXMLModule(_module, moduleCounter));
+              promises.push($scope.loadXMLModule(_module.defaultURL, moduleCounter));
             }
             else
             {
@@ -925,10 +1047,10 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         var promises = [];
 
         var moduleCounter = 0;
-        console.log($scope.entity.modules);
+        //console.log($scope.entity.modules);
         angular.forEach($scope.entity.modules, function(_module) 
         {
-          console.log('foreach '+moduleCounter+ ' module type: '+_module.type);
+          //console.log('foreach '+moduleCounter+ ' module type: '+_module.type);
           $scope.adData[moduleCounter] = _module.ads;
 
           $scope.loading  = false;
@@ -939,8 +1061,16 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           $scope.rssData[moduleCounter]                 = [];
           $scope.rssData[moduleCounter].state           = 1; //'active'; 
           $scope.rssData[moduleCounter].numberOfEntries = $scope.emailTemplates.modules[moduleCounter].defaultNumberOfEntries;  
+          //console.log('defaultNumberOfEntries: '+$scope.emailTemplates.modules[moduleCounter].defaultNumberOfEntries);
           $scope.rssData[moduleCounter].data            = [];  
 
+          $scope.rssData[moduleCounter].bodyData = {};
+          $scope.rssData[moduleCounter].bodyVariables = {};
+          for(var x = 0; x < $scope.emailTemplates.modules[moduleCounter].bodyVariables.length; x++)
+          {
+            $scope.rssData[moduleCounter].bodyData[$scope.emailTemplates.modules[moduleCounter].bodyVariables[x].name] = $scope.emailTemplates.modules[moduleCounter].bodyVariables[x].defaultValue;
+            $scope.rssData[moduleCounter].bodyVariables[$scope.emailTemplates.modules[moduleCounter].bodyVariables[x].name] = $scope.emailTemplates.modules[moduleCounter].bodyVariables[x];
+          }
 
           if(_module.type == "1")
           {
@@ -988,31 +1118,51 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       //console.log('checkAd2 ('+moduleCounter+', '+index+')');
       var deferred = $q.defer();
       //console.log($scope.adData[moduleCounter][index].img);
-
-      Emaileditor.checkAdvertisment().query({url: $scope.adData[moduleCounter][index].img}, function(dimensions)
-      {
-        //console.log('checkAdvertisment');
-        //console.log(dimensions[0].height);
-        if(dimensions[0].height == 1)
+     
+      Emaileditor.checkAdvertisment().query(
         {
-          $scope.adData[moduleCounter][index].booked = false;
-          //console.log('yes');
-        }
-        else
-        {
+          url: $scope.adData[moduleCounter][index].img
+        }, 
+        function(dimensions)
+        { 
+          console.log('checkAdvertisment');
+          //console.log(dimensions[0].height);
+          if(dimensions == null || dimensions.length == 0)
+          {
+            $scope.adData[moduleCounter][index].booked = false;
+          }
+          else
+          {
+            if( dimensions[0].height == 1)
+            {
+              $scope.adData[moduleCounter][index].booked = false;
+              //console.log('yes');
+            }
+            else
+            {
+              $scope.adData[moduleCounter][index].booked = true;
+              //console.log('no');
+            }
+          }
+        
+          deferred.resolve();     
+        }, function(error)
+        { 
+          console.error('checkAdvertisment error');
+          $scope.errorMsgs = [];
+          $scope.errorMsgs.push({param:$scope.adData[moduleCounter][index].img, msg: 'couldnt check if the ad was booked'});
+          
           $scope.adData[moduleCounter][index].booked = true;
-          //console.log('no');
+          deferred.resolve();
         }
-
-        deferred.resolve();
-      });
+      );
       
       return deferred.promise;
     }
 
     $scope.checkAds = function(cb)
     {
-        console.log('checkAds');
+        //console.log('checkAds');
    
         var defer = $q.defer();
         var promises = [];
@@ -1068,57 +1218,57 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       return deferred.promise;
     };
 
-    function improveRSSfeed(rss)
+    function improveRSSfeed(rssFeed)
     {
       console.log('improveRSSfeed');
 
-      var feed = rss;
-      if((feed.data != null) && (feed.data.responseData != null)  && (feed.data.responseData.feed != null) && (feed.data.responseData.feed.entries != null))
+      if(rssFeed != null)
       {
-          for(var i = 0; i < feed.data.responseData.feed.entries.length; i++)
+          for(var i = 0; i < rssFeed.length; i++)
           {
-              var currentEntry = feed.data.responseData.feed.entries[i];
+              var currentEntry = rssFeed[i];
 
               var re = /\<img.*?\>/g;
               var subRe = /src=\".*?\"/g;
               var match = '';
               var subMatch = '';
-
               var matches = [];
-
               var _images = [];
            
-              while ((match = re.exec(currentEntry.content)) != null) 
+              if(currentEntry.content != null)
               {
-                  //console.log("match found at " + match.index);
-                  //console.log(match[0].length);
-                  //console.log(match);
+                while ((match = re.exec(currentEntry.content)) != null) 
+                {
+                    //console.log("match found at " + match.index);
+                    //console.log(match[0].length);
+                    //console.log(match);
 
-                  var posSrc = match[0].indexOf('src=');
-                  //console.log(posSrc);
-                  var imgUrl = match[0].substring(posSrc+5);
-                  //console.log(imgUrl);
-                  imgUrl = imgUrl.substring(0, imgUrl.indexOf("\""));
-                  //console.log(imgUrl);
+                    var posSrc = match[0].indexOf('src=');
+                    //console.log(posSrc);
+                    var imgUrl = match[0].substring(posSrc+5);
+                    //console.log(imgUrl);
+                    imgUrl = imgUrl.substring(0, imgUrl.indexOf("\""));
+                    //console.log(imgUrl);
 
-                  _images.push(imgUrl);
+                    _images.push(imgUrl);
 
+                    /*var _name = match[0].substring(2, match[0].length-2);
+                    var _label = _name;
+                    //console.log(_name);
+                    if(_variablesHash[_name] != true)
+                    {
+                      _variablesHash[_name] = true
+                      _variables.push({name: _name, label: _label, defaultValue: '', fieldType: '1', inUse: true});
+                    }*/
+                }
 
-                                    /*var _name = match[0].substring(2, match[0].length-2);
-                  var _label = _name;
-                  //console.log(_name);
-                  if(_variablesHash[_name] != true)
-                  {
-                    _variablesHash[_name] = true
-                    _variables.push({name: _name, label: _label, defaultValue: '', fieldType: '1', inUse: true});
-                  }*/
+                currentEntry.content = currentEntry.content.replace(/<img(?:.|\n)*?>/gm, '');
               }
-
-              currentEntry.content = currentEntry.content.replace(/<(?:.|\n)*?>/gm, '');
 
               if(_images.length > 1)
               {
-                logger.warn('improveRSSfeed in this entry there are more than 1 entries: #'+_images.length);
+                //console.log('improveRSSfeed in this entry there are more than 1 entries: #'+_images.length);
+                currentEntry.imageUrl = _images[0];
               }
 
               if(_images.length == 1)
@@ -1126,24 +1276,44 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
                currentEntry.imageUrl = _images[0];
               }
 
-              feed.data.responseData.feed.entries[i] = currentEntry;
+              rssFeed[i] = currentEntry;
           }
       }
+      //console.log(feed);
 
-      return feed;
+      return rssFeed;
     }
 
     function loadRssFeed(url, modulePos)
     {
       var deferred = $q.defer();
+      console.log('loadRssFeed('+url+','+modulePos+')');
 
-      Emaileditor.parseRSSFeed(url).then(function(rss)
+      Emaileditor.parseRSSFeed().query({url: url}, function(rss)
       {
-        console.log('parseRSSFeed() callback');
-        console.log(rss);
+        //console.log('parseRSSFeed() callback');
+        //console.log(rss);
 
-        feeds[modulePos] = improveRSSfeed(rss);
+        if((rss != null) && (rss[0] != null) && (rss[0].entries != null))
+        { 
+          feeds[modulePos] = improveRSSfeed(rss[0].entries);
+        }
+        else
+        {
+          $scope.errorMsgs.push({param: 'rss feed', msg:'response is empty '});
+        }
+       
+        
         deferred.resolve();  
+      }, 
+      function(error) 
+      {
+        // error handler
+        //console.log('loadRssFeed error');
+        //console.log(error.data);
+        feeds[modulePos] = [];
+        $scope.errorMsgs = $scope.errorMsgs.concat(error.data);
+        deferred.resolve(); 
       });
 
       return deferred.promise;
@@ -1155,17 +1325,39 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
       XMLFeed.query({url: url}, function(feed)
       {
-          for(var index in feed[0])
+        console.log('xml feed cb');
+
+        feeds[modulePos] = [];
+        var _isValid = false;
+       
+        if(feed != null && feed.length > 0)
+        {
+          var keys = Object.keys(feed[0]);
+          console.log(keys);
+          if(keys.length == 1)
           {
-            for(var arrayholder in feed[0][index])
+            var subKeys = Object.keys(feed[0][keys[0]]);
+            console.log(subKeys);
+            if(subKeys.length == 1)
             {
-              console.log(arrayholder);
-              var dataArray = feed[0][index][arrayholder];
-              
-              feeds[modulePos] = dataArray;
-              deferred.resolve(); 
+              //for(var arrayholder in feed[0][index])
+              //{
+               // console.log(arrayholder);
+                var dataArray = feed[0][keys[0]][subKeys[0]];
+                
+                feeds[modulePos] = dataArray;
+                _isValid = true;
+                deferred.resolve(); 
+              //}
             }
           }
+        }
+
+        if(!_isValid)
+        {
+          $scope.errorMsgs.push({param: 'xml feed', msg:'there was an issue loading '+url});
+          deferred.resolve(); 
+        }
       });
 
       return deferred.promise;
@@ -1203,34 +1395,48 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     $scope.loadRSSModule  = function(module, modulePos, from, to)
     {
-      console.log('loadRSSModule');
+      console.log('loadRSSModule '+modulePos);
       var deferred = $q.defer();
       $scope.loading  = false;
 
       //console.log(feeds[modulePos]);
-      var rss = feeds[modulePos];
+      var rssFeed = feeds[modulePos];
 
-      if(rss.status == '200')
+      if(rssFeed != null)
       {
-        var entries = rss.data.responseData.feed.entries;
-        
-        for(var  i = from; (i < to); i++)
+       
+        var  i = parseInt(from);
+        //console.log(i+' = '+parseInt(from)+'; (('+i+' < '+to+') && ('+i+' < '+rssFeed.length+'));');
+        //console.log(i < to);
+        //console.log(i < rssFeed.length);
+        //console.log(((i < to) && (i < rssFeed.length)));
+        for(var  i = parseInt(from); ((i < parseInt(to)) && (i < rssFeed.length)); i++)
         {
-          $scope.rssData[modulePos].data[i] = $scope.rssData[modulePos].data[i] || {};
-          $scope.rssData[modulePos].data[i].state         = 1;
-          $scope.rssData[modulePos].data[i].author         = entries[i].author;
-          $scope.rssData[modulePos].data[i].categories     = entries[i].categories;
-          //$scope.rssData[modulePos].data[i].htmlContent    = $sce.trustAsHtml(entries[i].content);
-          $scope.rssData[modulePos].data[i].content        = entries[i].content;
-          $scope.rssData[modulePos].data[i].image          = entries[i].imageUrl;
-          //$scope.rssData[modulePos].data[i].contentSnippet = entries[i].contentSnippet;
+          //console.log('i:'+i);
+          $scope.rssData[modulePos].data[i]                = $scope.rssData[modulePos].data[i] || {};
+          $scope.rssData[modulePos].data[i].state          = 1;
+          $scope.rssData[modulePos].data[i].author         = rssFeed[i].author;
+          $scope.rssData[modulePos].data[i].categories     = rssFeed[i].categories;
+          //$scope.rssData[modulePos].data[i].htmlContent  = $sce.trustAsHtml(rssFeed[i].content);
+          $scope.rssData[modulePos].data[i].content        = rssFeed[i].content;
+          $scope.rssData[modulePos].data[i].image          = rssFeed[i].imageUrl;
+          //$scope.rssData[modulePos].data[i].contentSnippet = rssFeed[i].contentSnippet;
 
-          $scope.rssData[modulePos].data[i].link           = entries[i].link;
-          $scope.rssData[modulePos].data[i].publishedDate  = entries[i].publishedDate;
-          $scope.rssData[modulePos].data[i].author         = entries[i].author;
-         // $scope.rssData[modulePos].data[i].htmlTitle      = $sce.trustAsHtml(entries[i].title);
-          $scope.rssData[modulePos].data[i].title          = entries[i].title;
+          $scope.rssData[modulePos].data[i].link           = rssFeed[i].link;
+          $scope.rssData[modulePos].data[i].publishedDate  = rssFeed[i].publishedDate;
+          $scope.rssData[modulePos].data[i].author         = rssFeed[i].author;
+          $scope.rssData[modulePos].data[i].enclosure         = rssFeed[i].enclosure;
+         // $scope.rssData[modulePos].data[i].htmlTitle    = $sce.trustAsHtml(rssFeed[i].title);
+          $scope.rssData[modulePos].data[i].title          = rssFeed[i].title;
           $scope.rssData[modulePos].data[i]._view          = $scope.emailTemplates.modules[modulePos].views[0];
+
+          for(var x = 0; x < $scope.emailTemplates.modules[modulePos].views.length; x++ )
+          {
+            if($scope.emailTemplates.modules[modulePos].views[x].isDefault == true)
+            {
+              $scope.rssData[modulePos].data[i]._view = $scope.emailTemplates.modules[modulePos].views[x];
+            }
+          }
     
         
           $scope.rssData[modulePos].data[i].data = {};
@@ -1245,10 +1451,11 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           $scope.rssData[modulePos].data[i]._view.source   = $scope.rssData[modulePos].data[i]._view.source.replace(/(\r\n|\n|\r)/gm,"");         
           $scope.rssData[modulePos].data[i]._pos           = i;
 
+          //console.log($scope.rssData[modulePos].data[i]);
           $scope.feedPositions[modulePos][i] = i;
         }
 
-        //console.log($scope.rssData);
+        //console.log($scope.rssData[modulePos]);
 
         deferred.resolve();  
       }
@@ -1257,7 +1464,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         deferred.reject(rss.status);
       }
 
-      console.log('parseRSSFeed() callback done');
+      //console.log('parseRSSFeed() callback done');
      
 
       return deferred.promise;
@@ -1272,14 +1479,13 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       //console.log(feeds[modulePos]);
       var xmlFeed = feeds[modulePos];
       
-      for(var  i = from; (i < to); i++)
+      for(var  i = from; ((i < to) && (i < xmlFeed.length)); i++)
       {
         $scope.rssData[modulePos].data[i] = $scope.rssData[modulePos].data[i] || {};
         $scope.rssData[modulePos].data[i].state         = 1;
 
         for(var xmlVarCounter = 0; xmlVarCounter < $scope.emailTemplates.modules[modulePos].xmlVariables.length; xmlVarCounter++)
         {
-
           var feedValue = xmlFeed[i][$scope.emailTemplates.modules[modulePos].xmlVariables[xmlVarCounter].name];
 
           $scope.rssData[modulePos].data[i][$scope.emailTemplates.modules[modulePos].xmlVariables[xmlVarCounter].name] = feedValue[0];
@@ -1290,6 +1496,12 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       
         $scope.rssData[modulePos].data[i].data = {};
         $scope.rssData[modulePos].data[i].variables = {};
+        
+        for(var x = 0; x < $scope.emailTemplates.modules[modulePos].variables.length; x++)
+        {
+          $scope.rssData[modulePos].data[i].data[$scope.emailTemplates.modules[modulePos].variables[x].name] = $scope.emailTemplates.modules[modulePos].variables[x].defaultValue;
+          $scope.rssData[modulePos].data[i].variables[$scope.emailTemplates.modules[modulePos].variables[x].name] = $scope.emailTemplates.modules[modulePos].variables[x];
+        }
 
   
         $scope.rssData[modulePos].data[i]._view.label    = $scope.rssData[modulePos].data[i]._view.name;          
@@ -1309,54 +1521,5 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
       return deferred.promise;
    };  
-
-   /*
-   $scope.loadRSSFeed = function(modulePos)
-    {
-      console.log('loadRSSFeed');
-      $scope.loading  = false;
-      var TEST_ITERATOR = 0;
-      Emaileditor.parseRSSFeed($scope.feedURL).then(function(rss)
-    	{
-        console.log('parseRSSFeed() callback');
-        //console.log(rss);
-        if(rss.status == '200')
-        {
-          var entries = rss.data.responseData.feed.entries;
-          
-          $scope.feedPositions[modulePos] = [];
-
-          for(var  i = 0; (i < entries.length); i++)
-          {
-            $scope.rssData[i] = $scope.rssData[i] || {};
-            $scope.rssData[i].author         = entries[i].author;
-            $scope.rssData[i].categories     = entries[i].categories;
-            $scope.rssData[i].htmlContent    = $sce.trustAsHtml(entries[i].content);
-            $scope.rssData[i].contentSnippet = entries[i].contentSnippet;
-            $scope.rssData[i].link           = entries[i].link;
-            $scope.rssData[i].publishedDate  = entries[i].publishedDate;
-            $scope.rssData[i].author         = entries[i].author;
-            $scope.rssData[i].htmlTitle      = $sce.trustAsHtml(entries[i].title);
-            $scope.rssData[i]._view          = $scope.emailTemplates.modules[modulePos].views[0];
-            $scope.rssData[i]._view.label    = $scope.rssData[i]._view.name;          
-            $scope.rssData[i]._view.source   =  $scope.rssData[i]._view.source.replace(/(\r\n|\n|\r)/gm,"");         
-            $scope.rssData[i]._pos           = i;
-
-            
-            $scope.feedPositions[modulePos][i] = i;
-          }
-
-          console.log($scope.rssData);
-
-          $scope.your_variable  = $scope.generateEmail(true);
-          $scope.api.initSortable();
-          $scope.firstInit = false;
-          $scope.loading = false;
-    	  }
-        console.log('parseRSSFeed() callback done');
-      });
-   };*/
-
-
   }
 ]);

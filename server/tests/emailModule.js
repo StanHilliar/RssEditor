@@ -75,7 +75,6 @@ function deleteModule(module, cb)
   });
 }
 
-
 /**
  * Test Suites
  */
@@ -118,7 +117,6 @@ describe('<Unit Test>', function()
 
   describe('REST API:', function()
   {
-
     it('emailModules api - create - missing name/type', function(done) 
     {
       var emptyModule = 
@@ -241,7 +239,6 @@ describe('<Unit Test>', function()
 
     after(function(done) 
     {
-
       /** Clean up user objects
        * un-necessary as they are cleaned up in each test but kept here
        * for educational purposes

@@ -43,6 +43,7 @@ function _getModuleById(moduleId, cb)
 function _parseAndUpdateModule(module)
 {
     var emailModule = module;
+    console.log('_parseAndUpdateModule');
     if(emailModule.views != null && emailModule.views.length > 0)
     {
         for(var i = 0; i < emailModule.views.length; i++)
@@ -53,7 +54,7 @@ function _parseAndUpdateModule(module)
                 //console.log(emailModule.views[i]._id);
             }
 
-            var fragment = parse5.parseFragment(emailModule.views[i].source);
+            var fragment = parse5.parseFragment(emailModule.views[i].source.replace(/[^\x20-\x7E]+/g, ''));
             console.log(fragment);
             emailModule.views[i].childTagName = 'div';
             if(fragment != null)
@@ -319,8 +320,11 @@ module.exports = function(MeanUser) {
         list: function(req, res, next) 
         {
             EmailModule.find(
-            {
-            }, function(err, emailModules) 
+                {},
+                'name createdBy createdAt updatedBy updatedAt'
+            )
+            .lean()
+            .exec(function(err, emailModules) 
             {
                res.jsonp(emailModules);
             });

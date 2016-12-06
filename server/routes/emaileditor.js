@@ -7,13 +7,20 @@ var parseString = require('xml2js').parseString;
 
 /* jshint -W098 */
 // The Package is past automatically as first parameter
-module.exports = function(Emaileditor, app, auth, database, amazingEloqua) 
+module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circles) 
 {
-   var emailTemplates = require('../controllers/emailTemplate')();
-   var newsletterEntities = require('../controllers/newsletterEntity')();
-   var emailModules = require('../controllers/emailModule')();
-   var email = require('../controllers/email')();
-   var helper = require('../controllers/helper')();
+
+  app.use(circles.controller.loadCircles);
+  app.use(circles.controller.userAcl);
+  app.use('/api/:company/emaileditor/*', circles.controller.companyAcl);
+
+  var emailTemplates = require('../controllers/emailTemplate')();
+  var newsletterEntities = require('../controllers/newsletterEntity')(circles.controller);
+  var emailModules = require('../controllers/emailModule')();
+  var eloqua = require('../controllers/eloqua')(amazingEloqua);
+  var email = require('../controllers/email')();
+  var helper = require('../controllers/helper')();
+  var feed = require('../controllers/feed')();
 
   app.get('/api/emaileditor/example/anyone', function(req, res, next) {
     res.send('Anyone can access this');
@@ -56,68 +63,93 @@ module.exports = function(Emaileditor, app, auth, database, amazingEloqua)
              });   
   });
 
+  app.get('/api/emaileditor/rsstest', function(req, res, next) 
+  {  
+    res.send(
+            '<?xml version="1.0" encoding="UTF-8" ?><rss version="2.0">  <channel>    <title>RSS</title>    <link>http://www.resume.se/analysbreven/innovation--kommunikation/RSS/</link>    <description><![CDATA[]]></description>        <item>            <title><![CDATA[Hanna testar analysbreven]]></title>           <link>            <![CDATA[http://www.resume.se/]]>            </link>            <description><![CDATA[<p><b>ICA ÄR ETT AV</b>&nbsp;Sveriges starkaste varumärken. Och det är till stor del byggt med reklam. Genial och konsekvent reklam. Unik på flera sätt. Inte bara i så motto att den numera finns med i Guiness Rekordbok, som världens längsta reklamsåpa.&nbsp;</p><p>Mest unikt är nog ICA:s förståelse för behovet av långsiktigt, samlat varumärkesfokus och deras förtroende för sin byrå. Plus byråns förmåga att skapa reklam som kombinerar strategisk varumärkesvård med taktiskt, säljdrivande aktiviteter.&nbsp;</p> [[youtube_1]]http://www.youtube.com/abc[[/yotube_1]]<div class="widget widget-free-text primary-color-0">    <p class="widget-title" ></p>    <div class="widget-text">        <iframe width="560" height="315" src="https://www.youtube.com/embed/s_u2KYfw-BQ" frameborder="0" allowfullscreen></iframe>    </div></div><p>Men mätningar från både Nepa och Xtreme visar att preferensen för ICA nu är på väg ner och förra året förlorade kedjan marknadsandelar.&nbsp;<br /><br />När preferensen sjunker, ger det en förvarning om vad det kan innebära för andelarna lite längre fram.<br /><br />Det finns naturligtvis flera skäl till tappade marknadsandelar. Bland annat det faktum att lågpriskedjorna tar mark. Men inte bara det. För ett varumärke som är så starkt förknippat med sin reklam och byggt på den grunden, kan förändringar i reklamen spela stor roll.<br /><br /><b>VID SEKELSKIFTET</b>&nbsp;var ICA redan landets största annonsör sedan mer än tio år. Man hade expanderat rejält, både när det gällde antal butiker, butiksyta och omsättning.<br /><br />Men bilden av varumärket var splittrad och marknadskommunikationen hade ingen röd tråd.</p><div class="widget widget-free-text primary-color-0">    <p class="widget-title" ></p>    <div class="widget-text">        <iframe width="560" height="315" src="https://www.youtube.com/embed/s_u2KYfw-BQ" frameborder="0" allowfullscreen></iframe>    </div></div><p><span>Det var först våren 1998, som ICA skaffades sig en huvudbyrå över huvud taget. Garbergs fick ansvaret för ICA:s övergripande profilering. Men samtidigt behöll ICA alla andra byråer man redan jobbade med. Så uppgiften kan inte ha varit helt enkel för Garbergs. Och samarbetet upphörde rätt snart.</span><br /><br /><span>När&nbsp;</span><b>Ingrid Jonasson Blank</b><span>&nbsp;tillträdde som ny marknadschef, 2001, insåg hon att företaget måste drivas tydligare utifrån varumärket. Till att börja med måste man konkretisera vad varumärket stod för över huvud taget.</span></p><p><img alt="" src="/globalassets/2print.jpg" height="336" width="500" /></p><p>Mest unikt är nog ICA:s förståelse för behovet av långsiktigt, samlat varumärkesfokus och deras förtroende för sin byrå. Plus byråns förmåga att skapa reklam som kombinerar strategisk varumärkesvård med taktiskt, säljdrivande aktiviteter.&nbsp;<br /><br />Men mätningar från både Nepa och Xtreme visar att preferensen för ICA nu är på väg ner och förra året förlorade kedjan marknadsandelar.&nbsp;<br /><br />När preferensen sjunker, ger det en förvarning om vad det kan innebära för andelarna lite längre fram.<br /><br />Det finns naturligtvis flera skäl till tappade marknadsandelar. Bland annat det faktum att lågpriskedjorna tar mark. Men inte bara det. För ett varumärke som är så starkt förknippat med sin reklam och byggt på den grunden, kan förändringar i reklamen spela stor roll.</p><div class="widget widget-free-text primary-color-0">    <p class="widget-title" ></p>    <div class="widget-text">        <iframe width="560" height="315" src="https://www.youtube.com/embed/s_u2KYfw-BQ" frameborder="0" allowfullscreen></iframe>    </div></div><p><b>VID SEKELSKIFTET</b>&nbsp;var ICA redan landets största annonsör sedan mer än tio år. Man hade expanderat rejält, både när det gällde antal butiker, butiksyta och omsättning.<br /><br />Men bilden av varumärket var splittrad och marknadskommunikationen hade ingen röd tråd.</p><p><span>Det var först våren 1998, som ICA skaffades sig en huvudbyrå över huvud taget. Garbergs fick ansvaret för ICA:s övergripande profilering. Men samtidigt behöll ICA alla andra byråer man redan jobbade med. Så uppgiften kan inte ha varit helt enkel för Garbergs. Och samarbetet upphörde rätt snart.</span><br /><span><br />När&nbsp;</span><b>Ingrid Jonasson Blank</b><span>&nbsp;tillträdde som ny marknadschef, 2001, insåg hon att företaget måste drivas tydligare utifrån varumärket. Till att börja med måste man konkretisera vad varumärket stod för över huvud taget.</span></p>]]></description>            <pubdate><![CDATA[Thu, 03 Mar 2016 08:01:12 GMT]]></pubdate>            <guid><![CDATA[Hanna testar analysbreven]]></guid>        </item>  </channel></rss>'
+         );   
+  });
+
   app.route('/api/emaileditor/template/create').post(emailTemplates.create);
   app.route('/api/emaileditor/template/update').post(emailTemplates.update);
   app.route('/api/emaileditor/template/get').get(emailTemplates.getEmailTemplateById);
   app.route('/api/emaileditor/template/all').get(emailTemplates.getAllEmailTemplates);
 
-  app.route('/api/emaileditor/newsletterentity').post(newsletterEntities.create);
-  app.route('/api/emaileditor/newsletterentity/:entityId').post(newsletterEntities.update);
-  app.route('/api/emaileditor/newsletterentity/:entityId').get(newsletterEntities.get);
-  app.route('/api/emaileditor/newsletterentity/:entityId').delete(newsletterEntities.destroy);
-  app.route('/api/emaileditor/newsletterentityfull/:entityId').get(newsletterEntities.getfull);
-            //api/emaileditor/newsletterentity/567ebc412f8676f948c8fb65
-  app.route('/api/emaileditor/newsletterentity').get(newsletterEntities.list);  
+  app.route('/api/:company/emaileditor/newsletterentity').post(newsletterEntities.create);
+  app.route('/api/:company/emaileditor/newsletterentity/:entityId').post(newsletterEntities.update);
+  app.route('/api/:company/emaileditor/newsletterentity/:entityId').get(newsletterEntities.get);
+  app.route('/api/:company/emaileditor/newsletterentity/:entityId').delete(newsletterEntities.destroy);
+  app.route('/api/:company/emaileditor/newsletterentityfull/:entityId').get(newsletterEntities.getfull);
+            //api/:company/emaileditor/newsletterentity/567ebc412f8676f948c8fb65
+  app.route('/api/:company/emaileditor/newsletterentity').get(newsletterEntities.list);  
 
   app.route('/api/emaileditor/checkadvertisment/:url').get(helper.isAdvertismentBooked);  
 
 
-  app.route('/api/emaileditor/emailmodule').post(emailModules.create);
-  app.route('/api/emaileditor/emailmodule/:moduleId').post(emailModules.update);
-  app.route('/api/emaileditor/emailmodule/:moduleId').get(emailModules.get);
-  app.route('/api/emaileditor/emailmodule/:moduleId').delete(emailModules.destroy);
-            //api/emaileditor/emailmodule/567ebc412f8676f948c8fb65
-  app.route('/api/emaileditor/emailmodule').get(emailModules.list);  
+  app.route('/api/:company/emaileditor/emailmodule').post(emailModules.create);
+  app.route('/api/:company/emaileditor/emailmodule/:moduleId').post(emailModules.update);
+  app.route('/api/:company/emaileditor/emailmodule/:moduleId').get(emailModules.get);
+  app.route('/api/:company/emaileditor/emailmodule/:moduleId').delete(emailModules.destroy);
+            //api/:company/emaileditor/emailmodule/567ebc412f8676f948c8fb65
+  app.route('/api/:company/emaileditor/emailmodule').get(emailModules.list);  
 
-  app.route('/api/emaileditor/email').post(email.create);
-  app.route('/api/emaileditor/email/:emailId').post(email.update);
-  app.route('/api/emaileditor/email/:emailId').get(email.get);
-  app.route('/api/emaileditor/email/:emailId').delete(email.destroy);
-            //api/emaileditor/email/567ebc412f8676f948c8fb65
-  app.route('/api/emaileditor/email').get(email.list);
+  app.route('/api/:company/emaileditor/email').post(email.create);
+  app.route('/api/:company/emaileditor/email/:emailId').post(email.update);
+  app.route('/api/:company/emaileditor/email/:emailId').get(email.get);
+  app.route('/api/:company/emaileditor/email/:emailId').delete(email.destroy);
+            //api/:company/emaileditor/email/567ebc412f8676f948c8fb65
+  app.route('/api/:company/emaileditor/email').get(email.list);
+
+  app.route('/api/emaileditor/rss/:url').get(feed.loadRSS);
 
   app.route('/api/emaileditor/xml/:url').get(function(req, res, next) 
   {  
-    var getReq = http.get(req.params.url, function(getRes) 
+    console.log('xml');
+    try 
     {
-      // save the data
-      var xml = '';
-
-      getRes.on('data', function(chunk) 
+      var getReq = http.get(req.params.url, function(getRes) 
       {
-        xml += chunk;
-      });
+        console.log('xml cb');
+        // save the data
+        var xml = '';
 
-      getRes.on('end', function() 
-      {
-        // parse xml
-        console.log(xml);
-        parseString(xml, {explicitArray: true}, function (err, result) 
+        getRes.on('data', function(chunk) 
         {
-            console.dir(result);
-            res.jsonp([result]);
+          xml += chunk;
         });
+
+        getRes.on('end', function() 
+        {
+          console.log('xm cb end');
+          
+          // parse xml
+          //console.log(xml);
+          parseString(xml, {explicitArray: true}, function (err, result) 
+          {
+              //console.dir(result);
+              res.jsonp([result]);
+          });
+        });
+        // or you can pipe the data to a parser
       });
 
-      // or you can pipe the data to a parser
-      
-    });
-
-    getReq.on('error', function(err) 
+      getReq.on('error', function(err) 
+      {
+        // debug error
+        console.log('Got error: '+e.message);
+      });
+    } catch (ex) 
     {
-      // debug error
-    });
-
+      console.log('Got error: '+ex);
+      var errors = [];
+      errors.push(
+      {
+        param: 'url',
+        msg: ex.message,
+        value: req.params.url
+      });
+      return res.status(400).json(errors);
+    }
   });
 
 /*
@@ -133,328 +165,89 @@ module.exports = function(Emaileditor, app, auth, database, amazingEloqua)
 
   });
 
-  app.get('/api/emaileditor/segments/:id', function(req, res, next) 
+  app.route('/api/:company/emaileditor/segments/:id').get(eloqua.getSegments);
+  app.route('/api/:company/emaileditor/emailgroups/').get(eloqua.getEmailgroups);
+
+  app.route('/api/:company/emaileditor/eloquaemail/').post(eloqua.createEmail);
+  app.route('/api/:company/emaileditor/eloquaemail/:eloquaId').post(eloqua.updateEmail);
+  app.route('/api/:company/emaileditor/sendtestemail').post(eloqua.sendTestEmail);
+  app.route('/api/:company/emaileditor/scheduleemail').post(eloqua.scheduleEmail);
+  app.route('/api/:company/emaileditor/scheduleemail/:eloquaCampaignId').post(eloqua.updateEmailSchedule);
+  app.route('/api/:company/emaileditor/unscheduleemail/:eloquaCampaignId').post(eloqua.unscheduleEmail); 
+  app.route('/api/emaileditor/saveemail').post(eloqua.saveEmail);
+   
+
+
+  /*
+    server-0 (err): Error: Can't set headers after they are sent.
+    server-0 (err):     at ServerResponse.OutgoingMessage.setHeader (http.js:724:11)
+    server-0 (err):     at ServerResponse.header (/home/node-js/rss/node_modules/meanio/lib/core_modules/server/node_modules/express/lib/response.js:718:10)
+    server-0 (err):     at ServerResponse.send (/home/node-js/rss/node_modules/meanio/lib/core_modules/server/node_modules/express/lib/response.js:163:12)
+    server-0 (err):     at ServerResponse.jsonp (/home/node-js/rss/node_modules/meanio/lib/core_modules/server/node_modules/express/lib/response.js:317:15)
+    server-0 (err):     at FeedParser.<anonymous> (/home/node-js/rss/packages/custom/emaileditor/server/controllers/feed.js:129:12)
+    server-0 (err):     at FeedParser.emit (events.js:117:20)
+    server-0 (err):     at /home/node-js/rss/node_modules/feedparser/node_modules/readable-stream/lib/_stream_readable.js:965:16
+    server-0 (err):     at process._tickDomainCallback (node.js:502:13)
+    server-0 (err): Wed, 06 Jul 2016 06:57:06 GMT validator deprecated you tried to validate a undefined but this library (validator.js) validates strings only. Please update your code as                                        this will be an error soon. at node_modules/meanio/lib/core_modules/server/node_modules/express-validator/lib/express_validator.js:335:41
+    server-0 (err): error2
+    server-0 (err): TypeError: Cannot set property 'eloquaCampaign' of null
+    server-0 (err):     at /home/node-js/rss/packages/custom/emaileditor/server/routes/emaileditor.js:458:30
+    server-0 (err):     at /home/node-js/rss/packages/custom/emaileditor/server/controllers/email.js:35:20
+    server-0 (err):     at Query.<anonymous> (/home/node-js/rss/node_modules/mongoose/lib/query.js:2140:28)
+    server-0 (err):     at /home/node-js/rss/node_modules/mongoose/node_modules/kareem/index.js:177:19
+    server-0 (err):     at /home/node-js/rss/node_modules/mongoose/node_modules/kareem/index.js:109:16
+    server-0 (err):     at process._tickDomainCallback (node.js:502:13)
+    server-0 (err): error2
+    server-0 (err): TypeError: Cannot set property 'eloquaCampaign' of null
+    server-0 (err):     at /home/node-js/rss/packages/custom/emaileditor/server/routes/emaileditor.js:458:30
+    server-0 (err):     at /home/node-js/rss/packages/custom/emaileditor/server/controllers/email.js:35:20
+    server-0 (err):     at Query.<anonymous> (/home/node-js/rss/node_modules/mongoose/lib/query.js:2140:28)
+    server-0 (err):     at /home/node-js/rss/node_modules/mongoose/node_modules/kareem/index.js:177:19
+    server-0 (err):     at /home/node-js/rss/node_modules/mongoose/node_modules/kareem/index.js:109:16
+    server-0 (err):     at process._tickDomainCallback (node.js:502:13)
+  */
+
+  function activateCampaignAndUpdateEmail(response, campaignId,  req, res, next)
   {
-    console.dir('segments ('+req.params.id+')');
-      
-    amazingEloqua.getSegmentsByFolderId(req.params.id, '1', '300', 'minimal', function(err, response)
+    console.log('activateCampaignAndUpdateEmail');
+
+    var activationOptions = {};
+    if(req.body.sendRightNow)
     {
-      console.log('getSegmentsByFolderId callback');
-      console.log(err);
-      console.log(response);
-
-      res.jsonp(response.elements);
-    });    
-  });
-
-  app.get('/api/emaileditor/emailgroups/', function(req, res, next) 
-  {
-    console.dir('emailgroups');
-      
-    amazingEloqua.searchEmailGroups('*', '1', '300', 'minimal', function(err, response)
-    {
-      console.log('searchEmailGroups callback');
-      console.log(err);
-      console.log(response);
-
-      res.jsonp(response.elements);
-    });    
-  }); 
-
-  app.post('/api/emaileditor/eloquaemail/', function(req, res, next) 
-  {
-    console.dir('create eloquaEmail');
-    console.dir(req.body);
-     
-    amazingEloqua.createHTMLEmail(req.body.name, req.body.eloquaFolder, req.body.eloquaFooter, req.body.eloquaHeader, req.body.eloquaEmailGroup, req.body.subject, req.body.html, function(err, response)
-    {
-      console.log('create eloquaEmail callback');
-      //console.log(err);
-      //console.log(response);
-
-      email.getEmailById(req.body.emailId, function(err, email)
-      {
-        console.log('getEmailById callback');
-        //console.log(err);
-        //console.log(email);
-        email.eloquaEmail = response.id;
-        email.save(function(saveErr, saveRes)
-        {
-          console.log('save callback');
-          //console.log(saveErr);
-          //console.log(saveRes);
-
-          res.jsonp(response);
-        });
-      });
-
-    });   
-
-  }); 
-
-  app.post('/api/emaileditor/eloquaemail/:eloquaEmailId', function(req, res, next) 
-  {
-    console.dir('update eloquaEmail');
-    
-    
-    amazingEloqua.updateHTMLEmail(req.params.eloquaEmailId, req.body.name, req.body.eloquaFolder, req.body.eloquaFooter, req.body.eloquaHeader, req.body.eloquaEmailGroup, req.body.subject, req.body.html, function(err, response)
-    {
-      console.log('updateHTMLEmail callback');
-      //console.log(err);
-      //console.log(response);
-
-      email.getEmailById(req.body.emailId, function(err, email)
-      {
-        console.log('getEmailById callback');
-        //console.log(err);
-        //console.log(email);
-
-        email.eloquaEmail = response.id;
-        email.save(function(saveErr, saveRes)
-        {
-          console.log('save callback');
-          console.log(saveErr);
-          console.log(saveRes);
-
-          res.jsonp(response);
-        });
-      });
-
-    });   
-  });    
-
-  app.post('/api/emaileditor/sendtestemail', function(req, res, next) 
-  {
-    console.dir('update sendtestemail');
-    console.log(req.body.eloquaEmailId);
-    console.log(req.body.emailAddresses);
-
-    req.assert('emailAddresses', 'You must enter a email address').notEmpty();
-
-    var errors = req.validationErrors();
-    if (errors) 
-    {
-        return res.status(400).send(errors);
+      activationOptions = { activateNow: true};
     }
-
-    var addresses = req.body.emailAddresses.split(',');
-    
-    console.log(addresses);
-
-
-    
-     async.map(addresses, 
-      function(emailAddress, cb)
-      {
-        if(emailAddress != '')
-        {
-          amazingEloqua.searchContacts(emailAddress.trim(), 1, 1, 'minimal', function(contactErr, contactRes)
-          {
-            console.log(contactErr);
-            console.log(contactRes);
-            if(contactErr == null && contactRes.total == 1)
-            {
-              if(emailAddress.trim() == contactRes.elements[0].emailAddress && emailAddress != '')
-              {
-                amazingEloqua.sendTestEmail(contactRes.elements[0].id, req.body.eloquaEmailId, 'TestEmail', function(emailErr, emailRes)
-                {
-                  console.log(emailErr);
-                  console.log(emailRes);
-                  return cb(null, emailRes);
-                });
-              }
-              else
-              {
-                return cb({
-                  param: emailAddress,
-                  msg: 'search emailAddress error 2',
-                  value: emailAddress
-                });
-              }
-            }
-            else
-            {
-              return cb({
-              param: emailAddress,
-              msg: 'search emailAddress error',
-              value: emailAddress
-            });
-            }
-          });
-        }
-        else
-        {
-          return cb({
-            param: 'emailAddress',
-            msg: 'email address is empty',
-            value: ''
-          });
-        }
-      }, 
-      function(mapErr, mapRes)
-      {
-        console.log('map Callback');
-        console.log(mapErr);
-        console.log(mapRes);
-
-        if(mapErr != null)
-        {
-          res.status(400).json([mapErr]);
-        }
-        else
-        {
-          res.jsonp({success: true});
-        }
-     });
-  });  
-
-
-  app.route('/api/emaileditor/scheduleemail').post(function(req, res, next) 
-  {
-    console.log('create createSimpleCampaign');
-    
-    amazingEloqua.createSimpleCampaign(req.body.name, req.body.eloquaFolder, req.body.eloquaSegment, req.body.eloquaEmail, req.body.startAt, req.body.endAt, function(err, response)
+    else
     {
-      console.log('createSimpleCampaign callback');
-      console.log(err);
-      console.log(response);
-
-      activateCampaignAndUpdateEmail(response, response.id,  req,res,next);
-    });   
-  });
-
-  app.route('/api/emaileditor/scheduleemail/:eloquaCampaignId').post(function(req, res, next) 
-  {
-    console.log('update createSimpleCampaign');
+      activationOptions = { scheduledFor: req.body.startAt};
+    }
     
-    amazingEloqua.updateSimpleCampaign(req.params.eloquaCampaignId, req.body.name, req.body.eloquaFolder, req.body.eloquaSegment, req.body.eloquaEmail, req.body.startAt, req.body.endAt, function(err, response)
+    console.log(activationOptions);
+
+    amazingEloqua.campaign.acitivate(campaignId, activationOptions, function(activationErr, activationRes)
     {
-      console.log('updateSimpleCampaign callback');
-      console.log(err);
-      console.log(response);
-
-      activateCampaignAndUpdateEmail(response, req.params.eloquaCampaignId, req, res,next);
-
-    });   
-  }); 
-
-  app.route('/api/emaileditor/unscheduleemail/:eloquaCampaignId').post(function(req, res, next) 
-  {
-    console.log('unscheduleemail');
-    
-    amazingEloqua.deacitivateCampaign(req.params.eloquaCampaignId, function(activationErr, activationRes)
-    {
-      console.log('deacitivateCampaign callback');
-      console.log(activationErr);
+      console.log('acitivateCampaign callback');
+      console.error(activationErr);
       console.log(activationRes);
 
       email.getEmailById(req.body.emailId, function(err, email)
       {
         console.log('getEmailById callback');
-        //console.log(err);
-        //console.log(email);
+        console.log(err);
+        console.log(email);
 
-        email.status = 'draft';
+        email.eloquaCampaign = campaignId;
+        email.status = 'active';
         email.save(function(saveErr, saveRes)
         {
           console.log('save callback');
           console.log(saveErr);
           console.log(saveRes);
 
-          res.jsonp(saveRes);
+          res.jsonp(response);
         });
       });
     });
-
-      
-  });
-
-  function activateCampaignAndUpdateEmail(response, campaignId,  req, res, next)
-  {
-    amazingEloqua.acitivateCampaign(campaignId, req.body.startAt, function(activationErr, activationRes)
-      {
-        console.log('acitivateCampaign callback');
-        console.log(activationErr);
-        console.log(activationRes);
-
-        email.getEmailById(req.body.emailId, function(err, email)
-        {
-          console.log('getEmailById callback');
-          //console.log(err);
-          //console.log(email);
-
-          email.eloquaCampaign = campaignId;
-          email.status = 'active';
-          email.save(function(saveErr, saveRes)
-          {
-            console.log('save callback');
-            console.log(saveErr);
-            console.log(saveRes);
-
-            res.jsonp(response);
-          });
-        });
-      });
   }
-
-  app.post('/api/emaileditor/saveemail?', function(req, res, next) 
-  {
-    console.dir('saveemail');
-    //console.dir(req.body.source);
-    
-    var contacts = [  
-      {  
-        'emailAddress': 'simon@leadteq.com',  
-        'id': 1  
-      },
-      {  
-        'emailAddress': 'bjorn.sperling@leadteq.com',  
-        'id': 8  
-      }
-      ];
-
-    var contacts2 = [  
-      {  
-        'emailAddress': 'simon@leadteq.com',  
-        'id': 1  
-      }  
-      ];
-
-    var segment = contacts;
-    if(req.body.segment == 1)
-    {
-      console.log('OTHER Segement');
-      segment = contacts;
-    }
-
-
-    var html = req.body.source;
-    var subject = req.body.subject;
-    var name = req.body.name;
-    var deployname = name+' deployment';
-
-     
-    amazingEloqua.sendInlineEmail(segment, html, subject, name, deployname, function(err, response)
-    {
-      console.log('send Inline Email callback');
-      //console.log(err);
-      //console.log(response);
-     
-      res.status(200).json(
-      {
-        success: true,
-        error: null
-      });
-    });
-
-    /*
-    res.status(200).json(
-      {
-        success: true,
-        error: null
-      });*/
-    
-  }); 
 
   app.get('/api/emaileditor/example/auth', auth.requiresLogin, function(req, res, next) {
     res.send('Only authenticated users can access this');

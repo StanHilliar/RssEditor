@@ -6,9 +6,10 @@ function($resource, $http)
     function getEmailTemplate()
     {
         //return $resource('/api/emaileditor/templates');
-        return $resource('/api/emaileditor/newsletterentityfull/:entityId', 
+        return $resource('/api/:company/emaileditor/newsletterentityfull/:entityId', 
         {
-            entityId: '@_id'
+            entityId: '@_id',
+            company: '@company'
         });
     }
 
@@ -22,8 +23,15 @@ function($resource, $http)
 
     function parseRSSFeed(url)
     {
-        return $http.jsonp('//ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=50&callback=JSON_CALLBACK&q=' + encodeURIComponent(url));     
+        //var randomNum = new Date().getTime() +''+ Math.floor((Math.random() * 10000) + 1);
+        //return $http.jsonp('//ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=50&callback=JSON_CALLBACK&q=' + encodeURIComponent(url+'?'+randomNum));     
+        return $resource('/api/emaileditor/rss/:url/', 
+        {
+            url: '@url'
+        });
     }
+
+
 
 
     function saveEmail(data)

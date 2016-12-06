@@ -3,108 +3,139 @@
 	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	  <strong>{{error.param}}</strong> {{error.msg}} 
 	</div>
-	<div class="row rowSpaced">
+	<div class="row">
 		<div class="col-md-4">
-			<h2>Newsletter Entity</h2>
+			<h3>Newsletter Entity</h3>
 		</div>
 	</div>
 	<div class="row rowSpaced">
-		<div class="col-md-10">
+		<div class="col-md-12">
 		 	<label for="">Name</label>
 			<input type="text" class="form-control" placeholder="" ng-model="entity.name" name="">
 		</div>
 	</div>
  	<div class="row rowSpaced">
-		<div class="col-xs-6 col-md-4">
-		  	available segments
+		<div class="col-xs-6 col-md-5">
+		  	<label>available segments</label>
 		  	<select multiple class="form-control" ng-model="available" ng-options="segment as segment.name for segment in availableSegments">
 			</select>
 		</div>
-		<div class="col-xs-6 col-md-2">
+		<div class="col-xs-1 col-md-1">
 			<br/>
 		  	<A href="#"  ng-click="moveAll(availableSegments, entity.segments)">
-		  		<span class=" glyphicon glyphicon-menu-right" aria-hidden="true"></span>
-		  		<span class=" glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+		  		&nbsp;<span class="glyphicon glyphicon-fast-forward" aria-hidden="true"></span>
 		  	</A><br/>
 
 		  	<A href="#"  ng-click="moveItem(available[0], availableSegments, entity.segments)">
-		  		<span class=" glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+		  		<span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
 		  	</A><br/><br/>
 
 		  	<A href="#"  ng-click="moveItem(selected[0], entity.segments, availableSegments)">
-		  		<span class=" glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+		  		<span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
 		  	</A><br/>
 		  	
 			<A href="#"  ng-click="moveAll(entity.segments, availableSegments)">
-				<span class=" glyphicon glyphicon-menu-left" aria-hidden="true"></span>
-				<span class=" glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+				&nbsp;<span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span>
 			</A><br/>
 		</div>
-		<div class="col-xs-6 col-md-4">
-		    selected segments
+		<div class="col-xs-6 col-md-6">
+		    <label>selected segments</label>
 		  	<select multiple class="form-control" ng-model="selected" ng-options="segment as segment.name for segment in entity.segments">
 			</select>
-			{{entity.segments}}
+			<!--{{entity.segments}}-->
 		</div>
 	</div>
 	<div class="row rowSpaced">
-		<div class="col-xs-6 col-md-4">
-		  	available security circles
+		<div class="col-xs-6 col-md-5">
+		  	<label>available security circles</label>
 		  	<select multiple class="form-control" ng-model="availableCircle" ng-options="circle for circle in availableSecurityCircles">
 			</select>
 		</div>
-		<div class="col-xs-6 col-md-2">
+		<div class="col-xs-6 col-md-1">
 			<br/>
 		  	<A href="#"  ng-click="moveAll(availableSecurityCircles, entity.circles)">
-		  		<span class=" glyphicon glyphicon-menu-right" aria-hidden="true"></span>
-		  		<span class=" glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+		  		&nbsp;<span class="glyphicon glyphicon-fast-forward" aria-hidden="true"></span>
 		  	</A><br/>
 
 		  	<A href="#"  ng-click="moveItem(availableCircle[0], availableSecurityCircles, entity.circles)">
-		  		<span class=" glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+		  		<span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
 		  	</A><br/><br/>
 
 		  	<A href="#"  ng-click="moveItem(selectedCircle[0], entity.circles, availableSecurityCircles)">
-		  		<span class=" glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+		  		<span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
 		  	</A><br/>
 		  	
 			<A href="#"  ng-click="moveAll(entity.circles, availableSecurityCircles)">
-				<span class=" glyphicon glyphicon-menu-left" aria-hidden="true"></span>
-				<span class=" glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+				&nbsp;<span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span>
 			</A><br/>
 		</div>
-		<div class="col-xs-6 col-md-4">
-		    selected circles
+		<div class="col-xs-6 col-md-6">
+		    <label>selected circles</label>
 		  	<select multiple class="form-control" ng-model="selectedCircle" ng-options="circle for circle in entity.circles">
 			</select>
-			{{entity.circles}}
+			<!--{{entity.circles}}-->
 		</div>
 	</div> 	
 	<div class="row rowSpaced">
-		<div class="col-xs-6 col-md-4">
-		  	emailGroup {{entity.eloquaEmailGroup}}
+		<div class="col-xs-6 col-md-5">
+		  	<label>emailGroup  <!--{{entity.eloquaEmailGroup}}--></label>
 		  	<select class="form-control" ng-model="entity.eloquaEmailGroup" ng-options="group.id as group.name for group in availableSEmailGroups">
 			</select>
+		</div>
+
+		<div class="col-xs-6 col-md-5">
+			<label for="">bounceback address</label>
+			<input type="text" class="form-control" placeholder="" ng-model="entity.bounceBackAddress" name="" readonly disabled>
+		</div>
+	</div>
+	<div class="row rowSpaced">
+		<div class="col-xs-6 col-md-5">
+			<label for="">reply to Name</label>
+			<input type="text" class="form-control" placeholder="" ng-model="entity.replyToName" name="" readonly disabled>
+		</div>
+		
+		<div class="col-xs-6 col-md-5">
+			<label for="">reply to Email</label>
+			<input type="text" class="form-control" placeholder="" ng-model="entity.replyToEmail" name="" readonly disabled>
 		</div>
 	</div>	
 
 	<div class="row rowSpaced">
-		<div class="col-md-10">
+		<div class="col-xs-6 col-md-5">
+	 		<label for="">from Address</label>
+			<input type="text" class="form-control" placeholder="" ng-model="entity.fromAddress" name="">
+		</div>
+		<div class="col-xs-6 col-md-5">
+			<label for="">sender Name</label>
+			<input type="text" class="form-control" placeholder="" ng-model="entity.senderName" name="">
+		</div>	
+
+	</div>
+
+	<!--
+	<div class="row rowSpaced">
+		<div class="col-md-12">
 		 	<label for="">eloquaCampaignFolder</label>
-			<input type="text" class="form-control" placeholder="" ng-model="entity.eloquaCampaignFolder"><br>
+			<input type="text" class="form-control" placeholder="" ng-model="entity.eloquaCampaignFolder">
+			<br>
 			<label for="">eloquaFolder</label>
-			<input type="text" class="form-control" placeholder="" ng-model="entity.eloquaFolder"><br>
+			<input type="text" class="form-control" placeholder="" ng-model="entity.eloquaFolder">
+			<br>
 			<label for="">eloquaFooter</label>
-			<input type="text" class="form-control" placeholder="" ng-model="entity.eloquaFooter"><br>
+			<input type="text" class="form-control" placeholder="" ng-model="entity.eloquaFooter">
+			<br>
 			<label for="">eloquaHeader</label>
 			<input type="text" class="form-control" placeholder="" ng-model="entity.eloquaHeader">
 		</div>
-	</div>
-
+	</div>-->
+	<input type="hidden" ng-model="entity.eloquaCampaignFolder">
+	<input type="hidden" ng-model="entity.eloquaFolder">
+	<input type="hidden" ng-model="entity.eloquaFooter">
+	<input type="hidden" ng-model="entity.eloquaHeader">
 
 	<div class="row rowSpaced bigEditor">
-		<div class="col-md-10">
-			template
+		<div class="col-md-12">
+			<label>template</label><br/><br/>
 			<div ui-ace="{
 			  useWrapMode : true,
 			  showGutter: true,
@@ -116,16 +147,17 @@
 			</div>
 			<br/>
 			<button ng-click="processTemplate()"  class="btn btn-warning">
-	    			processTemplate   
+	    		processTemplate   
 			</button>
 		</div>
 	</div>
-	<div class="row" data-ng-repeat="module in entity.modules">	
-		<div class="col-md-6" >	
+	<div class="row rowSpaced" data-ng-repeat="module in entity.modules">	
+		<div class="col-md-8" >	
 			<label for="module_$index">Module {{module.moduleIdentifier}}</label>
 			<select class="form-control" ng-model="module._id" ng-options="element._id as element.name for element in availableModules" name="module_$index"></select>
 		</div>
-		<div class="col-md-4">	
+		<div class="col-md-4">
+			<br/>	
 			<label>
 		      <input type="checkbox" ng-model="module.removeable"> Can be deactivated/removed?
 		    </label>

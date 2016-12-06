@@ -1,8 +1,8 @@
 'use strict';
 
 /* jshint -W098 */
-angular.module('mean.emaileditor').controller('NewsletterEditController', ['$scope','$stateParams','$compile', '$interpolate', '$sce', 'Global', 'NewsletterEntity', 'EmailModule', 'Eloqua', 'Circles',
-  function($scope, $stateParams, $compile, $interpolate, $sce, Global, NewsletterEntity, EmailModule, Eloqua, Circles) 
+angular.module('mean.emaileditor').controller('NewsletterEditController', ['$scope','$stateParams','$compile', '$interpolate', '$sce', 'Global', 'NewsletterEntity', 'EmailModule', 'Eloqua', 'Circles', 'MeanUser', '$meanConfig',
+  function($scope, $stateParams, $compile, $interpolate, $sce, Global, NewsletterEntity, EmailModule, Eloqua, Circles, MeanUser, $meanConfig) 
   {
     $scope.global = Global;
     $scope.package = 
@@ -38,10 +38,13 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     $scope.entity.preBody = '';
     $scope.entity.postBody = '';
     $scope.entity.footer = '';
-    $scope.entity.eloquaFolder = '433';
-    $scope.entity.eloquaCampaignFolder = '434';
-    $scope.entity.eloquaFooter = '1';
-    $scope.entity.eloquaHeader = '1';
+    $scope.entity.eloquaFolder = $meanConfig.eloqua.emailFolder;
+    $scope.entity.eloquaCampaignFolder = $meanConfig.eloqua.campaignFolder;
+    $scope.entity.eloquaFooter = $meanConfig.eloqua.footer;
+    $scope.entity.eloquaHeader = $meanConfig.eloqua.header;
+    $scope.entity.bounceBackAddress = $meanConfig.eloqua.bounceBackAddress;
+    $scope.entity.replyToName = $meanConfig.eloqua.replyToName;
+    $scope.entity.replyToEmail = $meanConfig.eloqua.replyToEmail;
     $scope.entity.eloquaEmailGroup = '';
     $scope.entity.segments = [];
     $scope.entity.circles = [];
@@ -60,9 +63,24 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
         
       console.log('loadNewsletterEntitiy');
 
-      NewsletterEntity.query({entityId: $stateParams.newsletterid}, function(newsletterEntityArray)
+      NewsletterEntity.query({company: MeanUser.company.id, entityId: $stateParams.newsletterid}, function(newsletterEntityArray)
       {
         $scope.entity = newsletterEntityArray[0];
+
+        if($scope.entity.bounceBackAddress == undefined || $scope.entity.bounceBackAddress == null)
+        {
+          $scope.entity.bounceBackAddress = $meanConfig.eloqua.bounceBackAddress;
+        } 
+
+        if($scope.entity.replyToName == undefined || $scope.entity.replyToName == null)
+        {
+          $scope.entity.replyToName = $meanConfig.eloqua.replyToName;
+        } 
+        
+        if($scope.entity.replyToEmail == undefined || $scope.entity.replyToEmail == null)
+        {
+          $scope.entity.replyToEmail = $meanConfig.eloqua.replyToEmail;
+        }
 
         var _template = $scope.entity.header;
         for(var i = 0; i < $scope.entity.modules.length; i++)
@@ -83,7 +101,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       });     
     }
 
-    Eloqua.segments().query({id: '432'}, function(segments)
+    Eloqua.segments().query({company: MeanUser.company.id, id: $meanConfig.eloqua.segmentFolder}, function(segments)
     {
       //console.log(segments);
       for(var i = 0; i < segments.length; i++)
@@ -93,13 +111,13 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       removeSelectedSegmentsfromAvailabeleSegments();
     });  
 
-    Eloqua.emailGroups().query({}, function(emailGroups)
+    Eloqua.emailGroups().query({company: MeanUser.company.id}, function(emailGroups)
     {
       console.log(emailGroups);
       $scope.availableSEmailGroups = emailGroups;
     });
 
-    Circles.mine(function(acl) 
+    Circles.mineCompany({company: MeanUser.company.id}, function(acl) 
     { 
       $scope.availableSecurityCircles = acl.allowed;
       removeSelectedCirclesfromAvailabeleCircles();
@@ -303,6 +321,18 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
         $scope.entity.footer = $scope.template.substr(_currentPos);
       }
 
+      for( var i = 0; i < $scope.availableSEmailGroups.length; i++)
+      {
+        if($scope.availableSEmailGroups[i].id == $scope.entity.eloquaEmailGroup)
+        {
+          $scope.entity.eloquaHeader = $scope.availableSEmailGroups[i].emailHeaderId;
+          $scope.entity.eloquaFooter = $scope.availableSEmailGroups[i].emailFooterId;
+        }
+      }
+
+
+      
+
       console.log($scope.entity);
     }
 
@@ -345,7 +375,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
 
       $scope.processTemplate();
       var newsletterEntity = new NewsletterEntity($scope.entity);
-
+      newsletterEntity.company = MeanUser.company.id;
       newsletterEntity.$save(function(data, headers) 
       {
   //              $scope.user = {};
@@ -354,6 +384,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
         $scope.errorMsgs = null;
         $scope.saveInProgress = false;
         $scope.newsletterExsists = true;
+        $scope.entity = data;
       }, function(data, headers) 
       {
           $scope.errorMsgs = data.data;
@@ -373,6 +404,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
 
     //  _preSavePrepModules();
         $scope.processTemplate();
+        $scope.entity.company = MeanUser.company.id;
         $scope.entity.$save(function(data, headers) 
         {
   //              $scope.user = {};
@@ -395,10 +427,9 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
 
     $scope.listModules = function()
     {
-      console.log('list Email Modules');
+      //console.log('list Email Modules');
 
-
-      EmailModule.query({},function(response)
+      EmailModule.query({company: MeanUser.company.id},function(response)
       {
         $scope.availableModules  = response;
 
@@ -415,7 +446,8 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
         }
       });
     };
-     $scope.listModules();   
+
+    $scope.listModules();   
 
 
   }

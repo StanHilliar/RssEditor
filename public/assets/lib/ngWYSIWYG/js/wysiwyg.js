@@ -98,7 +98,7 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 	    //model --> view
 	    ctrl.$render = function() 
 	    {
-	    	console.log('render');
+	    	//console.log('render');
 			//$body.html(ctrl.$viewValue || ''); //not friendly with jQuery. snap you jQuery
 			
 			$body[0].innerHTML = ctrl.$viewValue || '';
@@ -116,12 +116,12 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 
 			if(typeof($element[0].contentWindow.init) == "function")
 		   	{
-		   		console.log('--- init');
+		   		//console.log('--- init');
 		   		$element[0].contentWindow.init();
 		   	}
 		   	else
 		   	{
-		   		console.log('--- NOT init');
+		   		//console.log('--- NOT init');
 		   	}
 
 		   	var resizeTimer = null; 
@@ -137,9 +137,9 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 
 				resizeTimer = $timeout(function() 
 				{
-					console.log( 'resize timer');
-					console.log( $element[0].contentWindow.document.body.scrollHeight);
-					console.log( $element[0].contentWindow.document.body.offsetHeight);	
+					//console.log( 'resize timer');
+					//console.log( $element[0].contentWindow.document.body.scrollHeight);
+					//console.log( $element[0].contentWindow.document.body.offsetHeight);	
 
 					$element.css(
 					{
@@ -155,11 +155,11 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 	    
 	    scope.api.initSortable = function() 
 	    {
-			console.log('11111111111111111  initSortable !!!!!!!!!!!!!!!!!!! _-----------------------');
+			//console.log('11111111111111111  initSortable !!!!!!!!!!!!!!!!!!! _-----------------------');
 
 			jQuery('iframe').on('initSortable', function() 
 			{
-				console.log('iframe load !!!!!!!!!!!!!!!!!!!!!!!!!!');
+				//console.log('iframe load !!!!!!!!!!!!!!!!!!!!!!!!!!');
 		        var win = this.contentWindow,
 		            doc = win.document,
 		            ibody = doc.body,
@@ -168,7 +168,7 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 
 		        function loadJQueryUI() 
 		        {
-		        	console.log('loadJQueryUI()');
+		        	//console.log('loadJQueryUI()');
 		            //ibody.removeChild(ijQuery);
 		            //ijQuery = null;
 
@@ -188,17 +188,17 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 				            	items : '.dndelement:not(.static)',
 								start : function()
 								{
-									console.log('sortable start');
+									//console.log('sortable start');
 									win.jQuery('.static', this).each(function()
 									{
 										var that = wquery(this);
 										that.data('pos', that.index());
-										console.log(that.index());
+										//console.log(that.index());
 									});
 								},
 								change : function()
 								{
-									console.log('change');
+									//console.log('change');
 									var sortable = wquery(this);
 									var statics = win.jQuery('.static', this).detach();
 									var helper = win.jQuery('<div class="dndelement"></div>').prependTo(this);
@@ -208,36 +208,51 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 										var that = win.jQuery(this);
 										var target = that.data('pos'); 
 							
-										console.log(target);
+										//console.log(target);
 
 										that.insertAfter(win.jQuery('div.dndelement, div.dndplaceholder, div.static', sortable).eq(target));
 									});
 									helper.remove();
+									//console.log('change done');
 								},
 								stop : function(event, ui)
 								{
+									//console.log('stop');
+									//console.log(wquery(this).attr('id'));
+									//console.log(wquery(this).attr('class'));
 									//scope.lessonClicked({ lesson: '33333' });
-									scope.api.scope.updateFeedPositions(win.jQuery('.sortable1').sortable("toArray"));
+									scope.api.scope.updateFeedPositions(wquery(this).sortable("toArray"));
 								},
+								/*update : function(event, ui)
+								{
+									console.log('update');
+									//console.log(wquery(this).attr('id'));
+									//console.log(wquery(this).attr('class'));
+									var sortedIDs = wquery(this).sortable("toArray");
+									console.log(sortedIDs);
+									scope.api.scope.updateFeedPositions(sortedIDs);
+								},*/
 								placeholder: "ui-state-highlight dndplaceholder"
 				            });
 
 
-					    	console.log('SETTING UP ONCLICK !!!!!!!!!!!!!');
+					    	//console.log('SETTING UP ONCLICK !!!!!!!!!!!!!');
 				            win.jQuery(".clickableElement").click(function()
 				            {
 				            	//win.jQuery(this).attr('id');
-				            	console.log('click');
-				            	console.log(win.jQuery(this).attr('id'));
+				            	//console.log('click');
+				            	//console.log(win.jQuery(this).attr('id'));
 				            	scope.api.scope.clickOnElement(win.jQuery(this).attr('id'));
 				            }); 
 				            win.jQuery(".emailModuleSelector").click(function()
 				            {
 				            	//win.jQuery(this).attr('id');
-				            	console.log('click');
-				            	console.log(win.jQuery(this).attr('id'));
+				            	//console.log('click');
+				            	//console.log(win.jQuery(this).attr('id'));
 				            	scope.api.scope.clickOnEmailModule(win.jQuery(this).attr('id'));
 				            });
+
+				            win.jQuery('a').on('click', function(e) { e.preventDefault(); });
 
 				            win.jQuery(".sortable1 div, #sortable2 li").disableSelection();
 		                }
@@ -271,34 +286,38 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 
 	    scope.api.setMode = function(isEdit) 
 	    {
-	    	isEditMode = isEdit;
+	    	if(isEdit != isEditMode)
+	    	{
 
-	    	if(isEditMode == false)
-	    	{
-		    	$document = $element[0].contentDocument;
-			    $document.open(); //damn Firefox. kudos: http://stackoverflow.com/questions/15036514/why-can-i-not-set-innerhtml-of-an-iframe-body-in-firefox
-			    //$document.write('<!DOCTYPE html><html><head></head><body contenteditable="true"></body></html>');
-			    $document.write('<!DOCTYPE html><html><head></head><body></body></html>');
-			    $document.close();
-			    //$document.designMode = 'On';
-			    $body = angular.element($element[0].contentDocument.body);
-	    	}
-	    	else
-	    	{
-			    $head = angular.element($element[0].contentDocument.head);$document = $element[0].contentDocument;
-			    $document.open(); //damn Firefox. kudos: http://stackoverflow.com/questions/15036514/why-can-i-not-set-innerhtml-of-an-iframe-body-in-firefox
-			    //$document.write('<!DOCTYPE html><html><head></head><body contenteditable="true"></body></html>');
-			    $document.write('<!DOCTYPE html><html><head><link rel="stylesheet" href="/emaileditor/assets/css/iframeEditor.css"><link rel="stylesheet" href="/theme/assets/fonts/font-awesome/css/font-awesome.css?v=296d368ac8e07ef0e76f4d2df5836ba5"></head><body></body></html>');
-				$document.close();
-			    //$document.designMode = 'On';
-			    $body = angular.element($element[0].contentDocument.body);
-			    $head = angular.element($element[0].contentDocument.head);
+	    		isEditMode = isEdit;
+
+		    	if(isEditMode == false)
+		    	{
+			    	$document = $element[0].contentDocument;
+				    $document.open(); //damn Firefox. kudos: http://stackoverflow.com/questions/15036514/why-can-i-not-set-innerhtml-of-an-iframe-body-in-firefox
+				    //$document.write('<!DOCTYPE html><html><head></head><body contenteditable="true"></body></html>');
+				    $document.write('<!DOCTYPE html><html><head></head><body></body></html>');
+				    $document.close();
+				    //$document.designMode = 'On';
+				    $body = angular.element($element[0].contentDocument.body);
+		    	}
+		    	else
+		    	{
+				    $head = angular.element($element[0].contentDocument.head);$document = $element[0].contentDocument;
+				    $document.open(); //damn Firefox. kudos: http://stackoverflow.com/questions/15036514/why-can-i-not-set-innerhtml-of-an-iframe-body-in-firefox
+				    //$document.write('<!DOCTYPE html><html><head></head><body contenteditable="true"></body></html>');
+				    $document.write('<!DOCTYPE html><html><head><link rel="stylesheet" href="/emaileditor/assets/css/iframeEditor.css"><link rel="stylesheet" href="/theme/assets/fonts/font-awesome/css/font-awesome.css?v=296d368ac8e07ef0e76f4d2df5836ba5"></head><body></body></html>');
+					$document.close();
+				    //$document.designMode = 'On';
+				    $body = angular.element($element[0].contentDocument.body);
+				    $head = angular.element($element[0].contentDocument.head);
+		    	}
 	    	}
 	    }
 
 	    scope.sync = function() 
 	    {
-	    	console.log('sync');
+	    	//console.log('sync');
 			scope.$evalAsync(function(scope) 
 			{
 			    ctrl.$setViewValue($body.html());

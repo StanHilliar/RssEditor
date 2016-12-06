@@ -3,17 +3,21 @@
 	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	  <strong>{{error.param}}</strong> {{error.msg}} 
 	</div>
+	<div class="alert alert-danger alert-dismissible" role="alert" data-ng-repeat="error in xmlErrorMsgs">
+	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	  <strong>{{error.param}}</strong> {{error.msg}} 
+	</div>
 	<div class="row rowSpaced">
 		<div class="col-md-4">
-			<h2>EmailModule</h2>
+			<h3>EmailModule</h3>
 		</div>
 	</div>
 	<div class="row rowSpaced">
-		<div class="col-xs-6 col-md-8">
+		<div class="col-xs-6 col-md-9">
 		 	<label for="">Name</label>
 			<input type="text" class="form-control" placeholder="" ng-model="module.name" name="">
 		</div>
-		<div class="col-xs-6 col-md-2">
+		<div class="col-xs-6 col-md-3">
 			<label for="">Type</label>
 			<select class="form-control" ng-model="module.type" ng-options="type._id as type.name for type in availableTypes">
 			</select>
@@ -21,25 +25,23 @@
 	</div>
 	
 	<div class="row rowSpaced">
-		<div class="col-xs-6 col-md-8"  ng-if="module.type == '1' || module.type == '2'">
+		<div class="col-xs-6 col-md-9"  ng-if="module.type == '1' || module.type == '2'">
 			<label for="">default URL</label>
 			<input type="text" class="form-control" placeholder="" ng-model="module.defaultURL" name="">
 		</div>
 
-		<div class="col-xs-4 col-md-2">
-			<label for="">defaultNumberOfEntries =  {{module.defaultNumberOfEntries}}</label>
+		<div class="col-xs-4 col-md-3">
+			<label for="">defaultNumberOfEntries <!--=  {{module.defaultNumberOfEntries}}--></label>
 			<select class="form-control" ng-model="selecteddefaultNumberOfEntries" ng-options="noentries._id as noentries.name for noentries in numberOfEntries">
 			</select>
 		</div>
 	</div>
 	<div class="row rowSpaced">
-		<div class="col-xs-6 col-md-5">
-			<div>created by {{module.createdBy}}</div>
-			<div>createdAt  {{module.createdAt | date:'dd.MM.yyyy HH:mm'}}</div>
+		<div class="col-xs-6 col-md-6">
+			<div><label>created: </label>&nbsp;{{module.createdBy}} / {{module.createdAt | date:'dd.MM.yyyy HH:mm'}}</div>
 		</div>
-		<div class="col-xs-6 col-md-5">
-			<div>updatedBy {{module.updatedBy}}</div>
-			<div>updatedAt {{module.updatedAt | date:'dd.MM.yyyy HH:mm'}}</div>
+		<div class="col-xs-6 col-md-6">
+			<div><label>updated:</label>&nbsp; {{module.updatedBy}} / {{module.updatedAt | date:'dd.MM.yyyy HH:mm'}}</div>
 		</div>
 	</div>
 
@@ -67,8 +69,8 @@
 		<!--header
 		<textarea ng-model="module.header"></textarea> <br/>-->
 	<div class="row rowSpaced">
-		<div class="col-xs-6 col-md-10">
-		before body
+		<div class="col-xs-6 col-md-12">
+		<span class="">before body</span>
 		<!--<textarea ng-model="module.preBody"></textarea>-->
 		<div ui-ace="{
 		  useWrapMode : true,
@@ -103,28 +105,37 @@
 				<h2>Views</h2>
 			</div>
 
-			<ng-Simon-Test>
-			123
-			</ng-Simon-Test>		
-
 		</div>
 		<div data-ng-repeat="view in module.views">
 			<div class="row rowSpaced">
 				<div class="col-md-1">
-					<h3>{{$index + 1}} // {{view._id}}</h3>
+					<h3>{{$index + 1}} <!--// {{view._id}}--></h3>
 				</div>
-		  		<div class="col-md-4">
+		  		<div class="col-md-6">
 		  			<label for="view_name_{{$index}}" >name</label>
 		  			<input type="text" id="view_name_{{$index}}" name="view_name_{{$index}}" ng-model="view.name" class="form-control" >
 		  		</div>
-		  		<div class="col-md-2">
+		  		
+		  		<div class="col-md-1">
+		  			<br/>
+		  			 <div class="radio">
+				    <label>
+	
+				       <input type="checkbox" name="defaultView" ng-model="view.isDefault" value="true" ng-click="clickCheckbox($index)"> default
+  
+				    </label>
+				  </div>
+		  		</div>
+		  		<div class="col-md-1">
+		  			<br/>
 		  			<button type="button" class="btn btn-primary btn-sm" ng-click="removeView($index)">
 					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> remove
 					</button>
 		  		</div>
-		  		<div class="col-md-2">
+		  		<div class="col-md-1">
+		  			<br/>
 		  			<button type="button" class="btn btn-primary btn-sm" ng-click="parse($index)">
-					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> parse
+					  <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span> parse
 					</button>
 		  		</div>
 		 	</div>
@@ -132,7 +143,7 @@
 				<div class="col-md-1">
 				
 				</div>
-			  	<div class="col-md-9">
+			  	<div class="col-md-11">
 			  		<label for="view_source_{{$index}}">source</label>
 			  		<!--<textarea  id="view_name_{{$index}}" name="view_name_{{$index}}"  ng-model="view.source"></textarea>-->
 			  		<div ui-ace="{
@@ -144,6 +155,10 @@
 					  vscroll: true
 					      }" ng-model="view.source" class="form-control"></div>
 					<div>
+						<div class="alert alert-warning alert-dismissible" role="alert" data-ng-repeat="error in viewWarningMessages[$index]">
+						  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						  <strong>{{error.param}}</strong> {{error.msg}} 
+						</div>
 						<span ng-show="module.type==2">
 						available xml variables: <span data-ng-repeat="var in module.xmlVariables">{{var.label}} </span> 
 						<br/>
@@ -159,14 +174,14 @@
 		    <div class="col-md-1">
 				
 			</div>
-			<div class="col-md-9">
+			<div class="col-md-11">
 			  	<button type="button" class="btn btn-primary btn-sm" ng-click="addView()">
 				  <span class="glyphicon glyphicon-plus" aria-hidden="true" ></span> add View
 				</button>
 		  	</div>
 		</div>
 		<div class="row rowSpaced">
-		  	<div class="col-md-9">
+		  	<div class="col-md-12">
 				after body
 				<!--<textarea ng-model="module.postBody"></textarea><br/>-->
 				<div ui-ace="{
@@ -178,6 +193,7 @@
 				  vscroll: true
 				      }" ng-model="module.postBody"></div>
 
+			custom body variables: <span data-ng-repeat="var in module.bodyVariables">{{var.label}} </span> <br/>
 			</div>
 		</div>
 		<!--
@@ -200,7 +216,7 @@
 		  			<label for="ad_pos_{{$index}}" >pos</label>
 		  			<input type="text" id="ad_pos_{{$index}}" name="ad_pos_{{$index}}" ng-model="ad.pos" class="form-control" >
 		  		</div>
-		  		<div class="col-md-4">
+		  		<div class="col-md-5">
 		  			<label for="ad_img_{{$index}}" >Image</label>
 		  			<input type="text" id="ad_img_{{$index}}" name="ad_img_{{$index}}" ng-model="ad.img" class="form-control" >
 		  		</div>
@@ -209,6 +225,7 @@
 		  			<input type="text" id="ad_link_{{$index}}" name="ad_link_{{$index}}" ng-model="ad.link" class="form-control" >
 		  		</div>
 		  		<div class="col-md-1">
+
 		  			<button type="button" class="btn btn-primary btn-sm" ng-click="removeAd($index)">
 					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> remove
 					</button>
@@ -219,17 +236,18 @@
 		</div>
 		<div class="row rowSpaced">
 		   
-			<div class="col-md-10">
+			<div class="col-md-12">
 			  	<button type="button" class="btn btn-primary btn-sm" ng-click="addAd()">
 				  <span class="glyphicon glyphicon-plus" aria-hidden="true" ></span> add Ad
 				</button>
 		  	</div>
 		</div>
+		<!--
 		<div class="row rowSpaced" data-ng-repeat="view in adViews">
-		  	<div class="col-md-9">
-		  		<label for="ad_source">source</label>
+		  	<div class="col-md-11">
+		  		<label for="ad_source">source</label>-->
 		  		<!--<textarea  id="view_name_{{$index}}" name="view_name_{{$index}}"  ng-model="view.source"></textarea>-->
-		  		<div ui-ace="{
+		  		<!--<div ui-ace="{
 				  useWrapMode : true,
 				  showGutter: true,
 				  theme:'idle_fingers',
@@ -238,9 +256,9 @@
 				  vscroll: true
 				      }" ng-model="view.source" class="form-control"></div>
 		  	</div>
-		</div>
+		</div>-->
 
-		<div data-ng-repeat="view in module.adViews">
+		<div data-ng-repeat="view in module.adViews" class="row rowSpaced">
 			<!--<div class="row rowSpaced">
 				<div class="col-md-1">
 					<h3>{{$index + 1}}</h3>
@@ -255,12 +273,9 @@
 					</button>
 		  		</div>
 		 	</div> -->
-			<div class="row rowSpaced">
-				<div class="col-md-1">
-				
-				</div>
-			  	<div class="col-md-9">
-			  		<label for="view_source_{{$index}}">source</label>
+		
+			  	<div class="col-md-12">
+			  		<label for="view_source_{{$index}}">ad template</label>
 			  		<!--<textarea  id="view_name_{{$index}}" name="view_name_{{$index}}"  ng-model="view.source"></textarea>-->
 			  		<div ui-ace="{
 					  useWrapMode : true,
@@ -270,26 +285,62 @@
 					  firstLineNumber: 1,
 					  vscroll: true
 					      }" ng-model="view.source" class="form-control"></div>
+				  	<div>
+					  	<div class="alert alert-warning alert-dismissible" role="alert" data-ng-repeat="error in adWarningMessages[$index]">
+								  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+								  <strong>{{error.param}}</strong> {{error.msg}} 
+						</div>
+					</div>
 			  	</div>
-			</div>
+			
 		</div>
 
 		<div class="row rowSpaced">
-					all custom variables: 
+			<div class="col-md-12">
+					<label>all custom body variables:</label>
+			</div>
 		</div>
-		<div class="row" data-ng-repeat="var in module.variables">
-			<div class="col-md-8">
+		<div class="row rowSpaced" data-ng-repeat="var in module.bodyVariables">
+			<div class="col-md-12">
 				<div class="col-xs-4 col-md-2">
-					{{var.name}} 
+					<label>{{var.name}} </label>
 				</div>
-				<div class="col-xs-4 col-md-2">
+				<div class="col-xs-4 col-md-3">
 					<label for="defaultValue_$index">default Value</label>
 					<input type="text" ng-model="var.defaultValue" name="defaultValue_$index">
 				</div>
-				<div class="col-xs-4 col-md-2">
-						fieldType <select class="form-control" ng-model="var.fieldType" ng-options="type._id as type.name for type in availableFieldTypes"></select>
+				<div class="col-xs-4 col-md-3">
+					<label>fieldType</label>
+					<select class="form-control" ng-model="var.fieldType" ng-options="type._id as type.name for type in availableFieldTypes"></select>
 				</div>
 				<div class="col-xs-4 col-md-2" data-ng-if="!var.inUse">
+					<br>
+		  			<button type="button" class="btn btn-primary btn-sm" ng-click="removeBodyVariable(var.name)">
+					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> remove
+					</button>
+		  		</div>
+			</div>
+		</div>		
+		<div class="row rowSpaced">
+			<div class="col-md-12">
+					<label>all custom view variables:</label>
+			</div>
+		</div>
+		<div class="row rowSpaced" data-ng-repeat="var in module.variables">
+			<div class="col-md-12">
+				<div class="col-xs-4 col-md-2">
+					<label>{{var.name}} </label>
+				</div>
+				<div class="col-xs-4 col-md-3">
+					<label for="defaultValue_$index">default Value</label>
+					<input type="text" ng-model="var.defaultValue" name="defaultValue_$index">
+				</div>
+				<div class="col-xs-4 col-md-3">
+					<label>fieldType</label>
+					<select class="form-control" ng-model="var.fieldType" ng-options="type._id as type.name for type in availableFieldTypes"></select>
+				</div>
+				<div class="col-xs-4 col-md-2" data-ng-if="!var.inUse">
+					<br>
 		  			<button type="button" class="btn btn-primary btn-sm" ng-click="removeVariable(var.name)">
 					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> remove
 					</button>
@@ -299,20 +350,20 @@
 
 		<div class="row rowSpaced">
 			<div class="col-md-8">
-				childTagName: {{module.childTagName}}
+				<label>childTagName: {{module.childTagName}}</label>
 			</div>
 		</div>
 
 		<div class="row rowSpaced">
 		<div class="col-md-8">
 			<button ng-click="parseAll()"  class="btn btn-lg btn-link">
-    			parse   
+    			<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span> parse   
 			</button>
 			<button data-ng-if="!moduleExsists && !saveInProgress"  ng-click="save()"  class="btn btn-lg btn-warning">
-    			save   
+    			<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> save   
 			</button>
 			<button data-ng-if="moduleExsists && !saveInProgress"  ng-click="update()"  class="btn btn-lg btn-warning">
-    			Update   
+    			<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> update   
 			</button>
 			<button data-ng-if="saveInProgress" class="btn btn-lg btn-warning">
     			<span class="glyphicon glyphicon-refresh spinning"></span> Loading...    

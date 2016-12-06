@@ -3,23 +3,27 @@
 /*
  * Defining the Package
  */
-var Module = require('meanio').Module;
+var meanio = require('meanio');
+var Module = meanio.Module;
 
 var Emaileditor = new Module('emaileditor');
+
+var config = require('meanio').loadConfig();
 
 /*
  * All MEAN packages require registration
  * Dependency injection is used to define required modules
  */
-Emaileditor.register(function(app, auth, database) 
+Emaileditor.register(function(app, auth, database, circles) 
 {
   var amazingEloqua = require('amazing-eloqua')();
 
   //var eloqua = amazingEloqua.login('TechnologyPartnerLeadMgtTechSolutionsAB', 'Simon.Diel', '5urcluVIFb8pYkg0', 'https://www02.secure.eloqua.com');
-  var eloqua = amazingEloqua.login('BonnierBusinessMediaTest', 'Eloqua.Api', 'cX7mquRGww6qW8pBQ1qw1hzJ', 'https://secure.p06.eloqua.com');
+  var eloqua = amazingEloqua.login(config.eloqua.company, config.eloqua.username, config.eloqua.password, config.eloqua.host);
+  //var eloqua = amazingEloqua.login('BonnierBusinessMediaTest', 'Eloqua.Api', 'cX7mquRGww6qW8pBQ1qw1hzJ', 'https://secure.p06.eloqua.com');
   
   //We enable routing. By default the Package Object is passed to the routes
-  Emaileditor.routes(app, auth, database, eloqua);
+  Emaileditor.routes(app, auth, database, eloqua, circles);
 
   //We are adding a link to the main menu for all authenticated users
   /*
@@ -42,6 +46,7 @@ Emaileditor.register(function(app, auth, database)
     title: 'Entities',
     link: 'newsletter overview',
     roles: ['authenticated'],
+    weight: ['Company_Admin'],
     menu: 'main'
    });   
 
@@ -49,6 +54,7 @@ Emaileditor.register(function(app, auth, database)
     title: 'Modules',
     link: 'emailmodule_overview',
     roles: ['authenticated'],
+    weight: ['Company_Admin'],
     menu: 'main'
   });
 

@@ -19,6 +19,11 @@ var EmailModuleSchema = new Schema(
     unique: true,
     required: true
   },
+  company:
+  {
+    type: String,
+    required:  true
+  }, 
   type:   
   {
     type: String,
@@ -64,6 +69,11 @@ var EmailModuleSchema = new Schema(
     default: []
   },
   variables:
+  {
+    type: Array,
+    default: []
+  },   
+  bodyVariables:
   {
     type: Array,
     default: []

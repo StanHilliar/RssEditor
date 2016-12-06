@@ -19,6 +19,11 @@ var EmailTemplateSchema = new Schema(
     type: String,
     required: true
   },
+  company:
+  {
+    type: String,
+    required:  true
+  }, 
   name:
   {
     type: String,
