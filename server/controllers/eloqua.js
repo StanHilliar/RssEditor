@@ -1,5 +1,6 @@
 'use strict';
 
+var  async = require('async');
 /**
  * Module dependencies.
  */
@@ -20,8 +21,21 @@ module.exports = function(amazingEloqua) {
               console.log('getSegmentsByFolderId callback');
               console.log(err);
               console.log(response);
-
-              res.jsonp(response.elements);
+              if(err != null)
+              {
+                res.status(400).json(err);
+              }
+              else
+              {
+                if(response != null)
+                {
+                  res.jsonp(response.elements);
+                }
+                else
+                {
+                   res.status(400).json('response is null');
+                }
+              }
             }); 
         },
         getEmailgroups: function(req, res, next) 
@@ -34,153 +48,198 @@ module.exports = function(amazingEloqua) {
               console.log(err);
               console.log(response);
 
-              res.jsonp(response.elements);
+              if(err != null)
+              {
+                res.status(400).json(err);
+              }
+              else
+              {
+                if(response != null)
+                {
+                  res.jsonp(response.elements);
+                }
+                else
+                {
+                   res.status(400).json('response is null');
+                }
+              }
             });   
         },
         createEmail: function(req, res, next) 
         {
-            console.log('create');
-            amazingEloqua.createHTMLEmail(req.body.name, req.body.eloquaFolder, req.body.eloquaFooter, req.body.eloquaHeader, req.body.eloquaEmailGroup, req.body.subject, req.body.html, req.body.fromAddress, req.body.senderName, req.body.bounceBackAddress, req.body.replyToName, req.body.replyToEmail,  function(err, response)
+          console.log('create');
+          amazingEloqua.createHTMLEmail(req.body.name, req.body.eloquaFolder, req.body.eloquaFooter, req.body.eloquaHeader, req.body.eloquaEmailGroup, req.body.subject, req.body.html, req.body.fromAddress, req.body.senderName, req.body.bounceBackAddress, req.body.replyToName, req.body.replyToEmail,  function(err, response)
+          {
+            console.log('create eloquaEmail callback');
+            if(err)
             {
-              console.log('create eloquaEmail callback');
-              if(err)
-              {
-                console.error(err);
-                res.status(400).json(err.msg);
-              }
-              else
-              {
-                console.log(response);
+              console.error(err);
+              res.status(400).json(err.msg);
+            }
+            else
+            {
+              console.log(response);
 
-                email.getEmailById(req.body.emailId, function(err, email)
+              email.getEmailById(req.body.emailId, function(getEmailByIdErr, email)
+              {
+                console.log('getEmailById callback');
+                //console.log(email);
+                if(getEmailByIdErr != null)
                 {
-                  console.log('getEmailById callback');
-                  console.log(err);
-                  //console.log(email);
+                  console.log(getEmailByIdErr);
+                  res.status(400).json(getEmailByIdErr);
+                }
+                else
+                {
                   email.eloquaEmail = response.id;
                   email.save(function(saveErr, saveRes)
                   {
                     console.log('save callback');
                     //console.log(saveErr);
                     //console.log(saveRes);
-
-                    res.jsonp(response);
+                    if(saveErr != null)
+                    {
+                      res.status(400).json(saveErr);
+                    }
+                    else
+                    {
+                      res.jsonp(response);
+                    }
                   });
-                });
-              }
-            });
+                }
+              });
+            }
+          });
         },
         updateEmail: function(req, res, next) 
         {
-            console.dir('update eloquaEmail');
-            //console.log(req.body.replyToName);
-            //console.log(req.body.replyToEmail);
-            
-            amazingEloqua.updateHTMLEmail(req.params.eloquaEmailId, req.body.name, req.body.eloquaFolder, req.body.eloquaFooter, req.body.eloquaHeader, req.body.eloquaEmailGroup, req.body.subject, req.body.html, req.body.fromAddress, req.body.senderName, req.body.bounceBackAddress, req.body.replyToName, req.body.replyToEmail, function(err, response)
+          console.dir('update eloquaEmail');
+          //console.log(req.body.replyToName);
+          //console.log(req.body.replyToEmail);
+          
+          amazingEloqua.updateHTMLEmail(req.params.eloquaEmailId, req.body.name, req.body.eloquaFolder, req.body.eloquaFooter, req.body.eloquaHeader, req.body.eloquaEmailGroup, req.body.subject, req.body.html, req.body.fromAddress, req.body.senderName, req.body.bounceBackAddress, req.body.replyToName, req.body.replyToEmail, function(err, response)
+          {
+            console.log('updateHTMLEmail callback');
+            console.log(err);
+            //console.log(response);
+            if(err != null)
             {
-              console.log('updateHTMLEmail callback');
-              console.log(err);
-              //console.log(response);
-
-              email.getEmailById(req.body.emailId, function(err, email)
+              res.status(400).json(err);
+            }
+            else
+            {
+              email.getEmailById(req.body.emailId, function(getEmailByIdErr, email)
               {
                 console.log('getEmailById callback');
-                console.log(err);
                 //console.log(email);
-
-                email.eloquaEmail = response.id;
-                email.save(function(saveErr, saveRes)
+                if(getEmailByIdErr != null)
                 {
-                  console.log('save callback');
-                  console.log(saveErr);
-                  //console.log(saveRes);
-
-                  res.jsonp(response);
-                });
+                  console.log(getEmailByIdErr);
+                  res.status(400).json(getEmailByIdErr);
+                }
+                else
+                {
+                  email.eloquaEmail = response.id;
+                  email.save(function(saveErr, saveRes)
+                  {
+                    console.log('save callback');
+                   
+                    if(saveErr != null)
+                    {
+                      console.log(saveErr);
+                      res.status(400).json(saveErr);
+                    }
+                    else
+                    {
+                      res.jsonp(response);
+                    }
+                  });
+                }
               });
-            }); 
+            }
+          }); 
         },
         sendTestEmail: function(req, res, next)
         {
-            console.dir('update sendtestemail');
-            // console.log(req.body.eloquaEmailId);
-            // console.log(req.body.emailAddresses);
+          console.dir('update sendtestemail');
+          // console.log(req.body.eloquaEmailId);
+          // console.log(req.body.emailAddresses);
 
-            req.assert('emailAddresses', 'You must enter a email address').notEmpty();
+          req.assert('emailAddresses', 'You must enter a email address').notEmpty();
 
-            var errors = req.validationErrors();
-            if (errors) 
+          var errors = req.validationErrors();
+          if (errors) 
+          {
+              return res.status(400).send(errors);
+          }
+
+          var addresses = req.body.emailAddresses.split(',');
+          
+          // console.log(addresses);
+          
+          async.map(addresses, 
+            function(emailAddress, cb)
             {
-                return res.status(400).send(errors);
-            }
-
-            var addresses = req.body.emailAddresses.split(',');
-            
-            // console.log(addresses);
-            
-            async.map(addresses, 
-              function(emailAddress, cb)
+              if(emailAddress != '')
               {
-                if(emailAddress != '')
+                amazingEloqua.searchContacts(emailAddress.trim(), 1, 1, 'minimal', function(contactErr, contactRes)
                 {
-                  amazingEloqua.searchContacts(emailAddress.trim(), 1, 1, 'minimal', function(contactErr, contactRes)
+                  console.log(contactErr);
+                  //console.log(contactRes);
+                  if(contactErr == null && contactRes.total == 1)
                   {
-                    console.log(contactErr);
-                    //console.log(contactRes);
-                    if(contactErr == null && contactRes.total == 1)
+                    if(emailAddress.trim() == contactRes.elements[0].emailAddress && emailAddress != '')
                     {
-                      if(emailAddress.trim() == contactRes.elements[0].emailAddress && emailAddress != '')
+                      amazingEloqua.sendTestEmail(contactRes.elements[0].id, req.body.eloquaEmailId, 'TestEmail', function(emailErr, emailRes)
                       {
-                        amazingEloqua.sendTestEmail(contactRes.elements[0].id, req.body.eloquaEmailId, 'TestEmail', function(emailErr, emailRes)
-                        {
-                          console.log(emailErr);
-                          //console.log(emailRes);
-                          return cb(null, emailRes);
-                        });
-                      }
-                      else
-                      {
-                        return cb({
-                          param: emailAddress,
-                          msg: 'search emailAddress error 2',
-                          value: emailAddress
-                        });
-                      }
+                        console.log(emailErr);
+                        //console.log(emailRes);
+                        return cb(null, emailRes);
+                      });
                     }
                     else
                     {
                       return cb({
-                      param: emailAddress,
-                      msg: 'search emailAddress error',
-                      value: emailAddress
-                    });
+                        param: emailAddress,
+                        msg: 'search emailAddress error 2',
+                        value: emailAddress
+                      });
                     }
+                  }
+                  else
+                  {
+                    return cb({
+                    param: emailAddress,
+                    msg: 'search emailAddress error',
+                    value: emailAddress
                   });
-                }
-                else
-                {
-                  return cb({
-                    param: 'emailAddress',
-                    msg: 'email address is empty',
-                    value: ''
-                  });
-                }
-              }, 
-              function(mapErr, mapRes)
+                  }
+                });
+              }
+              else
               {
-                console.log('map Callback');
-                console.log(mapErr);
-                //console.log(mapRes);
+                return cb({
+                  param: 'emailAddress',
+                  msg: 'email address is empty',
+                  value: ''
+                });
+              }
+            }, 
+            function(mapErr, mapRes)
+            {
+              console.log('map Callback');
+              console.log(mapErr);
+              //console.log(mapRes);
 
-                if(mapErr != null)
-                {
-                  res.status(400).json([mapErr]);
-                }
-                else
-                {
-                  res.jsonp({success: true});
-                }
-             });
+              if(mapErr != null)
+              {
+                res.status(400).json([mapErr]);
+              }
+              else
+              {
+                res.jsonp({success: true});
+              }
+           });
         },
         scheduleEmail: function(req, res, next)
         {

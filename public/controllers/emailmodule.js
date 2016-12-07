@@ -71,7 +71,6 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
     $scope.adWarningMessages = [];
 
 
-
     $scope.module.adViews = [];
     $scope.module.adViews.push(
     {
@@ -582,13 +581,10 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
         }
       }
 
-
-
       if($scope.module.type == "2")
       {
         parseXMLFeed();
       }
-
     }
 
     function parseXMLFeed()
@@ -683,7 +679,6 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
       });
 
     };   
-
   }
 ]).controller('EmailModuleOverviewController', ['$scope','$compile', '$interpolate', '$sce', 'Global', 'EmailModule', 'MeanUser', '$uibModal',
   function($scope, $compile, $interpolate, $sce, Global, EmailModule, MeanUser, $uibModal) 

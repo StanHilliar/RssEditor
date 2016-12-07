@@ -123,11 +123,11 @@
 			    		<br/>
 			    		<!--elqEmail: {{storedEmail.eloquaEmail}}<br>
 			    		eloquaCampaign: {{storedEmail.eloquaCampaign}}-->
-			  			<button type="button" ng-if="storedEmail.status=='draft'" data-ng-hide="scheduleInProgress" class="btn btn-primary" ng-click="scheduleEmail()">schedule</button>
+			  			<button type="button" ng-if="storedEmail.status=='draft' && storedEmail.eloquaEmail" data-ng-hide="scheduleInProgress" class="btn btn-primary" ng-click="scheduleEmail()">schedule</button>
 
-			  			<button type="button" ng-if="storedEmail.status=='draft'" data-ng-hide="scheduleInProgress" class="btn btn-primary" ng-click="sendEmailRightNow()">send right now</button>
+			  			<button type="button" ng-if="storedEmail.status=='draft' && storedEmail.eloquaEmail" data-ng-hide="scheduleInProgress" class="btn btn-primary" ng-click="sendEmailRightNow()">send right now</button>
 
-			  			<button type="button" ng-if="storedEmail.status=='active'" data-ng-hide="scheduleInProgress" class="btn btn-primary" ng-click="unscheduleEmail()">unschedule</button>
+			  			<button type="button" ng-if="storedEmail.status=='active' && storedEmail.eloquaEmail" data-ng-hide="scheduleInProgress" class="btn btn-primary" ng-click="unscheduleEmail()">unschedule</button>
 
 			  			<button type="button" data-ng-show="scheduleInProgress" class="btn btn-primary">
     						<span class="glyphicon glyphicon-refresh spinning"></span> schedule    

@@ -226,6 +226,8 @@ module.exports = function() {
                 {},
                 'name company createdAt createdBy updatedAt updatedBy segment scheduledDate newsletterEntity status' 
             ).lean()
+            .sort({'updatedAt': -1})
+            .limit(100)
             .exec(
             function(err, email) 
             {

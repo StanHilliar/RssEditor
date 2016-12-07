@@ -1,7 +1,5 @@
 'use strict';
-'use strict';
 
-var  async = require('async');
 var  http = require('http');
 var parseString = require('xml2js').parseString;
 

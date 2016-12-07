@@ -18,22 +18,28 @@ module.exports = function() {
 				var feedReq = request(req.params.url), 
 				feedparser = new FeedParser();
 
+				var feedparserWasSuccessfull = true;
+
 				feedReq.on('error', function (error) 
 				{
 				  console.log('feedReq error');
 				  console.log(error);
 				  // handle any request errors
-				  return res.status(400).json([{
-                                    param: '1000 - loading feed',
-                                    msg: error
-                            }]);
+				  return res.status(400).json(
+				  	[{
+                    	param: '1000 - loading feed',
+                        msg: error
+                    }]);
 				});
 
 				feedReq.on('response', function (res) 
 				{
 				  var stream = this;
 
-				  if (res.statusCode != 200) return this.emit('error', new Error('Bad status code'));
+				  if (res.statusCode != 200) 
+				  {
+				  	return this.emit('error', new Error('Bad status code'));
+				  }
 
 				  stream.pipe(feedparser);
 				});
@@ -43,6 +49,7 @@ module.exports = function() {
 				{
 				  console.log('feedparser error');
 				  console.log(error);
+				  feedparserWasSuccessfull = false;
 				  // always handle errors
 				  return res.status(400).json([{
                                     param: '1001 - parsing feed',
@@ -112,28 +119,30 @@ module.exports = function() {
 				feedparser.on('end', function() 
 				{
 					var meta= this.meta;
-
-					if(meta != null)
+					if(feedparserWasSuccessfull)
 					{
-						var myFeed = 
+						if(meta != null)
 						{
-							'feedUrl': meta.xmlurl,
-							'title': meta.title,
-							'link': meta.link,
-							'author': meta.author,
-							'description': meta.description,
-							'type': 'rss',
-							'entries': entries
-						};
-					
-					 	res.jsonp([myFeed]);
-					}
-					else
-					{
-						return res.status(400).json([{
-                            param: '1002 - feed',
-                            msg: 'issue loading the feed'
-                        }]);
+							var myFeed = 
+							{
+								'feedUrl': meta.xmlurl,
+								'title': meta.title,
+								'link': meta.link,
+								'author': meta.author,
+								'description': meta.description,
+								'type': 'rss',
+								'entries': entries
+							};
+						
+						 	res.jsonp([myFeed]);
+						}
+						else
+						{
+							return res.status(400).json([{
+	                            param: '1002 - feed',
+	                            msg: 'issue loading the feed'
+	                        }]);
+						}
 					}
 				});
 			}

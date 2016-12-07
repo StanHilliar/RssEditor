@@ -14,8 +14,10 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     $scope.rssContent = 'omg';
     $scope.test1234 = 'omg';
 
-    $scope.availableSEmailGroups = [];
-    $scope.availableSegments = [];
+    $scope.errorMsgs                = [];
+    $scope.templateErrorMsgs        = [];
+    $scope.availableSEmailGroups    = [];
+    $scope.availableSegments        = [];
     $scope.availableSecurityCircles = [];
     /* [
       {_id: '1', name: 'test1'},
@@ -97,7 +99,6 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
 
         removeSelectedSegmentsfromAvailabeleSegments();
         removeSelectedCirclesfromAvailabeleCircles();
-
       });     
     }
 
@@ -188,6 +189,9 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       var match = '';
 
       var matches = [];
+      $scope.templateErrorMsgs = [];
+
+      var identifier = {};
 
       while ((match = re.exec($scope.template)) != null) 
       {
@@ -195,37 +199,69 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
           console.log(match[0].length);
           console.log(match);
 
-          var _pos = match[0].substr(9);
-          _pos = _pos.substr(0, _pos.length-2);
-          console.log(_pos);
+          var moduleIdentifier = match[0].substr(9);
+          moduleIdentifier = moduleIdentifier.substr(0, moduleIdentifier.length-2);
+          console.log(moduleIdentifier);
 
-          var _positionAlreadyExisits = false;
-
-          
-          
-          for(var i = 0; i < $scope.entity.modules.length; i++)
+          if(identifier[moduleIdentifier] != true)
           {
-            if($scope.entity.modules[i].moduleIdentifier == _pos)
+            identifier[moduleIdentifier] = true;
+
+            var _positionAlreadyExisits = false;
+
+            for(var i = 0; i < $scope.entity.modules.length; i++)
             {
-              _positionAlreadyExisits = true;
-
-              $scope.entity.modules[i].templatePos = match.index;
-              $scope.entity.modules[i].templatePosEnd = match.index+_pos.length+11;
-
-              matches.push($scope.entity.modules[i]);
-            }
-          }
-
-
-          if(!_positionAlreadyExisits)
-          {
-              matches.push(
+              if($scope.entity.modules[i].moduleIdentifier == moduleIdentifier)
               {
-                moduleIdentifier: _pos,
-                templatePos: match.index,
-                templatePosEnd: match.index+_pos.length+11,
-                _id : ''
-              });
+                _positionAlreadyExisits = true;
+
+                $scope.entity.modules[i].templatePos = match.index;
+                $scope.entity.modules[i].templatePosEnd = match.index+moduleIdentifier.length+11;
+
+                matches.push($scope.entity.modules[i]);
+                /*$scope.errorMsgs.push(
+                {
+                  param: 'template',
+                  msg: 'you cannot use the same module identifier more than once:'+moduleIdentifier ,
+                });*/
+
+              }
+            } 
+
+            /*
+            for(var i = 0; i < matches.length; i++)
+            {
+              if(matches[i].moduleIdentifier == moduleIdentifier)
+              {
+                _positionAlreadyExisits = true;
+
+                // $scope.entity.modules[i].templatePos = match.index;
+                // $scope.entity.modules[i].templatePosEnd = match.index+moduleIdentifier.length+11;
+
+                // matches.push($scope.entity.modules[i]);
+              }
+            }*/
+
+            if(!_positionAlreadyExisits)
+            {
+                matches.push(
+                {
+                  moduleIdentifier: moduleIdentifier,
+                  templatePos: match.index,
+                  templatePosEnd: match.index+ moduleIdentifier.length+11,
+                  _id : ''
+                });
+            }
+            
+          }
+          else
+          {
+            console.log('DUPLICATE');
+            $scope.templateErrorMsgs.push(
+            {
+              param: 'template',
+              msg: 'you cannot use the same module identifier more than once:'+moduleIdentifier ,
+            });
           }
       }
  
@@ -329,10 +365,6 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
           $scope.entity.eloquaFooter = $scope.availableSEmailGroups[i].emailFooterId;
         }
       }
-
-
-      
-
       console.log($scope.entity);
     }
 
@@ -381,7 +413,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
   //              $scope.user = {};
 //                $scope.users.push(user);
               //  $scope.userError = null;
-        $scope.errorMsgs = null;
+        $scope.errorMsgs = [];
         $scope.saveInProgress = false;
         $scope.newsletterExsists = true;
         $scope.entity = data;
@@ -410,7 +442,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
   //              $scope.user = {};
 //                $scope.users.push(user);
               //  $scope.userError = null;
-              $scope.errorMsgs = null;
+              $scope.errorMsgs = [];
               $scope.saveInProgress = false;         
             }, function(data, headers) 
             {
