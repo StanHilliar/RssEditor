@@ -39,5 +39,5 @@ files:
 #   section may cause associated deployments to fail.
 hooks:
   ApplicationStart:
-    - location: /home/node-js/scripts/RssApp.Prod.ApplicationStart.sh
+    - location: ApplicationStart.sh
       timeout: 3600
