@@ -103,7 +103,7 @@
 				  </div><!-- /.col-lg-6 -->
 				</div><!-- /.row -->
 				</fieldset>
-				<div class="row">
+				<div class="row" data-ng-show="storedEmail.eloquaEmail">
 					<div class="col-md-8">
 						<label for="testEmailAddresses" class="dark">email addresses</label>
 		      			<input type="text" class="form-control" placeholder="emails" ng-model="testEmailAddresses" id="testEmailAddresses" name="testEmailAddresses">
@@ -123,11 +123,11 @@
 			    		<br/>
 			    		<!--elqEmail: {{storedEmail.eloquaEmail}}<br>
 			    		eloquaCampaign: {{storedEmail.eloquaCampaign}}-->
-			  			<button type="button" ng-if="storedEmail.status=='draft' && storedEmail.eloquaEmail" data-ng-hide="scheduleInProgress" class="btn btn-primary" ng-click="scheduleEmail()">schedule</button>
+			  			<button type="button" data-ng-show="storedEmail.status =='draft' && storedEmail.eloquaEmail && !scheduleInProgress" class="btn btn-primary" ng-click="scheduleEmail()">schedule</button>
 
-			  			<button type="button" ng-if="storedEmail.status=='draft' && storedEmail.eloquaEmail" data-ng-hide="scheduleInProgress" class="btn btn-primary" ng-click="sendEmailRightNow()">send right now</button>
+			  			<button type="button" data-ng-show="storedEmail.status=='draft' && storedEmail.eloquaEmail && !scheduleInProgress" class="btn btn-primary" ng-click="sendEmailRightNow()">send right now</button>
 
-			  			<button type="button" ng-if="storedEmail.status=='active' && storedEmail.eloquaEmail" data-ng-hide="scheduleInProgress" class="btn btn-primary" ng-click="unscheduleEmail()">unschedule</button>
+			  			<button type="button" data-ng-show="storedEmail.status=='active' && storedEmail.eloquaEmail && !scheduleInProgress"  class="btn btn-primary" ng-click="unscheduleEmail()">unschedule</button>
 
 			  			<button type="button" data-ng-show="scheduleInProgress" class="btn btn-primary">
     						<span class="glyphicon glyphicon-refresh spinning"></span> schedule    

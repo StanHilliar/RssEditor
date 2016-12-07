@@ -162,8 +162,8 @@ module.exports = function(amazingEloqua) {
         sendTestEmail: function(req, res, next)
         {
           console.dir('update sendtestemail');
-          // console.log(req.body.eloquaEmailId);
-          // console.log(req.body.emailAddresses);
+          console.log(req.body.eloquaEmailId);
+          console.log(req.body.emailAddresses);
 
           req.assert('emailAddresses', 'You must enter a email address').notEmpty();
 

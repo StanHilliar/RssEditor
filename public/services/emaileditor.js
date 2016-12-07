@@ -31,9 +31,6 @@ function($resource, $http)
         });
     }
 
-
-
-
     function saveEmail(data)
     {
     	return $http({
