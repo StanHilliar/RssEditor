@@ -1,1 +1,1 @@
-sudo NODE_ENV=production pm2 startOrRestart server  --log-date-format="YYYY-MM-DD HH:mm Z"
+sudo pm2 restart all
