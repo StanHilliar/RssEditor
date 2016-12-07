@@ -9,14 +9,17 @@ angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scop
       name: 'emaileditor'
     };
 
-    $scope.your_variable = '';
-    $scope.rssContent = 'omg';
-    $scope.test1234 = 'omg';
+    // $scope.your_variable = '';
+    // $scope.rssContent = 'omg';
+    // $scope.test1234 = 'omg';
     
     $scope.emails = {};
+    $scope.noOfEmailsPerEntity = {};
 
     $scope.now = new Date();
-
+    $scope.loadingEntites = false;
+    $scope.loadingEmails = false;
+    var tmpEmails = [];
 
     $scope.destroyEntity = function(newsletterId, entityId)
     {
@@ -43,9 +46,17 @@ angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scop
      });
     };
 
+    $scope.clickEntity = function(id)
+    {
+      console.log('clickEntity('+id+')');
+      // $scope.newsletters[id].open = !$scope.newsletters[id].open
+      $scope.emails[id] = tmpEmails[id];
+      // newsletter.open=!newsletter.open
+    };
 
     $scope.listEntities = function()
     {
+      $scope.loadingEntites = true;
       //console.log('listNewsletterEntitiy');
 
       NewsletterEntity.query({company: MeanUser.company.id}, function(response)
@@ -57,29 +68,40 @@ angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scop
           response[i].open = false;
         }
         $scope.newsletters = response;
+        $scope.loadingEntites = false;
       });
     };  
 
     $scope.list = function()
     {
+      $scope.loadingEmails = true;
       //console.log('listNewsletterEntitiy');
 
       Email.query({company: MeanUser.company.id},function(response)
       {
         //console.log('list callback');
         //console.log(response);
-
+        
         for(var i = 0; i < response.length; i++)
         {
-          if($scope.emails[response[i].newsletterEntity] == null)
+          if(tmpEmails[response[i].newsletterEntity] == null)
           {
-            $scope.emails[response[i].newsletterEntity] = [];
+            tmpEmails[response[i].newsletterEntity] = [];
           }
 
           response[i].scheduledDate = new Date(response[i].scheduledDate);
 
-          $scope.emails[response[i].newsletterEntity].push(response[i])
+          tmpEmails[response[i].newsletterEntity].push(response[i])
         }
+
+
+        for(var entityId in tmpEmails)
+        {
+          $scope.noOfEmailsPerEntity[entityId] = tmpEmails[entityId].length;
+        }
+
+        $scope.loadingEmails = false;
+        // $scope.emails = tmpEmails;
       });
     };   
 
@@ -91,6 +113,5 @@ angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scop
 
     $scope.listEntities();
     $scope.list();
-
   }
 ]);

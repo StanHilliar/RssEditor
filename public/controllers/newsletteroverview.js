@@ -50,8 +50,7 @@ angular.module('mean.emaileditor').controller('NewsletterOverviewController', ['
       NewsletterEntity.query({company: MeanUser.company.id, entityId: entityId}, function(newsletterEntityArray)
       {
         //console.log(newsletterEntityArray[0]);
-          
-
+        
         delete newsletterEntityArray[0]._id;
         newsletterEntityArray[0].name = newsletterEntityArray[0].name+'_Clone_'+Math.floor(new Date() / 1000);
         newsletterEntityArray[0].company =  MeanUser.company.id;
