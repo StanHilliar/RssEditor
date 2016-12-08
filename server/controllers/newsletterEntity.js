@@ -274,11 +274,13 @@ module.exports = function(circles) {
 
             NewsletterEntity.find(
                 {},
-                'name createdBy createdAt updatedBy updatedAt'
+                'name createdBy createdAt updatedBy updatedAt circles'
             )
             .lean()
             .exec(function(err, newsletterEntities) 
             {
+                // res.jsonp(newsletterEntities);
+                
                 if(circles.hasCompanyCircleBoolean(req, 'Company_Admin'))
                 {
                     res.jsonp(newsletterEntities);
@@ -288,12 +290,15 @@ module.exports = function(circles) {
                     var returnme = [];
                     for(var i = 0; i < newsletterEntities.length; i++)
                     {
-                        for(var x = 0; x < newsletterEntities[i].circles.length; x++)
+                        if(newsletterEntities[i].circles != null)
                         {
-                            if(circles.hasCompanyCircleBoolean(req, newsletterEntities[i].circles[x]))
+                            for(var x = 0; x < newsletterEntities[i].circles.length; x++)
                             {
-                                returnme.push(newsletterEntities[i]);
-                                break;
+                                if(circles.hasCompanyCircleBoolean(req, newsletterEntities[i].circles[x]))
+                                {
+                                    returnme.push(newsletterEntities[i]);
+                                    break;
+                                }
                             }
                         }
                     }

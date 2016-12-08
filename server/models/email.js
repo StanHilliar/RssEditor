@@ -135,7 +135,6 @@ var EmailSchema = new Schema(
   {
     type: String
   }
-
 });
 
 
