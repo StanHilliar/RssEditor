@@ -43,7 +43,7 @@ Emaileditor.register(function(app, auth, database, circles)
    });  
 
    Emaileditor.menus.add({
-    title: 'Entities1',
+    title: 'Entities',
     link: 'newsletter overview',
     roles: ['authenticated'],
     weight: ['Company_Admin'],
