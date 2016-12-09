@@ -51,7 +51,7 @@ Emaileditor.register(function(app, auth, database, circles)
    });   
 
    Emaileditor.menus.add({
-    title: 'Modules1',
+    title: 'Modules',
     link: 'emailmodule_overview',
     roles: ['authenticated'],
     weight: ['Company_Admin'],
