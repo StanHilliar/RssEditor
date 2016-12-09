@@ -36,7 +36,7 @@ Emaileditor.register(function(app, auth, database, circles)
   
 
    Emaileditor.menus.add({
-    title: 'Newsletter',
+    title: 'Newsletter1',
     link: 'email_overview',
     roles: ['authenticated'],
     menu: 'main'
