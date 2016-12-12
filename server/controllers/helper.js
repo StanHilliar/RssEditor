@@ -10,7 +10,7 @@ var mongoose = require('mongoose'),
     var url = require('url');
     var http = require('http');
     //var sizeOf = require('image-size');
-    var imagesize = require('imagesize');
+    // var imagesize = require('imagesize');
     var request = require('request');
     var size = require('request-image-size');
 

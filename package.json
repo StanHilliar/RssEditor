@@ -10,6 +10,13 @@
     "node": "0.10.x",
     "npm": "1.4.x"
   },
-  "dependencies": {},
+  "dependencies": 
+  {
+   /* "xml2js": "latest",
+    "shortid": "latest",
+    "parse5": "latest",
+    "request-image-size": "latest",
+    "feedparser": "latest"*/
+  },
   "license": "MIT"
 }
