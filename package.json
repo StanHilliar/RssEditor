@@ -12,7 +12,7 @@
   },
   "dependencies": 
   {
-   "xml2js": "latest",
+    "xml2js": "latest",
     "shortid": "latest",
     "parse5": "latest",
     "request-image-size": "latest",
