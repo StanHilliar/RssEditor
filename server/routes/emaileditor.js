@@ -167,7 +167,7 @@ module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circl
   app.route('/api/:company/emaileditor/emailgroups/').get(eloqua.getEmailgroups);
 
   app.route('/api/:company/emaileditor/eloquaemail/').post(eloqua.createEmail);
-  app.route('/api/:company/emaileditor/eloquaemail/:eloquaId').post(eloqua.updateEmail);
+  app.route('/api/:company/emaileditor/eloquaemail/:eloquaEmailId').post(eloqua.updateEmail);
   app.route('/api/:company/emaileditor/sendtestemail').post(eloqua.sendTestEmail);
   app.route('/api/:company/emaileditor/scheduleemail').post(eloqua.scheduleEmail);
   app.route('/api/:company/emaileditor/scheduleemail/:eloquaCampaignId').post(eloqua.updateEmailSchedule);
