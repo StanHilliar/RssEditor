@@ -269,11 +269,10 @@ module.exports = function(circles) {
                 });
             });
         },
-        /*
         getEmailById: function(emailId, cb)
         {
            _getEmailById(emailId,cb);
-        },*/
+        },
         update: function(req, res) 
         {
             // console.log('update email');
