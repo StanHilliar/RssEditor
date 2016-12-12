@@ -174,7 +174,7 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 
 		            win.jQuery.ajax(
 		            {
-		                url: 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js',
+		                url: 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js',
 		                dataType: 'script',
 		                cache: true,
 		                success: function () 
