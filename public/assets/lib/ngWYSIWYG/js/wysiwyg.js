@@ -273,7 +273,7 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 		            loadJQueryUI();
 		        };
 
-		        ijQuery.src = 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js';
+		        ijQuery.src = 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js';
 		        ibody.appendChild(ijQuery);
 		    });
 			jQuery('iframe').trigger( "initSortable" );
