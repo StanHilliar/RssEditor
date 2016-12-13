@@ -7,8 +7,50 @@ var  async = require('async');
 var email = require('../controllers/email')();
 
 
-
 module.exports = function(amazingEloqua) {
+  
+  function activateCampaignAndUpdateEmail(response, campaignId,  req, res, next)
+  {
+    console.log('activateCampaignAndUpdateEmail');
+
+    var activationOptions = {};
+    if(req.body.sendRightNow)
+    {
+      activationOptions = { activateNow: true};
+    }
+    else
+    {
+      activationOptions = { scheduledFor: req.body.startAt};
+    }
+    
+    console.log(activationOptions);
+
+    amazingEloqua.campaign.acitivate(campaignId, activationOptions, function(activationErr, activationRes)
+    {
+      console.log('acitivateCampaign callback');
+      console.error(activationErr);
+      console.log(activationRes);
+
+      email.getEmailById(req.body.emailId, function(err, email)
+      {
+        console.log('getEmailById callback');
+        console.log(err);
+        console.log(email);
+
+        email.eloquaCampaign = campaignId;
+        email.status = 'active';
+        email.save(function(saveErr, saveRes)
+        {
+          console.log('save callback');
+          console.log(saveErr);
+          console.log(saveRes);
+
+          res.jsonp(response);
+        });
+      });
+    });
+  }
+  
     return {
         /**
          * Create user

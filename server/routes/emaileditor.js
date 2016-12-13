@@ -205,47 +205,7 @@ module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circl
     server-0 (err):     at process._tickDomainCallback (node.js:502:13)
   */
 
-  function activateCampaignAndUpdateEmail(response, campaignId,  req, res, next)
-  {
-    console.log('activateCampaignAndUpdateEmail');
 
-    var activationOptions = {};
-    if(req.body.sendRightNow)
-    {
-      activationOptions = { activateNow: true};
-    }
-    else
-    {
-      activationOptions = { scheduledFor: req.body.startAt};
-    }
-    
-    console.log(activationOptions);
-
-    amazingEloqua.campaign.acitivate(campaignId, activationOptions, function(activationErr, activationRes)
-    {
-      console.log('acitivateCampaign callback');
-      console.error(activationErr);
-      console.log(activationRes);
-
-      email.getEmailById(req.body.emailId, function(err, email)
-      {
-        console.log('getEmailById callback');
-        console.log(err);
-        console.log(email);
-
-        email.eloquaCampaign = campaignId;
-        email.status = 'active';
-        email.save(function(saveErr, saveRes)
-        {
-          console.log('save callback');
-          console.log(saveErr);
-          console.log(saveRes);
-
-          res.jsonp(response);
-        });
-      });
-    });
-  }
 
   app.get('/api/emaileditor/example/auth', auth.requiresLogin, function(req, res, next) {
     res.send('Only authenticated users can access this');
