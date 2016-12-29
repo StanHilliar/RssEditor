@@ -1,7 +1,6 @@
 'use strict';
 
-var  http = require('http');
-var parseString = require('xml2js').parseString;
+
 
 /* jshint -W098 */
 // The Package is past automatically as first parameter
@@ -99,56 +98,7 @@ module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circl
   app.route('/api/:company/emaileditor/email').get(email.list);
 
   app.route('/api/emaileditor/rss/:url').get(feed.loadRSS);
-
-  app.route('/api/emaileditor/xml/:url').get(function(req, res, next) 
-  {  
-    console.log('xml');
-    try 
-    {
-      var getReq = http.get(req.params.url, function(getRes) 
-      {
-        console.log('xml cb');
-        // save the data
-        var xml = '';
-
-        getRes.on('data', function(chunk) 
-        {
-          xml += chunk;
-        });
-
-        getRes.on('end', function() 
-        {
-          console.log('xm cb end');
-          
-          // parse xml
-          //console.log(xml);
-          parseString(xml, {explicitArray: true}, function (err, result) 
-          {
-              //console.dir(result);
-              res.jsonp([result]);
-          });
-        });
-        // or you can pipe the data to a parser
-      });
-
-      getReq.on('error', function(err) 
-      {
-        // debug error
-        console.log('Got error: '+e.message);
-      });
-    } catch (ex) 
-    {
-      console.log('Got error: '+ex);
-      var errors = [];
-      errors.push(
-      {
-        param: 'url',
-        msg: ex.message,
-        value: req.params.url
-      });
-      return res.status(400).json(errors);
-    }
-  });
+  app.route('/api/emaileditor/xml/:url').get(feed.loadXML); 
 
 /*
   app.get('/api/admin/newsletterentity', newsletterEntities.list);

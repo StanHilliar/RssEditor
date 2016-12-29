@@ -1,7 +1,11 @@
 'use strict';
 
-var FeedParser = require('feedparser'), 
-    request = require('request');
+var FeedParser = require('feedparser'); 
+var request = require('request');
+
+var  http = require('http');
+var  https = require('https');
+var parseString = require('xml2js').parseString;
 
 
 module.exports = function() {
@@ -9,17 +13,46 @@ module.exports = function() {
 
     	loadRSS: function(req, res, next) 
         {
-        	console.log('loadRSS: '+req.params.url);
         	var entries =[];
         	var metaInfo = null;
 
         	if(req != null && req.params != null && req.params.url != null && req.params.url != '')
         	{
-				var feedReq = request(req.params.url), 
-				feedparser = new FeedParser();
+        		console.log('loadRSS: '+req.params.url);
+				// var feedReq = request(req.params.url); 
+				var feedparser = new FeedParser();
 
 				var feedparserWasSuccessfull = true;
 
+	
+				request(req.params.url, function (error, response, body) 
+				{
+					if(error)
+					{
+						console.error(error);
+					}	
+					else
+					{
+						console.log(response.statusCode);
+					}
+
+				  	if (!error && response.statusCode == 200) 
+				  	{
+					    // var stream = this;
+						// stream.pipe(feedparser);
+				  	}
+				  	else
+				  	{
+				  		return res.status(400).json(
+				  		[{
+	                		param: '1000 - loading feed',
+	                    	msg: error
+	                	}]);
+					}
+				}).pipe(feedparser);
+				
+				/*
+				feedReq.pause();
 				feedReq.on('error', function (error) 
 				{
 				  console.log('feedReq error');
@@ -32,18 +65,22 @@ module.exports = function() {
                     }]);
 				});
 
-				feedReq.on('response', function (res) 
+				feedReq.on('response', function (feedReqRes) 
 				{
 				  var stream = this;
 
-				  if (res.statusCode != 200) 
+				  if (feedReqRes.statusCode != 200) 
 				  {
-				  	return this.emit('error', new Error('Bad status code'));
+				  	return res.status(400).json(
+				  	[{
+                    	param: '1000 - loading feed',
+                        msg: 'error'
+                    }]);
 				  }
 
 				  stream.pipe(feedparser);
-				});
-
+				  feedReq.resume();	
+				});*/
 
 				feedparser.on('error', function(error) 
 				{
@@ -66,7 +103,7 @@ module.exports = function() {
 
 				  while (item = stream.read()) 
 				  {
-				    console.log(item);
+				    // console.log(item);
 
 				   	var modItem = {};
 				   	if(item['rss:title']['#'] != null)
@@ -153,8 +190,48 @@ module.exports = function() {
                                     msg: 'request didnt contain an url'
                                 }]);
 			}
+       	},
+       	loadXML: function(req, res, next) 
+       	{
+			var xml = '';
 
-        	
-       	}     
+			if(req != null && req.params != null && req.params.url != null && req.params.url != '')
+        	{
+				request(req.params.url, function (error, response, body) 
+				{
+					if(error)
+					{
+						console.log(error);
+					}	
+					else
+					{
+						console.log(response.statusCode);
+					}
+				  if (!error && response.statusCode == 200) 
+				  {
+				    // console.log(body) // Show the HTML for the Google homepage.
+				    parseString(body, {explicitArray: true}, function (err, result) 
+			        {
+			            res.jsonp([result]);
+		         	});
+				  }
+				  else
+				  {
+				  	return res.status(400).json(
+				  	[{
+	                	param: '1000 - loading feed',
+	                    msg: error
+	                }]);
+				  }
+				});
+			}
+			else
+			{
+				return res.status(400).json([{
+                                    param: '1003 - url',
+                                    msg: 'request didnt contain an url'
+                                }]);
+			}
+       	}  
     };
 }
