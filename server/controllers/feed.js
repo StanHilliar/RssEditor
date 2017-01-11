@@ -207,22 +207,45 @@ module.exports = function() {
 					{
 						console.log(response.statusCode);
 					}
-				  if (!error && response.statusCode == 200) 
-				  {
-				    // console.log(body) // Show the HTML for the Google homepage.
-				    parseString(body, {explicitArray: true}, function (err, result) 
-			        {
-			            res.jsonp([result]);
-		         	});
-				  }
-				  else
-				  {
-				  	return res.status(400).json(
-				  	[{
-	                	param: '1000 - loading feed',
-	                    msg: error
-	                }]);
-				  }
+					if(!error && response.statusCode == 200) 
+				  	{
+				  		try
+				  		{
+						    parseString(body, {explicitArray: true}, function (err, result) 
+					        {
+					        	// console.log('parseString CALLBACK');
+					        	// console.log(err);
+					        	// console.log(result);
+					        	if(err)
+					        	{
+					        		console.error(err);
+					        		return res.status(400).json(
+								  	[{
+					                	param: '1005 - error parsing feed',
+					                    msg: err
+					                }]);
+					        	}
+					        	else
+					        	{
+					        		// console.log('success');
+					            	res.jsonp([result]);
+					        	}
+				         	});
+				  		}
+				  		catch(exception)
+				  		{
+				  			// console.error('catch:');
+				  			console.error(exception);
+				  		}
+					}
+					else
+					{
+					  	return res.status(400).json(
+					  	[{
+		                	param: '1000 - loading feed',
+		                    msg: error
+		                }]);
+					}
 				});
 			}
 			else
