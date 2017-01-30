@@ -56,7 +56,7 @@ var template = "<div class=\"tinyeditor\">" +
 	"<div style=\"clear: both;\"></div>" +
     "</div>" +
     "<div class=\"sizer\" ce-resize>" +
-	"<textarea data-placeholder-attr=\"\" style=\"-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; resize: none; width: 100%; height: 100%;\" ng-show=\"editMode\" ng-model=\"content\"></textarea>        <iframe style=\"-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; width: 100%; height: 100%;\" ng-hide=\"editMode\" wframe=\"\" ng-model=\"content\"></iframe>    </div>" +
+	"<textarea data-placeholder-attr=\"\" style=\"-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; resize: none; width: 100%; height: 100%;\" ng-show=\"editMode\" ng-model=\"content\"></textarea>        <iframe id=\"frame\" style=\"-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; width: 100%; height: 100%;\" ng-hide=\"editMode\" wframe=\"\" ng-model=\"content\"></iframe>    </div>" +
 	"<div class=\"tinyeditor-footer\">" +
 	"<div ng-switch=\"editMode\" ng-click=\"editMode = !editMode\" class=\"toggle\"><span ng-switch-when=\"true\">wysiwyg</span><span ng-switch-default>source</span></div>" + 
     "</div>" +
@@ -66,9 +66,13 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
     function($compile, $timeout) {
 
 	//kudos http://stackoverflow.com/questions/13881834/bind-angular-cross-iframes-possible
-	var linker = function(scope, $element, attrs, ctrl) 
+	var linker = function(scope, $element, attrs, controllers) 
 	{
-	    var $document = $element[0].contentDocument;
+	    var $document		= $element[0].contentDocument;
+		var ctrl 			= controllers[0];
+		var dndEditorCtrl 	= controllers[1];
+		// console.log(ctrl);
+		dndEditorCtrl.iFrameLoaded('test');
 	    $document.open(); //damn Firefox. kudos: http://stackoverflow.com/questions/15036514/why-can-i-not-set-innerhtml-of-an-iframe-body-in-firefox
 	    //$document.write('<!DOCTYPE html><html><head></head><body contenteditable="true"></body></html>');
 	    $document.write('<!DOCTYPE html><html><head><link rel="stylesheet" href="/emaileditor/assets/css/iframeEditor.css"><link rel="stylesheet" href="/theme/assets/fonts/font-awesome/css/font-awesome.css?v=296d368ac8e07ef0e76f4d2df5836ba5"></head><body></body></html>');
@@ -80,6 +84,8 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 
 	    var jQueryUILoaded = false;
 	    var isEditMode = true;
+
+		var isDNDInit = false;
 	    
    		/*var scriptTag = "<script type='text/javascript' src='https://code.jquery.com/jquery-1.11.3.min.js'><";
 		scriptTag +=  "/script>";
@@ -111,8 +117,6 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 			scope.adData = scope.api.scope.adData;
 			
 			$compile($element.contents())(scope);
-
-
 
 			if(typeof($element[0].contentWindow.init) == "function")
 		   	{
@@ -151,12 +155,17 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 
 
 			$element[0].contentWindow.foo();
+			angular.element('#frame').ready(function()
+			{
+				console.log('frame ready');
+				initSortable();
+			});
 	    }
 	    
 	    scope.api.initSortable = function() 
 	    {
 			//console.log('11111111111111111  initSortable !!!!!!!!!!!!!!!!!!! _-----------------------');
-
+			/*
 			jQuery('iframe').on('initSortable', function() 
 			{
 				//console.log('iframe load !!!!!!!!!!!!!!!!!!!!!!!!!!');
@@ -223,18 +232,14 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 									//scope.lessonClicked({ lesson: '33333' });
 									scope.api.scope.updateFeedPositions(wquery(this).sortable("toArray"));
 								},
-								/*update : function(event, ui)
-								{
-									console.log('update');
-									//console.log(wquery(this).attr('id'));
-									//console.log(wquery(this).attr('class'));
-									var sortedIDs = wquery(this).sortable("toArray");
-									console.log(sortedIDs);
-									scope.api.scope.updateFeedPositions(sortedIDs);
-								},*/
 								placeholder: "ui-state-highlight dndplaceholder"
 				            });
 
+					    	win.jQuery('.pickUpArea').sortable(
+				            { 
+				            	items : '.dndelement:not(.static)',
+				            	placeholder: "ui-state-highlight dndplaceholder"
+				            });
 
 					    	//console.log('SETTING UP ONCLICK !!!!!!!!!!!!!');
 				            win.jQuery(".clickableElement").click(function()
@@ -276,12 +281,185 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 		        ijQuery.src = 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js';
 		        ibody.appendChild(ijQuery);
 		    });
-			jQuery('iframe').trigger( "initSortable" );
+			jQuery('iframe').trigger( "initSortable" );*/
+			dndEditorCtrl.iFrameLoaded('test');
+
+			initSortable();
 		}
+
+		function initSortable()
+		{
+			console.log('initSortable');
+
+			if(!isDNDInit)
+			{
+				var el = angular.element('#sortable')[0];
+				console.log(el);
+				
+				var sortable = Sortable.create(el,
+				{
+					sort: false,
+					// handle: '.handle',
+					group: 
+					{
+						name: 'sortable-group',
+						pull: 'clone',
+						put:  false
+					}
+				});
+				isDNDInit = true;
+			}
+
+			var elInner = document.getElementById('frame').contentWindow.document.getElementById('modulesContainer');
 			
+			console.log(angular.element('#frame'));
+			console.log(angular.element('#frame').contents());
+			console.log(angular.element('#frame').contents().find('div'));
+			console.log(angular.element('#frame').contents().find('div#sortable'));
+			console.log(angular.element('#frame').contents().find('#sortable'));
+			console.log(angular.element('#frame').contents().find('.emailModule'));
+			console.log(angular.element('#frame').contents().find('.sortable1'));
+			console.log(angular.element('#frame').contents().find('.dndelement'));
+			console.log(angular.element('#frame').contents().find('.clickableElement'));
+			console.log(elInner);
+
+			var myIFrame = angular.element('#frame').contents();
+			if(elInner)
+			{
+				Sortable.create(elInner, 
+				{
+					//  handle: '.handle',
+					group: 
+					{
+						name: 'sortable-group',
+						pull: true,
+						put:  true
+					}
+				});
+
+				for(var i = 0; i < elInner.children.length; i++)
+				{
+					for(var x = 0; x < elInner.children[i].children.length; x++)
+					{
+						if(elInner.children[i].children[x].className =='sortable1')
+						{
+							initSubSortable(myIFrame, elInner.children[i].children[x]);
+						} 
+					}
+				}
+
+				console.log(".clickableElement:");
+				console.log(myIFrame.find(".dndelement.clickableElement"));
+				myIFrame.find(".clickableElement").click(function()
+				{
+					//win.jQuery(this).attr('id');
+					//console.log('click');
+					//console.log(win.jQuery(this).attr('id'));
+					scope.api.scope.clickOnElement(myIFrame.find(this).attr('id'));
+				}); 
+			}
+		}
+
+		function initSubSortable(myIFrame, elementContainer)
+        {
+          // var subSortable = document.getElementById('subsortable');
+          var sortable123 = Sortable.create(elementContainer,
+          {
+            draggable: ".dndelement",
+            // filter: ".static",
+            dataIdAttr: 'id',
+            // Element dragging ended
+            onEnd: function (/**Event*/evt) 
+            {
+              console.log('onEnd');
+              evt.oldIndex;  // element's old index within parent
+              evt.newIndex;  // element's new index within parent
+              console.log(evt.oldIndex);
+              console.log(evt.newIndex);
+              // var smallerIndex = Math.min(evt.oldIndex, evt.newIndex);
+              // var biggerIndex  = Math.max(evt.oldIndex, evt.newIndex);
+              var order = sortable123.toArray();
+              console.log(order);
+
+              // console.log(smallerIndex);
+              // console.log(biggerIndex);
+              var newOrder = new Array(order.length);
+              var alreadyInNewOrder = {};
+              for(var i = 0; i < order.length; i++)
+              {
+                console.log(order[i]);
+                var element = myIFrame.find('#'+order[i]);
+                var staticPos = element.attr('data-static-pos');
+                console.log(staticPos);
+                if(staticPos)
+                {
+                  newOrder[staticPos] = order[i];
+                  alreadyInNewOrder[order[i]] = true;
+                }
+              }
+
+
+              for(var x = 0; x < newOrder.length; x++)
+              {
+                console.log('x:'+x);
+                console.log(newOrder[x]);
+                if(!newOrder[x])
+                {
+                  var indexToSet = -1;
+                  for(var i = 0; i < order.length; i++)
+                  {
+                    console.log('i:'+i)
+                    if(indexToSet === -1 && alreadyInNewOrder[order[i]] !== true)
+                    {
+                      indexToSet = i;
+                    }
+                  }
+                  if(indexToSet !== -1)
+                  {
+                    newOrder[x] = order[indexToSet];
+                    alreadyInNewOrder[order[indexToSet]] = true;
+                  }
+                }
+              }
+
+              	console.log(newOrder);
+                
+            	sortable123.sort(newOrder);
+            },
+            onUpdate: function (/**Event*/evt) 
+            {
+              console.log('onUpdate');
+              var itemEl = evt.item;  // dragged HTMLElement
+              // + indexes from onEnd
+            },
+            onMove: function (/**Event*/evt, /**Event*/originalEvent) 
+            {
+              console.log('onMove');
+              console.log(evt);
+              console.log(originalEvent);
+              // Example: http://jsbin.com/tuyafe/1/edit?js,output
+              evt.dragged; // dragged HTMLElement
+              evt.draggedRect; // TextRectangle {left, top, right и bottom}
+              evt.related; // HTMLElement on which have guided
+              evt.relatedRect; // TextRectangle
+              originalEvent.clientY; // mouse position
+
+              // return false; — for cancel
+            },
+            // Called by any change to the list (add / update / remove)
+            onSort: function (/**Event*/evt) 
+            {
+              console.log('onSort');
+                // same properties as onUpdate
+            }
+          });	
+		}
+
 		scope.api.reinitSortable = function() 
 	    {
-			jQuery('iframe').trigger( "initSortable" );
+			//jQuery('iframe').trigger( "initSortable" );
+			initSortable();
+			dndEditorCtrl.iFrameLoaded('test');
 	    }
 
 	    scope.api.setMode = function(isEdit) 
@@ -400,7 +578,6 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 		100/*ms*/, true /*invoke apply*/);
 	    });
 	    
-
 	    scope.range = null;
 	    scope.getSelection = function() 
 	    {
@@ -464,7 +641,7 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 	}
 	return {
 	    link: linker,
-	    require: 'ngModel',
+		require: ['ngModel', '^^wysiwygEditor'],
 	    replace: true,
 	    /*scope: {   
 	    	api : '@',
@@ -802,6 +979,75 @@ angular.module('ngWYSIWYG').directive('wysiwygEdit', ['$compile', '$timeout', '$
 	    template: template
 	}
     }
+]);
+
+angular.module('ngWYSIWYG').directive('wysiwygEditor', ['$compile', '$timeout', '$q', '$log',
+function($compile, $timeout, $q, $log) 
+{
+	function linker(scope, element)
+	{
+		$log.info('wysiwygEditor link logger test');
+		console.log('wysiwygEditor linker');
+		// var el = element[0].querySelector('#sortable');
+		// console.log(el);
+		
+		// var sortable = Sortable.create(el,
+		// {
+		// 	sort: false,
+		// 	// handle: '.handle',
+		// 	group: 
+		// 	{
+		// 		name: 'sortable-group',
+		// 		pull: 'clone',
+		// 		put:  false
+		// 	}
+		// });
+
+		scope.omgIFrame = element[0].querySelector('#frame');
+	}
+    function DnDEditorController(scope, element) 
+    {
+		$log.info('DnDEditorController1234');
+        this.handlers = 
+        {
+            showAnnotations: []
+        };
+		// $log.info('start ifrmae');
+		// $log.info(scope.omgIFrame);
+		// $log.info(element);
+		// $log.info('end ifrmae2');
+		this.myIFrame = scope.omgIFrame;
+    }
+
+    DnDEditorController.prototype.onShowAnnotations = function(handler)
+    {
+        this.handlers.showAnnotations.push(handler);
+    }
+
+    DnDEditorController.prototype.iFrameLoaded = function(param)
+    {
+        console.log('iFrameLoaded');
+		$log.info('iFrameLoaded2');
+        console.log(param);
+		// var elInner = this.myIFrame.contentWindow.document.getElementById('sortable');
+		// Sortable.create(elInner, 
+		// {
+		
+		// });
+    }
+
+    return {
+        restrict: 'E',
+        transclude: true,
+		link: linker,
+        controller: ['$scope', DnDEditorController],
+        scope: 
+        {
+            
+        },
+        template: '<div class="dndEditor" ng-transclude></div>'
+    };
+}
 ]);
 
 })(angular);
