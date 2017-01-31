@@ -3,168 +3,54 @@
 /* jshint -W098 */
 angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope', '$q', '$stateParams', '$compile', '$interpolate', '$sce', 'Global', 'Emaileditor', 'NewsletterEntity', 'Email', 'Eloqua', 'XMLFeed', 'MeanUser',
   function ($scope, $q, $stateParams, $compile, $interpolate, $sce, Global, Emaileditor, NewsletterEntity, Email, Eloqua, XMLFeed, MeanUser) {
-    $scope.global = Global;
-    $scope.package =
-      {
-        name: 'emaileditor'
-      };
+$scope.global = Global;
+$scope.package =
+  {
+    name: 'emaileditor'
+  };
 
-    var dndElementIdentifier = 'dndelement';
-    var clickableElementIdentifier = 'clickableElement';
-    $scope.modalInstance = '';
-    var modalInstance = null;
-    var entity = {};
+var dndElementIdentifier        = 'dndelement';
+var clickableElementIdentifier  = 'clickableElement';
+$scope.modalInstance = '';
+var modalInstance = null;
+var entity = {};
 
-    var EloquaEmail = Eloqua.eloquaEmail();
-    var EloquaCampaign = Eloqua.eloquaCampaign();
-    var EloquaTestEmail = Eloqua.eloquaTestEmail();
-    var EloquaCampaignUnschedule = Eloqua.eloquaCampaignUnschedule();
-    var storedEloquaEmail = null;
-    var storedEloquaCampaign = null;
+var EloquaEmail               = Eloqua.eloquaEmail();
+var EloquaCampaign            = Eloqua.eloquaCampaign();
+var EloquaTestEmail           = Eloqua.eloquaTestEmail();
+var EloquaCampaignUnschedule  = Eloqua.eloquaCampaignUnschedule();
+var storedEloquaEmail         = null;
+var storedEloquaCampaign      = null;
+var sendRightNow              = false;
+var emailId                   = null;
 
-    var sendRightNow = false;
+$scope.storedEmail = null;
 
+$scope.feedURL = 'http://feeds.wired.com/wired/index';
 
-    var emailId = null;
-    $scope.storedEmail = null;
+$scope.rssData = [];
+$scope.adData = [];
 
-    $scope.feedURL = 'http://feeds.wired.com/wired/index';
+$scope.EmailName = '';
 
-    $scope.rssData = [];
-    $scope.adData = [];
+$scope.your_variable = '';
+$scope.rssContent = 'omg';
+$scope.test1234 = 'omg';
 
-    $scope.EmailName = '';
+$scope.showSendingOptions = true;
 
-    $scope.your_variable = '';
-    $scope.rssContent = 'omg';
-    $scope.test1234 = 'omg';
+$scope.feedPositions = [];
+$scope.skipedEntries = [];
+$scope.skipedEmailModules = {};
 
-    $scope.showSendingOptions = true;
+$scope.errorMsgs = [];
 
-    $scope.feedPositions = [];
-    $scope.skipedEntries = [];
-    $scope.skipedEmailModules = {};
+$scope.firstInit = true;
+$scope.loading = false;
+var feeds = [];
 
-    $scope.errorMsgs = [];
-
-    $scope.firstInit = true;
-    $scope.loading = false;
-    var feeds = [];
-
-    $scope.modules =
-    [
-      {
-        "moduleIdentifier": "test", 
-        "templatePos": 115, 
-        "templatePosEnd": 130, 
-        "_id": "588789d496fa717b0e5f827d", 
-        "createdAt": "2017-01-24T17:07:32.624Z", 
-        "updatedAt": "2017-01-24T17:10:32.174Z", 
-        "name": "test", 
-        "defaultURL": "", 
-        "defaultNumberOfEntries": "3", 
-        "type": "3", 
-        "header": "", 
-        "footer": "", 
-        "createdBy": "Simon.Eckhardt",
-        "updatedBy": "Simon.Eckhardt",
-        "company": "588788e44cb14e490e56997b", 
-        "__v": 2,
-        "childTagName": "div", 
-        "postBody": "<div>\n    <hr>\n    <br/>\n</div>", 
-        "preBody": "", 
-        "xmlVariables": [], 
-        "bodyVariables": [], 
-        "variables": 
-        [
-          { "inUse": true, "fieldType": "1", "defaultValue": "placeholder", "label": "C_param", "name": "C_param" }
-        ], 
-        "views": 
-        [
-          { 
-            "childTagName": "div", 
-            "isDefault": false, 
-            "variables": 
-            [
-              { "inUse": true, "fieldType": "1", "defaultValue": "", "label": "C_param", "name": "C_param" }
-            ], 
-            "source": "<div>test {{C_param}}</div>\n<br/>\n<br/>", 
-            "name": "default", 
-            "_id": "r1pRFWSwg" 
-          }
-        ], 
-        "adViews": 
-        [
-          { "_id": "", "name": "", "source": "" }
-        ], 
-        "ads": []
-      },
-      {
-        "moduleIdentifier": "test222", 
-        "templatePos": 115, 
-        "templatePosEnd": 130, 
-        "_id": "588789d496ffake", 
-        "createdAt": "2017-01-24T17:07:32.624Z", 
-        "updatedAt": "2017-01-24T17:10:32.174Z", 
-        "name": "test222", 
-        "defaultURL": "", 
-        "defaultNumberOfEntries": "3", 
-        "type": "3", 
-        "header": "", 
-        "footer": "", 
-        "createdBy": "Simon.Eckhardt",
-        "updatedBy": "Simon.Eckhardt",
-        "company": "588788e44cb14e490e56997b", 
-        "__v": 2,
-        "childTagName": "div", 
-        "postBody": "<div>\n    <hr>\n    <br/>\n</div>", 
-        "preBody": "", 
-        "xmlVariables": [], 
-        "bodyVariables": [], 
-        "variables": 
-        [
-          { "inUse": true, "fieldType": "1", "defaultValue": "placeholder", "label": "C_param", "name": "C_param" }
-        ], 
-        "views": 
-        [
-          { 
-            "childTagName": "div", 
-            "isDefault": false, 
-            "variables": 
-            [
-              { "inUse": true, "fieldType": "1", "defaultValue": "", "label": "C_param", "name": "C_param" }
-            ], 
-            "source": "<div>test {{C_param}}</div>\n<br/>\n<br/>", 
-            "name": "default", 
-            "_id": "r1pRFWSwg" 
-          }
-        ], 
-        "adViews": 
-        [
-          { "_id": "", "name": "", "source": "" }
-        ], 
-        "ads": []
-      }
-    ];
-
-  
-    $scope.newsletterEntity = '000';
+$scope.newsletterEntity = '000';
     
-/*
-$scope.emailSegements = 
-  [
-    { 
-      id: 0,
-      label: 'Segment 1',
-      
-    },
-    { 
-      id: 1,
-      label: 'Segment 2'
-    } 
-  ];
-  
-$scope.emailSegement = $scope.emailSegements[0];*/
 $scope.segment = '';
 
 $scope.isEditMode = true;
@@ -312,81 +198,88 @@ $scope.setMode = function () {
 /***
  saves the email in the apps database
 ***/
-$scope.saveEmail = function (cb) {
+$scope.saveEmail = function (cb) 
+{
   //console.log('saveEmail');
   //console.log($scope.rssData);
   $scope.saveInProgress = true;
 
   var myData = [];
-  for (var i = 0; i < $scope.rssData.length; i++) {
+  for (var i = 0; i < $scope.rssData.length; i++) 
+  {
     //console.log($scope.rssData[i].bodyData);
     myData[i] = {};
-    myData[i].state = $scope.rssData[i].state;
+    myData[i].state           = $scope.rssData[i].state;
     myData[i].numberOfEntries = $scope.rssData[i].numberOfEntries;
-    myData[i].data = $scope.rssData[i].data;
-    myData[i].bodyData = $scope.rssData[i].bodyData;
+    myData[i].data            = $scope.rssData[i].data;
+    myData[i].bodyData        = $scope.rssData[i].bodyData;
     //console.log(myData[i]);
   }
 
   //console.log($scope.storedEmail);
 
-  if ($scope.storedEmail != null) {
+  if ($scope.storedEmail != null) 
+  {
     //console.log('storedEmail NOT null');
-    $scope.storedEmail.name = $scope.EmailName;
-    $scope.storedEmail.subject = $scope.EmailSubject;
-    $scope.storedEmail.scheduledDate = $scope.dt;
-    $scope.storedEmail.scheduledTime = $scope.dt;
-    $scope.storedEmail.positions = $scope.feedPositions;
-    $scope.storedEmail.data = myData;
-    $scope.storedEmail.eloquaFolder = $scope.entity.eloquaFolder;
+    $scope.storedEmail.name                 = $scope.EmailName;
+    $scope.storedEmail.subject              = $scope.EmailSubject;
+    $scope.storedEmail.scheduledDate        = $scope.dt;
+    $scope.storedEmail.scheduledTime        = $scope.dt;
+    $scope.storedEmail.positions            = $scope.feedPositions;
+    $scope.storedEmail.data                 = myData;
+    $scope.storedEmail.eloquaFolder         = $scope.entity.eloquaFolder;
     $scope.storedEmail.eloquaCampaignFolder = $scope.entity.eloquaCampaignFolder;
-    $scope.storedEmail.eloquaFooter = $scope.entity.eloquaFooter;
-    $scope.storedEmail.eloquaHeader = $scope.entity.eloquaHeader;
-    $scope.storedEmail.bounceBackAddress = $scope.entity.bounceBackAddress;
-    $scope.storedEmail.replyToName = $scope.entity.replyToName;
-    $scope.storedEmail.replyToEmail = $scope.entity.replyToEmail;
-    $scope.storedEmail.fromAddress = $scope.entity.fromAddress;
-    $scope.storedEmail.senderName = $scope.entity.senderName;
+    $scope.storedEmail.eloquaFooter         = $scope.entity.eloquaFooter;
+    $scope.storedEmail.eloquaHeader         = $scope.entity.eloquaHeader;
+    $scope.storedEmail.bounceBackAddress    = $scope.entity.bounceBackAddress;
+    $scope.storedEmail.replyToName          = $scope.entity.replyToName;
+    $scope.storedEmail.replyToEmail         = $scope.entity.replyToEmail;
+    $scope.storedEmail.fromAddress          = $scope.entity.fromAddress;
+    $scope.storedEmail.senderName           = $scope.entity.senderName;
   }
-  else {
+  else 
+  {
     //console.log('storedEmail == null');
     $scope.storedEmail = new Email(
       {
-        name: $scope.EmailName,
-        segment: $scope.segment,
-        subject: $scope.EmailSubject,
-        scheduledDate: $scope.dt,
-        scheduledTime: $scope.dt,
-        newsletterEntity: $stateParams.newsletterid,
-        data: myData,
-        eloquaFolder: $scope.entity.eloquaFolder,
+        name                : $scope.EmailName,
+        segment             : $scope.segment,
+        subject             : $scope.EmailSubject,
+        scheduledDate       : $scope.dt,
+        scheduledTime       : $scope.dt,
+        newsletterEntity    : $stateParams.newsletterid,
+        data                : myData,
+        eloquaFolder        : $scope.entity.eloquaFolder,
         eloquaCampaignFolder: $scope.entity.eloquaCampaignFolder,
-        eloquaFooter: $scope.entity.eloquaFooter,
-        eloquaHeader: $scope.entity.eloquaHeader,
-        eloquaEmailGroup: $scope.entity.eloquaEmailGroup,
-        bounceBackAddress: $scope.entity.bounceBackAddress,
-        replyToName: $scope.entity.replyToName,
-        replyToEmail: $scope.entity.replyToEmail,
-        fromAddress: $scope.entity.fromAddress,
-        senderName: $scope.entity.senderName,
-        positions: $scope.feedPositions,
-        status: 'draft'
+        eloquaFooter        : $scope.entity.eloquaFooter,
+        eloquaHeader        : $scope.entity.eloquaHeader,
+        eloquaEmailGroup    : $scope.entity.eloquaEmailGroup,
+        bounceBackAddress   : $scope.entity.bounceBackAddress,
+        replyToName         : $scope.entity.replyToName,
+        replyToEmail        : $scope.entity.replyToEmail,
+        fromAddress         : $scope.entity.fromAddress,
+        senderName          : $scope.entity.senderName,
+        positions           : $scope.feedPositions,
+        status              : 'draft'
       });
     //console.log($scope.storedEmail);
   }
 
   $scope.storedEmail.company = MeanUser.company.id;
-  $scope.storedEmail.$save(function (data, headers) {
+
+  $scope.storedEmail.$save(function (data, headers) 
+  {
     $scope.module = data;
     $scope.errorMsgs = [];
     $scope.moduleExsists = true;
     saveEloquaEmail(cb);
   },
-    function (data, headers) {
-      $scope.errorMsgs = data.data;
-      $scope.saveInProgress = false;
-      if (cb) return cb();
-    });
+  function (data, headers) 
+  {
+    $scope.errorMsgs = data.data;
+    $scope.saveInProgress = false;
+    if (cb) return cb();
+  });
 };
 
 function saveEloquaEmail(cb) {
@@ -616,6 +509,33 @@ $scope.updateFeedPositions = function (data) {
   $scope.feedPositions[modulePos] = _data;
 };
 
+$scope.onAddModuleToEmail = function (moduleId, position) 
+{
+  console.log('onAddModuleToEmail');
+  console.log(moduleId);
+  var moduleIndex = -1;
+  for(var i = 0; i < $scope.emailTemplates.dropzoneModules.length; i++)
+  {
+    if($scope.emailTemplates.dropzoneModules[i]._id == moduleId)
+    {
+      moduleIndex = i;
+    }
+  }
+
+  if(moduleIndex != -1)
+  {
+    $scope.emailTemplates.modules.push($scope.emailTemplates.dropzoneModules[moduleIndex]);
+    initModule($scope.emailTemplates.modules[moduleIndex], moduleIndex).then(function () 
+    {
+      $scope.your_variable = $scope.generateEmail(true);
+      $scope.api.initSortable();
+      $scope.firstInit = false;
+      $scope.loading = false;
+    });
+    //  $scope.generateEmail($scope.isEditMode);
+  }
+};
+
 $scope.clickOnElement = function (elementID) {
   console.log("clickOnElement");
   console.log(elementID);
@@ -653,7 +573,8 @@ $scope.clickOnEmailModule = function (elementID) {
   $scope.$apply();
 };
 
-$scope.addEntry = function (moduleIndex) {
+$scope.addEntry = function (moduleIndex) 
+{
   //console.log("addEntry("+moduleIndex+")");
   var _module = $scope.emailTemplates.modules[moduleIndex];
   //_module.type;
@@ -719,6 +640,215 @@ $scope.updateViewforEntry = function () {
   $scope.api.reinitSortable();
 };
 
+$scope.generateModule = function(isEdit, currentModule, moduleCounter)
+{
+  var _moduleData = ''
+    var isDraggable = ($scope.feedPositions[moduleCounter].length > 1);
+
+    if (isEdit) 
+    {
+      _moduleData += '<div data-ng-hide="rssData[' + moduleCounter + '].state==0" data-ng-class="{emailModule:true, inactiveEmailModule:rssData[' + moduleCounter + '].state==2}">';
+      _moduleData += '<div class="emailModuleHandle" id="emailModuleHandle_' + moduleCounter + '"><i class="fa fa-arrows fa-3"></i></div>';
+      _moduleData += '<div class="emailModuleSelector" id="emailModuleSelector_' + moduleCounter + '"><i class="fa fa-cog fa-3"></i></div>';
+    }
+
+    var preBody = currentModule.preBody;
+
+    for (var varCounter = 0; varCounter < currentModule.bodyVariables.length; varCounter++) 
+    {
+      var variableName = currentModule.bodyVariables[varCounter].name;
+      preBody = preBody.replace("{{" + variableName + "}}", '{{rssData[' + moduleCounter + '].bodyData.' + variableName + '}}');
+      preBody = preBody.replace("{{" + variableName + "}}", '{{rssData[' + moduleCounter + '].bodyData.' + variableName + '}}');
+    }
+    _moduleData += preBody;
+
+    if (isEdit && isDraggable) 
+    {
+      _moduleData += '<div class="sortable1">';
+    }
+
+    //for(var  x = 0; (x < $scope.feedPositions[moduleCounter].length && x < $scope.feedNumberOfEntries.no); x++)
+    //console.log($scope.feedPositions[moduleCounter].length + '  '+ $scope.rssData[moduleCounter].numberOfEntries);
+    for (var x = 0; (x < $scope.feedPositions[moduleCounter].length && x < $scope.rssData[moduleCounter].numberOfEntries); x++) 
+    {
+      //console.log('feedPositions '+x);
+      var _tmpData = '';
+      var i = $scope.feedPositions[moduleCounter][x];
+      //console.log(i);
+
+      var entryState = $scope.rssData[moduleCounter].data[i].state;
+
+      if (entryState == 1 || isEdit) {
+        var _entryView = currentModule.views[0].source;
+        var childTagName = currentModule.views[0].childTagName;
+        var clickableTagNameOpen = 'div';
+        var clickableTagNameClose = 'div';
+
+        if ($scope.rssData != null) 
+        {
+          //console.log('rssData !=  null');
+          //console.log($scope.rssData.length);
+
+          if ($scope.rssData.length > 0 && $scope.rssData[moduleCounter] != null) 
+          {
+            //console.log('rssData['+moduleCounter+'] !=  null');
+            //console.log($scope.rssData[moduleCounter][i]._view);
+            for (var viewIter = 0; viewIter < currentModule.views.length; viewIter++)
+            {
+              //console.log(currentModule.views[viewIter]._id +' == '+ $scope.rssData[moduleCounter][i]._view._id)
+              if (currentModule.views[viewIter]._id == $scope.rssData[moduleCounter].data[i]._view._id) 
+              {
+                _entryView = currentModule.views[viewIter].source;
+                childTagName = currentModule.views[viewIter].childTagName;
+                // console.log('Set view '+viewIter);
+              }
+            }
+          }
+        }
+
+        //console.log($scope.rssData[moduleCounter][x]._view);
+        //var _entryView = currentModule.views[$scope.rssData[moduleCounter][i]._view.id].source;
+
+        _entryView = _entryView.replace(/\[\[title\]\]/g, '{{rssData[' + moduleCounter + '].data[' + i + '].title}}');
+        //_entryView = _entryView.replace("[[htmlContent\]\]/g", 'rssData['+moduleCounter+'].data['+i+'].htmlContent');
+        _entryView = _entryView.replace(/\[\[content\]\]/g, '{{rssData[' + moduleCounter + '].data[' + i + '].content}}');
+        _entryView = _entryView.replace(/\[\[image\]\]/g, '{{rssData[' + moduleCounter + '].data[' + i + '].image}}');
+        _entryView = _entryView.replace(/\[\[link\]\]/g, '{{rssData[' + moduleCounter + '].data[' + i + '].link}}');
+        _entryView = _entryView.replace(/\[\[enclosure\]\]/g, '{{rssData[' + moduleCounter + '].data[' + i + '].enclosure}}');
+        // _entryView = _entryView.replace("/\[\[contentSnippet\]\]/g", '{{rssData['+moduleCounter+'].data['+i+'].contentSnippet}}');
+
+
+        for (var varCounter = 0; varCounter < currentModule.variables.length; varCounter++) {
+          var variableName = currentModule.variables[varCounter].name;
+          _entryView = _entryView.replace(new RegExp("\{\{" + variableName + "\}\}", 'g'), '{{rssData[' + moduleCounter + '].data[' + i + '].data.' + variableName + '}}');
+          // _entryView = _entryView.replace("/\{\{"+variableName+"\}\}/g", '{{rssData['+moduleCounter+'].data['+i+'].data.'+variableName+'}}');
+        }
+
+        if (currentModule.type == 2) {
+          for (var xmlVarCounter = 0; xmlVarCounter < currentModule.xmlVariables.length; xmlVarCounter++) {
+            //var re = new RegExp("[["+currentModule.xmlVariables[xmlVarCounter].label+"]]");
+            _entryView = _entryView.replace("[[" + currentModule.xmlVariables[xmlVarCounter].label + "]]", '{{rssData[' + moduleCounter + '].data[' + i + '].' + currentModule.xmlVariables[xmlVarCounter].name + '}}');
+            _entryView = _entryView.replace("[[" + currentModule.xmlVariables[xmlVarCounter].label + "]]", '{{rssData[' + moduleCounter + '].data[' + i + '].' + currentModule.xmlVariables[xmlVarCounter].name + '}}');
+            _entryView = _entryView.replace("[[" + currentModule.xmlVariables[xmlVarCounter].label + "]]", '{{rssData[' + moduleCounter + '].data[' + i + '].' + currentModule.xmlVariables[xmlVarCounter].name + '}}');
+          }
+        }
+
+        //console.log(_entryView);
+        //console.log(childTagName);
+        if (childTagName == 'tr') 
+        {
+          clickableTagNameOpen = 'tr><td><table';
+          clickableTagNameClose = 'table></td></tr';
+        }
+
+        if (isEdit) 
+        {
+          if (isDraggable) 
+          {
+            //_moduleData += '<div  >';
+            _tmpData += '<' + clickableTagNameOpen + ' data-ng-class="{' + dndElementIdentifier + ':true, ' + clickableElementIdentifier + ':true, inactiveEmailEntry:rssData[' + moduleCounter + '].data[' + i + '].state==2}" id="' + dndElementIdentifier + '_' + moduleCounter + '_' + i + '" ng-hide="rssData[' + moduleCounter + '].data[' + i + '].state==0">';
+
+          }
+          else 
+          {
+            _tmpData += '<' + clickableTagNameOpen + ' class="' + clickableElementIdentifier + '" id="' + clickableElementIdentifier + '_' + moduleCounter + '_' + i + '">';
+          }
+        }
+
+
+        _tmpData += _entryView;
+
+        if (isEdit) 
+        {
+          _tmpData += '<div data-ng-class="{inactiveEmailModuleOverlay:rssData[' + moduleCounter + '].data[' + i + '].state==2}"><div data-ng-class="{inactiveEmailModuleOverlayColor:rssData[' + moduleCounter + '].data[' + i + '].state==2}"></div></div>';
+          if (isDraggable) 
+          {
+            _tmpData += '</' + clickableTagNameClose + '>';
+          }
+          else 
+          {
+            _tmpData += '</' + clickableTagNameClose + '>';
+          }
+
+          if (entryState == 0 || entryState == 2) 
+          {
+            noSkippedEntries++;
+          }
+        }
+      }
+      else 
+      {
+        noSkippedEntries++;
+      }
+
+      var _addAd = false;
+      var _adIndex = -1;
+      for (var adCounter = 0; adCounter < currentModule.ads.length; adCounter++) 
+      {
+        //console.log('CHECK AD _pos:'+currentModule.ads[adCounter].pos + ' == '+(parseInt(x)-parseInt(noSkippedEntries)+1));
+        if (currentModule.ads[adCounter].pos == (parseInt(x) - parseInt(noSkippedEntries) + 1) + '') 
+        {
+          //console.log('ADD FOUND');
+          if (entryState == 1) 
+          {
+            _adIndex = adCounter;
+            _addAd = true;
+          }
+        }
+      }
+
+      if (_addAd) 
+      {
+        _tmpData += _getAdView(isEdit, moduleCounter, _adIndex);
+      }
+
+      //console.log(_tmpData);
+
+      _moduleData += _tmpData;
+    }
+
+    var _addAd = false;
+    var _adIndex = -1;
+    var x = Math.min($scope.feedPositions[moduleCounter].length, $scope.rssData[moduleCounter].numberOfEntries);
+    //console.log(x);
+    for (var adCounter = 0; adCounter < currentModule.ads.length; adCounter++) {
+      //console.log('CHECK AD _pos:'+currentModule.ads[adCounter].pos+ ' >= '+(parseInt(x)-parseInt(noSkippedEntries)+1));
+      if (parseInt(currentModule.ads[adCounter].pos) >= (parseInt(x) - parseInt(noSkippedEntries) + 1) + '') {
+        //console.log('ADD FOUND1');
+
+        _adIndex = adCounter;
+
+        _moduleData += _getAdView(isEdit, moduleCounter, _adIndex);
+      }
+    }
+
+    if (isEdit && isDraggable) 
+    {
+      _moduleData += '</div>';  //div.sortable1
+    }
+
+    var postBody = currentModule.postBody;
+    for (var varCounter = 0; varCounter < currentModule.bodyVariables.length; varCounter++) {
+      var variableName = currentModule.bodyVariables[varCounter].name;
+      postBody = postBody.replace("{{" + variableName + "}}", '{{rssData[' + moduleCounter + '].bodyData.' + variableName + '}}');
+      postBody = postBody.replace("{{" + variableName + "}}", '{{rssData[' + moduleCounter + '].bodyData.' + variableName + '}}');
+    }
+    _moduleData += postBody;
+
+    if (isEdit) {
+      _moduleData += '<div data-ng-class="{inactiveEmailModuleOverlay:rssData[' + moduleCounter + '].state==2}"><div data-ng-class="{inactiveEmailModuleOverlayColor:rssData[' + moduleCounter + '].state==2}"></div></div>';
+      _moduleData += '</div>';  //div.emailModule
+    }
+
+    //console.log(currentModule.postModule);
+    if (currentModule.postModule) 
+    {
+      _moduleData += currentModule.postModule;
+    }
+
+    return _moduleData;
+};
+
 $scope.generateEmail = function (isEdit) {
   //console.log('generateEmail');
   var formatedEntries = '';
@@ -728,202 +858,27 @@ $scope.generateEmail = function (isEdit) {
     var moduleState = $scope.rssData[moduleCounter].state;
     //console.log( $scope.entity.modules[moduleCounter].childTagName);
 
-    if (moduleState == 1 || isEdit) {
-      var _moduleData = ''
-      var isDraggable = ($scope.feedPositions[moduleCounter].length > 1);
-
-      if (isEdit) {
-        _moduleData += '<div data-ng-hide="rssData[' + moduleCounter + '].state==0" data-ng-class="{emailModule:true, inactiveEmailModule:rssData[' + moduleCounter + '].state==2}">';
-        _moduleData += '<div class="emailModuleSelector" id="emailModuleSelector_' + moduleCounter + '"><i class="fa fa-cog fa-3"></i></div>';
-      }
-
-      var preBody = $scope.emailTemplates.modules[moduleCounter].preBody;
-
-      for (var varCounter = 0; varCounter < $scope.emailTemplates.modules[moduleCounter].bodyVariables.length; varCounter++) {
-        var variableName = $scope.emailTemplates.modules[moduleCounter].bodyVariables[varCounter].name;
-        preBody = preBody.replace("{{" + variableName + "}}", '{{rssData[' + moduleCounter + '].bodyData.' + variableName + '}}');
-        preBody = preBody.replace("{{" + variableName + "}}", '{{rssData[' + moduleCounter + '].bodyData.' + variableName + '}}');
-      }
-      _moduleData += preBody;
-
-      if (isEdit && isDraggable) {
-        _moduleData += '<div class="sortable1">';
-      }
-
-      //for(var  x = 0; (x < $scope.feedPositions[moduleCounter].length && x < $scope.feedNumberOfEntries.no); x++)
-      //console.log($scope.feedPositions[moduleCounter].length + '  '+ $scope.rssData[moduleCounter].numberOfEntries);
-      for (var x = 0; (x < $scope.feedPositions[moduleCounter].length && x < $scope.rssData[moduleCounter].numberOfEntries); x++) {
-        //console.log('feedPositions '+x);
-        var _tmpData = '';
-        var i = $scope.feedPositions[moduleCounter][x];
-        //console.log(i);
-
-        var entryState = $scope.rssData[moduleCounter].data[i].state;
-
-        if (entryState == 1 || isEdit) {
-          var _entryView = $scope.emailTemplates.modules[moduleCounter].views[0].source;
-          var childTagName = $scope.emailTemplates.modules[moduleCounter].views[0].childTagName;
-          var clickableTagNameOpen = 'div';
-          var clickableTagNameClose = 'div';
-
-          if ($scope.rssData != null) {
-            //console.log('rssData !=  null');
-            //console.log($scope.rssData.length);
-
-            if ($scope.rssData.length > 0 && $scope.rssData[moduleCounter] != null) {
-              //console.log('rssData['+moduleCounter+'] !=  null');
-              //console.log($scope.rssData[moduleCounter][i]._view);
-              for (var viewIter = 0; viewIter < $scope.emailTemplates.modules[moduleCounter].views.length; viewIter++) {
-                //console.log($scope.emailTemplates.modules[moduleCounter].views[viewIter]._id +' == '+ $scope.rssData[moduleCounter][i]._view._id)
-                if ($scope.emailTemplates.modules[moduleCounter].views[viewIter]._id == $scope.rssData[moduleCounter].data[i]._view._id) {
-                  _entryView = $scope.emailTemplates.modules[moduleCounter].views[viewIter].source;
-                  childTagName = $scope.emailTemplates.modules[moduleCounter].views[viewIter].childTagName;
-                  // console.log('Set view '+viewIter);
-                }
-              }
-            }
-          }
-
-          //console.log($scope.rssData[moduleCounter][x]._view);
-          //var _entryView = $scope.emailTemplates.modules[moduleCounter].views[$scope.rssData[moduleCounter][i]._view.id].source;
-
-          _entryView = _entryView.replace(/\[\[title\]\]/g, '{{rssData[' + moduleCounter + '].data[' + i + '].title}}');
-          //_entryView = _entryView.replace("[[htmlContent\]\]/g", 'rssData['+moduleCounter+'].data['+i+'].htmlContent');
-          _entryView = _entryView.replace(/\[\[content\]\]/g, '{{rssData[' + moduleCounter + '].data[' + i + '].content}}');
-          _entryView = _entryView.replace(/\[\[image\]\]/g, '{{rssData[' + moduleCounter + '].data[' + i + '].image}}');
-          _entryView = _entryView.replace(/\[\[link\]\]/g, '{{rssData[' + moduleCounter + '].data[' + i + '].link}}');
-          _entryView = _entryView.replace(/\[\[enclosure\]\]/g, '{{rssData[' + moduleCounter + '].data[' + i + '].enclosure}}');
-          // _entryView = _entryView.replace("/\[\[contentSnippet\]\]/g", '{{rssData['+moduleCounter+'].data['+i+'].contentSnippet}}');
-
-
-          for (var varCounter = 0; varCounter < $scope.emailTemplates.modules[moduleCounter].variables.length; varCounter++) {
-            var variableName = $scope.emailTemplates.modules[moduleCounter].variables[varCounter].name;
-            _entryView = _entryView.replace(new RegExp("\{\{" + variableName + "\}\}", 'g'), '{{rssData[' + moduleCounter + '].data[' + i + '].data.' + variableName + '}}');
-            // _entryView = _entryView.replace("/\{\{"+variableName+"\}\}/g", '{{rssData['+moduleCounter+'].data['+i+'].data.'+variableName+'}}');
-          }
-
-          if ($scope.emailTemplates.modules[moduleCounter].type == 2) {
-            for (var xmlVarCounter = 0; xmlVarCounter < $scope.emailTemplates.modules[moduleCounter].xmlVariables.length; xmlVarCounter++) {
-              //var re = new RegExp("[["+$scope.emailTemplates.modules[moduleCounter].xmlVariables[xmlVarCounter].label+"]]");
-              _entryView = _entryView.replace("[[" + $scope.emailTemplates.modules[moduleCounter].xmlVariables[xmlVarCounter].label + "]]", '{{rssData[' + moduleCounter + '].data[' + i + '].' + $scope.emailTemplates.modules[moduleCounter].xmlVariables[xmlVarCounter].name + '}}');
-              _entryView = _entryView.replace("[[" + $scope.emailTemplates.modules[moduleCounter].xmlVariables[xmlVarCounter].label + "]]", '{{rssData[' + moduleCounter + '].data[' + i + '].' + $scope.emailTemplates.modules[moduleCounter].xmlVariables[xmlVarCounter].name + '}}');
-              _entryView = _entryView.replace("[[" + $scope.emailTemplates.modules[moduleCounter].xmlVariables[xmlVarCounter].label + "]]", '{{rssData[' + moduleCounter + '].data[' + i + '].' + $scope.emailTemplates.modules[moduleCounter].xmlVariables[xmlVarCounter].name + '}}');
-            }
-          }
-
-          //console.log(_entryView);
-          //console.log(childTagName);
-          if (childTagName == 'tr') {
-            clickableTagNameOpen = 'tr><td><table';
-            clickableTagNameClose = 'table></td></tr';
-          }
-
-          if (isEdit) {
-            if (isDraggable) {
-              //_moduleData += '<div  >';
-              _tmpData += '<' + clickableTagNameOpen + ' data-ng-class="{' + dndElementIdentifier + ':true, ' + clickableElementIdentifier + ':true, inactiveEmailEntry:rssData[' + moduleCounter + '].data[' + i + '].state==2}" id="' + dndElementIdentifier + '_' + moduleCounter + '_' + i + '" ng-hide="rssData[' + moduleCounter + '].data[' + i + '].state==0">';
-
-            }
-            else {
-              _tmpData += '<' + clickableTagNameOpen + ' class="' + clickableElementIdentifier + '" id="' + clickableElementIdentifier + '_' + moduleCounter + '_' + i + '">';
-            }
-          }
-
-
-          _tmpData += _entryView;
-
-          if (isEdit) {
-            _tmpData += '<div data-ng-class="{inactiveEmailModuleOverlay:rssData[' + moduleCounter + '].data[' + i + '].state==2}"><div data-ng-class="{inactiveEmailModuleOverlayColor:rssData[' + moduleCounter + '].data[' + i + '].state==2}"></div></div>';
-            if (isDraggable) {
-              _tmpData += '</' + clickableTagNameClose + '>';
-            }
-            else {
-              _tmpData += '</' + clickableTagNameClose + '>';
-            }
-
-            if (entryState == 0 || entryState == 2) {
-              noSkippedEntries++;
-            }
-          }
-        }
-        else {
-          noSkippedEntries++;
-        }
-
-        var _addAd = false;
-        var _adIndex = -1;
-        for (var adCounter = 0; adCounter < $scope.emailTemplates.modules[moduleCounter].ads.length; adCounter++) {
-          //console.log('CHECK AD _pos:'+$scope.emailTemplates.modules[moduleCounter].ads[adCounter].pos + ' == '+(parseInt(x)-parseInt(noSkippedEntries)+1));
-          if ($scope.emailTemplates.modules[moduleCounter].ads[adCounter].pos == (parseInt(x) - parseInt(noSkippedEntries) + 1) + '') {
-            //console.log('ADD FOUND');
-            if (entryState == 1) {
-              _adIndex = adCounter;
-              _addAd = true;
-            }
-          }
-        }
-
-        if (_addAd) {
-          _tmpData += _getAdView(isEdit, moduleCounter, _adIndex);
-        }
-
-        //console.log(_tmpData);
-
-        _moduleData += _tmpData;
-      }
-
-      var _addAd = false;
-      var _adIndex = -1;
-      var x = Math.min($scope.feedPositions[moduleCounter].length, $scope.rssData[moduleCounter].numberOfEntries);
-      //console.log(x);
-      for (var adCounter = 0; adCounter < $scope.emailTemplates.modules[moduleCounter].ads.length; adCounter++) {
-        //console.log('CHECK AD _pos:'+$scope.emailTemplates.modules[moduleCounter].ads[adCounter].pos+ ' >= '+(parseInt(x)-parseInt(noSkippedEntries)+1));
-        if (parseInt($scope.emailTemplates.modules[moduleCounter].ads[adCounter].pos) >= (parseInt(x) - parseInt(noSkippedEntries) + 1) + '') {
-          //console.log('ADD FOUND1');
-
-          _adIndex = adCounter;
-
-          _moduleData += _getAdView(isEdit, moduleCounter, _adIndex);
-        }
-      }
-
-      if (isEdit && isDraggable) {
-        _moduleData += '</div>';  //div.sortable1
-      }
-
-
-      var postBody = $scope.emailTemplates.modules[moduleCounter].postBody;
-      for (var varCounter = 0; varCounter < $scope.emailTemplates.modules[moduleCounter].bodyVariables.length; varCounter++) {
-        var variableName = $scope.emailTemplates.modules[moduleCounter].bodyVariables[varCounter].name;
-        postBody = postBody.replace("{{" + variableName + "}}", '{{rssData[' + moduleCounter + '].bodyData.' + variableName + '}}');
-        postBody = postBody.replace("{{" + variableName + "}}", '{{rssData[' + moduleCounter + '].bodyData.' + variableName + '}}');
-      }
-      _moduleData += postBody;
-
-      if (isEdit) {
-        _moduleData += '<div data-ng-class="{inactiveEmailModuleOverlay:rssData[' + moduleCounter + '].state==2}"><div data-ng-class="{inactiveEmailModuleOverlayColor:rssData[' + moduleCounter + '].state==2}"></div></div>';
-        _moduleData += '</div>';  //div.emailModule
-      }
-
-      //console.log($scope.emailTemplates.modules[moduleCounter].postModule);
-      if ($scope.emailTemplates.modules[moduleCounter].postModule) {
-        _moduleData += $scope.emailTemplates.modules[moduleCounter].postModule;
-      }
-
-      if (isEdit) {
+    if (moduleState == 1 || isEdit) 
+    {
+      var _moduleData = $scope.generateModule(isEdit, $scope.emailTemplates.modules[moduleCounter], moduleCounter);
+      
+      if (isEdit) 
+      {
         formatedEntries += _moduleData;
       }
-      else {
+      else 
+      {
         formatedEntries += $scope.compileEmailAndData(_moduleData);
       }
-    }
+    } //if (moduleState == 1 || isEdit) 
   }
 
   //console.log($scope.emailTemplates.header + formatedEntries + $scope.emailTemplates.footer);
   //console.log($scope.adData);
 
   //console.log('generateEmail done');
-  if (isEdit) {
+  if (isEdit) 
+  {
     formatedEntries = '<div id="modulesContainer">' + formatedEntries + '</div>';
   }
   return $scope.emailTemplates.header + formatedEntries + $scope.emailTemplates.footer;
@@ -959,8 +914,8 @@ function _getAdView(isEdit, moduleCounter, _adIndex) {
   }
 }
 
-
-$scope.initAfterLoad = function () {
+$scope.initAfterLoad = function () 
+{
   console.log('init');
 
   var defer = $q.defer();
@@ -968,13 +923,15 @@ $scope.initAfterLoad = function () {
 
   var moduleCounter = 0;
   console.log($scope.entity.modules);
-  angular.forEach($scope.entity.modules, function (_module) {
+  angular.forEach($scope.entity.modules, function (_module) 
+  {
     console.log('foreach ' + moduleCounter + ' module type: ' + _module.type);
     $scope.adData[moduleCounter] = _module.ads;
 
     $scope.loading = false;
 
-    if (_module.type == "1") {
+    if (_module.type == "1") 
+    {
       /*
       loadRssFeed(_module.defaultURL, moduleCounter, function()
       {
@@ -982,15 +939,20 @@ $scope.initAfterLoad = function () {
       });*/
       promises.push(loadRssFeed(_module.defaultURL, moduleCounter));
     }
-    else {
-      if (_module.type == "2") {
+    else 
+    {
+      if (_module.type == "2") 
+      {
         promises.push($scope.loadXMLModule(_module.defaultURL, moduleCounter));
       }
-      else {
-        if (_module.type == "3") {
+      else 
+      {
+        if (_module.type == "3") 
+        {
           //promises.push($scope.loadManualModule(_module, moduleCounter, 0, _module.defaultNumberOfEntries));
         }
-        else {
+        else 
+        {
           console.error('unkown module type: ' + _module.type);
         }
       }
@@ -1007,87 +969,81 @@ $scope.initAfterLoad = function () {
   });
 };
 
-$scope.init = function () {
+$scope.init = function () 
+{
   console.log('init');
-  /*
-  for(var moduleCounter = 0; moduleCounter < entity.modules.length; moduleCounter++)
-  {
-    console.log('module '+moduleCounter);
-    var _module = entity.modules[moduleCounter];
-    if(_module.type == "1")
-    {
-      $scope.loadRSSFeed(moduleCounter);
-    }
-    else
-    {
-      $scope.feedPositions[moduleCounter] = [];
-      $scope.feedPositions[moduleCounter][0] = 1;
-      $scope.your_variable  = $scope.generateEmail(true);
-      $scope.api.initSortable();
-      $scope.firstInit = false;
-      $scope.loading = false;
-    }
-  }*/
 
   var defer = $q.defer();
   var promises = [];
 
   var moduleCounter = 0;
   //console.log($scope.entity.modules);
-  angular.forEach($scope.entity.modules, function (_module) {
-    //console.log('foreach '+moduleCounter+ ' module type: '+_module.type);
-    $scope.adData[moduleCounter] = _module.ads;
+  
+  for(var i = 0; i < $scope.entity.modules.length; i++)
+  {
+    promises.push(initModule($scope.entity.modules[i], i));
+  }
 
-    $scope.loading = false;
-
-    $scope.feedPositions[moduleCounter] = [];
-    $scope.skipedEntries[moduleCounter] = {};
-
-    $scope.rssData[moduleCounter] = [];
-    $scope.rssData[moduleCounter].state = 1; //'active'; 
-    $scope.rssData[moduleCounter].numberOfEntries = $scope.emailTemplates.modules[moduleCounter].defaultNumberOfEntries;
-    //console.log('defaultNumberOfEntries: '+$scope.emailTemplates.modules[moduleCounter].defaultNumberOfEntries);
-    $scope.rssData[moduleCounter].data = [];
-
-    $scope.rssData[moduleCounter].bodyData = {};
-    $scope.rssData[moduleCounter].bodyVariables = {};
-    for (var x = 0; x < $scope.emailTemplates.modules[moduleCounter].bodyVariables.length; x++) {
-      $scope.rssData[moduleCounter].bodyData[$scope.emailTemplates.modules[moduleCounter].bodyVariables[x].name] = $scope.emailTemplates.modules[moduleCounter].bodyVariables[x].defaultValue;
-      $scope.rssData[moduleCounter].bodyVariables[$scope.emailTemplates.modules[moduleCounter].bodyVariables[x].name] = $scope.emailTemplates.modules[moduleCounter].bodyVariables[x];
-    }
-
-    if (_module.type == "1") {
-      /*
-      loadRssFeed(_module.defaultURL, moduleCounter, function()
-      {
-        promises.push($scope.loadRSSModule(_module, moduleCounter));
-      });*/
-      promises.push($scope.loadRSSModuleWithFeed(_module, moduleCounter, 0, _module.defaultNumberOfEntries));
-    }
-    else {
-      if (_module.type == "2") {
-        promises.push($scope.loadXMLModuleWithFeed(_module, moduleCounter, 0, _module.defaultNumberOfEntries));
-        //promises.push($scope.loadXMLModule(_module, moduleCounter));
-      }
-      else {
-        if (_module.type == "3") {
-          promises.push($scope.loadManualModule(_module, moduleCounter, 0, _module.defaultNumberOfEntries));
-        }
-        else {
-          console.error('unkown module type: ' + _module.type);
-        }
-      }
-    }
-    moduleCounter++;
-  });
-
-  $q.all(promises).then(function () {
+  $q.all(promises).then(function () 
+  {
     console.log('ALL PROMISES DONE');
     $scope.your_variable = $scope.generateEmail(true);
     $scope.api.initSortable();
     $scope.firstInit = false;
     $scope.loading = false;
   });
+};
+
+function initModule(_module, moduleCounter) 
+{
+  var promise;
+  //console.log('foreach '+moduleCounter+ ' module type: '+_module.type);
+  $scope.adData[moduleCounter] = _module.ads;
+
+  $scope.loading = false;
+
+  $scope.feedPositions[moduleCounter] = [];
+  $scope.skipedEntries[moduleCounter] = {};
+
+  $scope.rssData[moduleCounter] = [];
+  $scope.rssData[moduleCounter].state = 1; //'active'; 
+  $scope.rssData[moduleCounter].numberOfEntries = $scope.emailTemplates.modules[moduleCounter].defaultNumberOfEntries;
+  //console.log('defaultNumberOfEntries: '+$scope.emailTemplates.modules[moduleCounter].defaultNumberOfEntries);
+  $scope.rssData[moduleCounter].data = [];
+
+  $scope.rssData[moduleCounter].bodyData = {};
+  $scope.rssData[moduleCounter].bodyVariables = {};
+  for (var x = 0; x < $scope.emailTemplates.modules[moduleCounter].bodyVariables.length; x++) 
+  {
+    $scope.rssData[moduleCounter].bodyData[$scope.emailTemplates.modules[moduleCounter].bodyVariables[x].name] = $scope.emailTemplates.modules[moduleCounter].bodyVariables[x].defaultValue;
+    $scope.rssData[moduleCounter].bodyVariables[$scope.emailTemplates.modules[moduleCounter].bodyVariables[x].name] = $scope.emailTemplates.modules[moduleCounter].bodyVariables[x];
+  }
+
+  if (_module.type == "1") 
+  {
+    promise = ($scope.loadRSSModuleWithFeed(_module, moduleCounter, 0, _module.defaultNumberOfEntries));
+  }
+  else 
+  {
+    if (_module.type == "2") 
+    {
+      promise = ($scope.loadXMLModuleWithFeed(_module, moduleCounter, 0, _module.defaultNumberOfEntries));
+    }
+    else 
+    {
+      if (_module.type == "3") 
+      {
+        promise = ($scope.loadManualModule(_module, moduleCounter, 0, _module.defaultNumberOfEntries));
+      }
+      else 
+      {
+        console.error('unkown module type: ' + _module.type);
+      }
+    }
+  }
+  moduleCounter++;
+
+  return promise;
 };
 
 $scope.checkAd2 = function (moduleCounter, index) {

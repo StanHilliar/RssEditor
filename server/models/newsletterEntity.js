@@ -85,6 +85,11 @@ var NewsletterEntitySchema = new Schema(
     type: Array,
     default: []
   },
+  dropzoneModules:
+  {
+    type: Array,
+    default: []
+  },
   eloquaFolder:
   {
     type: String,
@@ -131,15 +136,12 @@ var NewsletterEntitySchema = new Schema(
 
 NewsletterEntitySchema.pre('save', function(next)
 {
-
   var now = new Date();
 
   this.updatedAt = now;
   if ( !this.createdAt ) 
   {
-
       this.createdAt = now;
-
   }
   
   next();

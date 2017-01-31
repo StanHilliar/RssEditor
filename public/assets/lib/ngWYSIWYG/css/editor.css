@@ -44,3 +44,18 @@
 {
     display: none;
 }
+
+.emailModuleDrag
+{
+    /*position: relative;*/
+	/*z-index: 10;*/
+	border: 1px solid #ff0000;
+	min-height: 80px;
+	background: repeating-linear-gradient(
+	  -45deg,
+	  #ddd,
+	  #ddd 10px,
+	  #eee 10px,
+	  #eee 20px
+	);
+}
