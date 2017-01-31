@@ -57,12 +57,12 @@ module.exports = function(amazingEloqua) {
          */
         getSegments: function(req, res, next) 
         {
-            console.dir('segments ('+req.params.id+')');
+            // console.dir('segments ('+req.params.id+')');
             amazingEloqua.getSegmentsByFolderId(req.params.id, '1', '300', 'minimal', function(err, response)
             {
-              console.log('getSegmentsByFolderId callback');
-              console.log(err);
-              console.log(response);
+              // console.log('getSegmentsByFolderId callback');
+              // console.log(err);
+              // console.log(response);
               if(err != null)
               {
                 res.status(400).json(err);
@@ -82,13 +82,13 @@ module.exports = function(amazingEloqua) {
         },
         getEmailgroups: function(req, res, next) 
         { 
-            console.dir('emailgroups');
+            // console.dir('emailgroups');
       
             amazingEloqua.searchEmailGroups('*', '1', '300', 'complete', function(err, response)
             {
-              console.log('searchEmailGroups callback');
-              console.log(err);
-              console.log(response);
+              // console.log('searchEmailGroups callback');
+              // console.log(err);
+              // console.log(response);
 
               if(err != null)
               {
@@ -107,10 +107,37 @@ module.exports = function(amazingEloqua) {
               }
             });   
         },
+        getEmailEncoding: function(req, res, next) 
+        { 
+            console.dir('getEmailEncoding');
+      
+            amazingEloqua.getEmailEncoding('minimal', function(err, response)
+            {
+              console.log('getEmailEncoding callback');
+              console.log(err);
+              console.log(response);
+
+              if(err != null)
+              {
+                res.status(400).json(err);
+              }
+              else
+              {
+                if(response != null)
+                {
+                  res.jsonp(response);
+                }
+                else
+                {
+                   res.status(400).json('response is null');
+                }
+              }
+            });   
+        },
         createEmail: function(req, res, next) 
         {
           console.log('create');
-          amazingEloqua.createHTMLEmail(req.body.name, req.body.eloquaFolder, req.body.eloquaFooter, req.body.eloquaHeader, req.body.eloquaEmailGroup, req.body.subject, req.body.html, req.body.fromAddress, req.body.senderName, req.body.bounceBackAddress, req.body.replyToName, req.body.replyToEmail,  function(err, response)
+          amazingEloqua.createHTMLEmail(req.body.name, req.body.eloquaFolder, req.body.eloquaFooter, req.body.eloquaHeader, req.body.eloquaEmailGroup, req.body.eloquaEmailEncoding, req.body.subject, req.body.html, req.body.fromAddress, req.body.senderName, req.body.bounceBackAddress, req.body.replyToName, req.body.replyToEmail,  function(err, response)
           {
             console.log('create eloquaEmail callback');
             if(err)
@@ -159,7 +186,7 @@ module.exports = function(amazingEloqua) {
           //console.log(req.body.replyToName);
           //console.log(req.body.replyToEmail);
           
-          amazingEloqua.updateHTMLEmail(req.params.eloquaEmailId, req.body.name, req.body.eloquaFolder, req.body.eloquaFooter, req.body.eloquaHeader, req.body.eloquaEmailGroup, req.body.subject, req.body.html, req.body.fromAddress, req.body.senderName, req.body.bounceBackAddress, req.body.replyToName, req.body.replyToEmail, function(err, response)
+          amazingEloqua.updateHTMLEmail(req.params.eloquaEmailId, req.body.name, req.body.eloquaFolder, req.body.eloquaFooter, req.body.eloquaHeader, req.body.eloquaEmailGroup, req.body.eloquaEmailEncoding, req.body.subject, req.body.html, req.body.fromAddress, req.body.senderName, req.body.bounceBackAddress, req.body.replyToName, req.body.replyToEmail, function(err, response)
           {
             console.log('updateHTMLEmail callback');
             console.log(err);
