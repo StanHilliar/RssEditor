@@ -155,7 +155,7 @@
 			</button>
 		</div>
 	</div>
-	<div class="row rowSpaced" data-ng-repeat="module in entity.modules" ng-if="!module.type||module.type=='MODULE'">	
+	<div class="row rowSpaced" data-ng-repeat="module in entity.modules" ng-if="!module.placeholderType||module.placeholderType=='MODULE'">	
 		<div class="col-md-8" >	
 			<label for="module_$index">Module {{module.moduleIdentifier}}</label>
 			<select class="form-control" ng-model="module._id" ng-options="element._id as element.name for element in availableModules" name="module_$index"></select>

@@ -95,7 +95,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
         var _template = $scope.entity.header;
         for(var i = 0; i < $scope.entity.modules.length; i++)
         {
-          if($scope.entity.modules[i].type == 'DROPZONE')
+          if($scope.entity.modules[i].placeholderType == 'DROPZONE')
           {
             _template += '{{'+$scope.entity.modules[i].moduleIdentifier+'}}';
             $scope.hasDropzone = true;
@@ -234,18 +234,18 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
 
         
           var moduleIdentifier;
-          var type;
+          var placeholderType;
 
           if(match[0].indexOf('{{MODULE') != -1)
           {
             moduleIdentifier = match[0].substr(9);
-            type = 'MODULE';
+            placeholderType = 'MODULE';
           }
 
           if(match[0].indexOf('{{DROPZONE')!= -1)
           {
             moduleIdentifier = match[0].substr(2);
-            type = 'DROPZONE';
+            placeholderType = 'DROPZONE';
             $scope.hasDropzone
           }
           
@@ -266,12 +266,12 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
                 _positionAlreadyExisits = true;
 
                 $scope.entity.modules[i].templatePos = match.index;
-                if(type == 'MODULE')
+                if(placeholderType == 'MODULE')
                 {
                   $scope.entity.modules[i].templatePosEnd = match.index+moduleIdentifier.length+11;
                 }
 
-                if(type == 'DROPZONE')
+                if(placeholderType == 'DROPZONE')
                 {
                   $scope.entity.modules[i].templatePosEnd = match.index+moduleIdentifier.length+4;
                 }
@@ -283,12 +283,12 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
             if(!_positionAlreadyExisits)
             {
                 var templatePosEnd;
-                if(type == 'MODULE')
+                if(placeholderType == 'MODULE')
                 {
                   templatePosEnd = match.index+ moduleIdentifier.length+11;
                 }
 
-                if(type == 'DROPZONE')
+                if(placeholderType == 'DROPZONE')
                 {
                   templatePosEnd = match.index+ moduleIdentifier.length+4;
                 }
@@ -299,7 +299,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
                   templatePos: match.index,
                   templatePosEnd: templatePosEnd,
                   _id : '',
-                  type: type
+                  placeholderType: placeholderType
                 });
             } 
           }
@@ -363,7 +363,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
 
       for(var i = 0; i < $scope.entity.modules.length; i++)
       {
-        if($scope.entity.modules[i].type == 'DROPZONE')
+        if($scope.entity.modules[i].placeholderType == 'DROPZONE')
         {
           $scope.entity.modules[i]._id = $scope.entity.modules[i].moduleIdentifier;
         }

@@ -3,23 +3,18 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-  NewsletterEntity = mongoose.model('NewsletterEntity'),
-  emailModules = require('./emailModule')(),
-  async = require('async'),
-  config = require('meanio').loadConfig(),
-  crypto = require('crypto'),
-  _ = require('lodash'),
-  jwt = require('jsonwebtoken'); //https://npmjs.org/package/node-jsonwebtoken
-
-
+var mongoose            = require('mongoose');
+var NewsletterEntity    = mongoose.model('NewsletterEntity');
+var emailModules        = require('./emailModule')();
+var async               = require('async');
+var config              = require('meanio').loadConfig();
+var _                   = require('lodash');
 
 module.exports = function(circles) {
 
-
     function getEmailModuleByArrayOfIds(modules, cb)
     {
-        console.log('getEmailModuleByArrayOfIds');
+        console.log('getEmailModuleByArrayOfIds--------------------');
         var cache = [];
         async.eachSeries(modules, function (module, callback) 
         {
@@ -56,8 +51,7 @@ module.exports = function(circles) {
                             {
                                 console.log(module._id)
                                 //cache[module._module._id] = emailModule;
-                                cache[module._id]       = _.extend(emailModule._doc, module);
-                                cache[module._id].type  = emailModule._doc.type;
+                                cache[module._id]       = emailModule._doc;
                                 return callback(null, cache[module._id]);
                             }
                             else
@@ -197,16 +191,18 @@ module.exports = function(circles) {
                     getEmailModuleByArrayOfIds(myDropzoneModules, 
                     function(err, dropzoneModules)
                     {
-                        console.log(dropzoneModules);
-                        newsletterEntity.modules = [];
+                        // console.log(dropzoneModules);
+                        // newsletterEntity.modules = [];
 
-                        for(var key in modules)
+                        console.log('modules:');
+                        for(var i = 0; i < newsletterEntity.modules.length; i++)
                         {
-                            if(modules.hasOwnProperty(key))
-                            {
-                                newsletterEntity.modules.push(modules[key]);
-                            }
+                            newsletterEntity.modules[i]._id
+                            // newsletterEntity.modules[i].type
+                            _.extend(newsletterEntity.modules[i], modules[newsletterEntity.modules[i]._id]);
+                        //  cache[module._id]       = _.extend(emailModule._doc, module);
                         }
+                       
 
                         newsletterEntity.dropzoneModules = [];
 

@@ -337,7 +337,8 @@
 									console.log(evt);
 									console.log(evt.oldIndex);
 									console.log(evt.newIndex);
-									scope.api.scope.onAddModuleToEmail(myIFrame.find(evt.item).attr('data-module-id'), evt.newIndex);
+									console.log('data-dropzone-id:'+elInner.getAttribute('data-dropzone-id'));
+									scope.api.scope.onAddModuleToEmail(myIFrame.find(evt.item).attr('data-module-id'), elInner.getAttribute('data-dropzone-id'), evt.newIndex);
 								}
 							});
 
@@ -393,7 +394,6 @@
 										alreadyInNewOrder[order[i]] = true;
 									}
 								}
-
 
 								for (var x = 0; x < newOrder.length; x++) {
 									console.log('x:' + x);

@@ -4,6 +4,19 @@
 	margin: 20px;
 }
 
+#modulesContainer:empty
+{
+	border: 1px solid #000;
+	min-height: 80px;
+	background: repeating-linear-gradient(
+	  -45deg,
+	  #ddd,
+	  #ddd 10px,
+	  #eee 10px,
+	  #eee 20px
+	);
+}
+
 .dndelement
 {
 	border: 1px dashed grey;
