@@ -80,14 +80,13 @@ module.exports = function(circles) {
                 return res.status(200).json(savedNewsletterEntity);
             });
         },
-      
-
         /**
          * Find user by id
          */
         get: function(req, res) 
         {
-            NewsletterEntity.findOne({
+            NewsletterEntity.findOne(
+            {
                 _id: req.params.entityId
             }).exec(function(err, newsletterEntity) 
             {
@@ -96,23 +95,24 @@ module.exports = function(circles) {
                     console.error('error1');
                     return res.status(500).send(err);
                 }
+
                 if (!newsletterEntity)
                 {
                     console.error('error2');
-                    return res.status(500).send('Failed to load newsletterEntity ' + id);
+                    return res.status(500).send('Failed to load newsletterEntity ' + req.params.entityId);
                 }    
 
-               
                 res.jsonp([newsletterEntity]);
             });
-        },        /**
+        },       
+        /**
          * Find user by id
          */
         getfull: function(req, res) 
         {
             NewsletterEntity.findOne({
                 _id: req.params.entityId
-            }).exec(function(err, newsletterEntity) 
+            }).exec(function(err, newsletterEntity)  
             {
                 if (err) 
                 {
@@ -329,4 +329,3 @@ module.exports = function(circles) {
 
 
 }
-

@@ -141,9 +141,7 @@ NewsletterEntitySchema.pre('save', function(next)
   this.updatedAt = now;
   if ( !this.createdAt ) 
   {
-
       this.createdAt = now;
-
   }
   
   next();
