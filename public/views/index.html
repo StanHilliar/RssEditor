@@ -159,24 +159,24 @@
 				</div>
 				<div data-ng-show="!isEmailModuleSelected && !showSendingOptions && isEditMode">
 					<label for="currentEntryView" class="dark">View</label>
-					<select class="form-control" ng-model="rssData[currentEntry.moduleId].data[currentEntry.id]._view" ng-options="item as item.name for item in currentViews track by item._id" name="currentEntryView" ng-change="updateViewforEntry()">
+					<select class="form-control" ng-model="getCurrentEntryData()._view" ng-options="item as item.name for item in currentViews track by item._id" name="currentEntryView" ng-change="updateViewforEntry()">
 					</select> 
 
 					<div data-ng-show="entity.modules[currentEntry.moduleId].type == '1'">
 						<label for="currentEntryTitle" class="dark">Title</label>
-						<input type="text" class="form-control" placeholder="" ng-model="rssData[currentEntry.moduleId].data[currentEntry.id].title" name="currentEntryTitle">	 
+						<input type="text" class="form-control" placeholder="" ng-model="getCurrentEntryData().title" name="currentEntryTitle">	 
 
 						<label for="currentEntryLink" class="dark">Link</label>
-						<input type="text" class="form-control" placeholder="" ng-model="rssData[currentEntry.moduleId].data[currentEntry.id].link" name="currentEntryLink">
+						<input type="text" class="form-control" placeholder="" ng-model="getCurrentEntryData().link" name="currentEntryLink">
 
 						<label for="currentEntryImage" class="dark">Image</label>
-						<input type="text" class="form-control" placeholder="" ng-model="rssData[currentEntry.moduleId].data[currentEntry.id].image" name="currentEntryImage">
+						<input type="text" class="form-control" placeholder="" ng-model="getCurrentEntryData().image" name="currentEntryImage">
 
 						<label for="currentEntryContent" class="dark">Content</label>
-						<textarea  placeholder="Content" rows="4" class="form-control" id="" name="currentEntryContent"  ng-model="rssData[currentEntry.moduleId].data[currentEntry.id].content" ></textarea>
+						<textarea  placeholder="Content" rows="4" class="form-control" id="" name="currentEntryContent"  ng-model="getCurrentEntryData().content" ></textarea>
 							<!--
 						<label for="currentEntryTitleContentSnippet">ContentSnippet</label>
-						<textarea  placeholder="ContentSnippet" rows="4" class="form-control" id="" name="currentEntryTitleContentSnippet"  ng-model="rssData[currentEntry.moduleId].data[currentEntry.id].contentSnippet" ></textarea>
+						<textarea  placeholder="ContentSnippet" rows="4" class="form-control" id="" name="currentEntryTitleContentSnippet"  ng-model="getCurrentEntryData().contentSnippet" ></textarea>
 						<br/>
 					
 						<div data-ng-repeat="var in emailTemplates.modules[currentEntry.moduleId].variables">
@@ -187,12 +187,12 @@
 				
 					<div data-ng-repeat="xmlVar in emailTemplates.modules[currentEntry.moduleId].xmlVariables">
 						<label for="" class="dark">{{xmlVar.label}}</label>
-						<input type="text" class="form-control" placeholder="" ng-model="rssData[currentEntry.moduleId].data[currentEntry.id][xmlVar.name]" name="">					
+						<input type="text" class="form-control" placeholder="" ng-model="getCurrentEntryData()[xmlVar.name]" name="">					
 					</div>
 
-					<div data-ng-repeat="(key, value) in rssData[currentEntry.moduleId].data[currentEntry.id].data">
-						<label for="" class="dark">{{rssData[currentEntry.moduleId].data[currentEntry.id].variables[key].label}}</label>
-						<input type="text" class="form-control" placeholder="" ng-model="rssData[currentEntry.moduleId].data[currentEntry.id].data[key]" name="">					
+					<div data-ng-repeat="(key, value) in getCurrentEntryData().data">
+						<label for="" class="dark">{{getCurrentEntryData().variables[key].label}}</label>
+						<input type="text" class="form-control" placeholder="" ng-model="getCurrentEntryData().data[key]" name="">					
 					</div>
 
 					<!--<button type="button" class="btn btn-primary" ng-click="deleteEntry()">Delete</button>-->
@@ -201,9 +201,9 @@
 						<div class="col-xs-12 col-md-12">
 							<br/>
 							<div class="btn-group">
-								<label class="btn btn-primary" ng-model="rssData[currentEntry.moduleId].data[currentEntry.id].state" uib-btn-radio="1" ng-click="updateEntryState()">active</label>
-								<label class="btn btn-primary" ng-model="rssData[currentEntry.moduleId].data[currentEntry.id].state" uib-btn-radio="2" ng-click="updateEntryState()">inActive</label>
-								<label class="btn btn-primary" ng-model="rssData[currentEntry.moduleId].data[currentEntry.id].state" uib-btn-radio="0" ng-click="updateEntryState()">deleted</label>
+								<label class="btn btn-primary" ng-model="getCurrentEntryData().state" uib-btn-radio="1" ng-click="updateEntryState()">active</label>
+								<label class="btn btn-primary" ng-model="getCurrentEntryData().state" uib-btn-radio="2" ng-click="updateEntryState()">inActive</label>
+								<label class="btn btn-primary" ng-model="getCurrentEntryData().state" uib-btn-radio="0" ng-click="updateEntryState()">deleted</label>
 							</div>
 						</div>
 					</div>
