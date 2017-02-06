@@ -16,7 +16,7 @@
 	</div>
  	<div class="row rowSpaced">
 		<div class="col-xs-6 col-md-5">
-		  	<label>available segments</label>
+		  	<label>available segments <span ng-if="loading.segments" class="glyphicon glyphicon-refresh spinning"></span></label>
 		  	<select multiple class="form-control" ng-model="available" ng-options="segment as segment.name for segment in availableSegments">
 			</select>
 		</div>
@@ -47,7 +47,7 @@
 	</div>
 	<div class="row rowSpaced">
 		<div class="col-xs-6 col-md-5">
-		  	<label>available security circles</label>
+		  	<label>available security circles <span ng-if="loading.circles" class="glyphicon glyphicon-refresh spinning"></span></label>
 		  	<select multiple class="form-control" ng-model="availableCircle" ng-options="circle for circle in availableSecurityCircles">
 			</select>
 		</div>
@@ -78,7 +78,7 @@
 	</div> 	
 	<div class="row rowSpaced">
 		<div class="col-xs-6 col-md-5">
-		  	<label>emailGroup  <!--{{entity.eloquaEmailGroup}}--></label>
+		  	<label>emailGroup  <!--{{entity.eloquaEmailGroup}}--> <span ng-if="loading.groups" class="glyphicon glyphicon-refresh spinning"></span></label>
 		  	<select class="form-control" ng-model="entity.eloquaEmailGroup" ng-options="group.id as group.name for group in availableSEmailGroups">
 			</select>
 		</div>
@@ -90,7 +90,7 @@
 	</div>
 	<div class="row rowSpaced">
 		<div class="col-xs-6 col-md-5">
-		  	<label>Encoding   <!--{{entity.eloquaEmailEncoding}}--></label>
+		  	<label>Encoding   <!--{{entity.eloquaEmailEncoding}}--><span ng-if="loading.encoding" class="glyphicon glyphicon-refresh spinning"></span></label>
 		  	<select class="form-control" ng-model="entity.eloquaEmailEncoding" ng-options="encoding.id as encoding.name for encoding in availableEmailEncodings">
 			</select>
 		</div>
@@ -164,7 +164,7 @@
 	</div>
 	<div class="row rowSpaced" data-ng-repeat="module in entity.modules">	
 		<div class="col-md-8" >	
-			<label for="module_$index">Module {{module.moduleIdentifier}}</label>
+			<label for="module_$index">Module {{module.moduleIdentifier}} <span ng-if="loading.modules" class="glyphicon glyphicon-refresh spinning"></span></label>
 			<select class="form-control" ng-model="module._id" ng-options="element._id as element.name for element in availableModules" name="module_$index"></select>
 		</div>
 		<div class="col-md-4">
