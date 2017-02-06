@@ -313,6 +313,19 @@
 								dragClass: 'emailModuleDrag'
 
 							});
+
+						var elementTrashBin = angular.element('#trash')[0];
+						var sortableTrashBin = Sortable.create(elementTrashBin,
+						{
+							sort: false,
+							// handle: '.handle',
+							group: 
+							{
+								name: 'sortable-group',
+								pull: false,
+								put:  true
+							}
+						});
 						isDNDInit = true;
 					}
 
@@ -376,6 +389,14 @@
 							//console.log('click');
 							//console.log(win.jQuery(this).attr('id'));
 							scope.api.scope.clickOnElement(myIFrame.find(this).attr('id'));
+						});
+
+						myIFrame.find(".emailModuleSelector").click(function()
+						{
+							//win.jQuery(this).attr('id');
+							console.log('click');
+							//console.log(win.jQuery(this).attr('id'));
+							scope.api.scope.clickOnEmailModule(myIFrame.find(this).attr('id'));
 						});
 					}
 				}
