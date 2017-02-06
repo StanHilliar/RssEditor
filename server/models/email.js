@@ -123,6 +123,10 @@ var EmailSchema = new Schema(
     type: String,
     /*required:  true*/
   },
+  hiddenPreviewText:
+  {
+    type: String
+  },
   data:
   [{
      state: String,

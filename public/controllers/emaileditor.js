@@ -35,6 +35,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     $scope.adData =  [] ;
 
     $scope.EmailName = '';
+    $scope.hiddenPreviewText = '';
 
     $scope.your_variable = '';
     $scope.rssContent = 'omg';
@@ -173,8 +174,10 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           //console.log('load email cb');
           if(email !=  null)
           {
-            $scope.EmailName = email.name;
-            $scope.EmailSubject = email.subject;
+            $scope.EmailName         = email.name;
+            $scope.EmailSubject      = email.subject;
+            $scope.hiddenPreviewText = email.hiddenPreviewText;
+
             if(email.scheduledDate)
             {
               $scope.dt = new Date(email.scheduledDate);
@@ -258,6 +261,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         //console.log('storedEmail NOT null');
         $scope.storedEmail.name = $scope.EmailName;
         $scope.storedEmail.subject = $scope.EmailSubject;
+        $scope.storedEmail.hiddenPreviewText = $scope.hiddenPreviewText;
         $scope.storedEmail.scheduledDate = $scope.dt;
         $scope.storedEmail.scheduledTime = $scope.dt;
         $scope.storedEmail.positions =  $scope.feedPositions;
@@ -281,6 +285,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           name: $scope.EmailName,        
           segment: $scope.segment,
           subject: $scope.EmailSubject,
+          hiddenPreviewText: $scope.hiddenPreviewText,
           scheduledDate: $scope.dt,  
           scheduledTime: $scope.dt,
           newsletterEntity: $stateParams.newsletterid,    
