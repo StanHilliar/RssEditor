@@ -442,8 +442,8 @@
 								}
 
 								// console.log(newOrder);
-
 								sortable123.sort(newOrder);
+								scope.api.scope.updateFeedPositions(newOrder);
 							},
 							onUpdate: function (/**Event*/evt)
 							{

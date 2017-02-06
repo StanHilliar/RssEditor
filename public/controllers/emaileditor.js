@@ -472,22 +472,59 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       modalInstance.dismiss('cancel');
     };
 
+    function elementIdToPositions(identifier, identifier2, idStr)
+    {
+      var pos = {};
+
+      var _tmp = idStr.replace(identifier + '_', '');
+      _tmp = _tmp.replace(identifier2 + '_', '');
+      _tmp = _tmp.split('_');
+
+      pos.containerId;
+      pos.moduleId  = _tmp[0];
+      pos.id        = _tmp[1];
+
+      if (pos.id == 'C')
+      {
+        var _tmp2 = idStr.replace(identifier + '_' + pos.moduleId + '_' + pos.id  + '_', '');
+        _tmp2     = _tmp2.replace(identifier2+ '_' + pos.moduleId + '_' + pos.id  + '_', '');
+        _tmp2 = _tmp2.split('_');
+
+        pos.containerId = pos.moduleId;
+        pos.moduleId    = _tmp2[0];
+        pos.id          = _tmp2[1];
+      }
+
+      return pos;
+    }
+
     $scope.updateFeedPositions = function (data)
     {
-      //console.log("updateFeedPositions");
-      //console.log(data);
+      console.log("updateFeedPositions");
+      console.log(data);
       var _data = data.slice(0);
+      var containerId = 0;
       var modulePos = 0;
       for (var i = 0; i < _data.length; i++)
       {
-
-        var posIdentifier = _data[i].replace(dndElementIdentifier + '_', '').split('_');
-        _data[i] = posIdentifier[1];
-        modulePos = posIdentifier[0];
-
+          var ids = elementIdToPositions(dndElementIdentifier, dndElementIdentifier, _data[i]);
+          // var posIdentifier = _data[i].replace(dndElementIdentifier + '_', '').split('_');
+          containerId = ids.containerId;
+          modulePos   = ids.moduleId;
+          _data[i]   = ids.id;
       }
+
+      console.log('containerId:'+containerId);
+      console.log('modulePos:'+modulePos);
       //console.log(_data);
-      $scope.feedPositions[modulePos] = _data;
+      if(containerId)
+      {
+        $scope.feedPositions[containerId][modulePos] = _data;
+      }
+      else
+      {
+        $scope.feedPositions[modulePos] = _data;
+      }
     };
 
     var countModulesInDropzone = 0;
@@ -530,36 +567,41 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     $scope.clickOnElement = function (elementID) 
     {
-      // console.log("clickOnElement");
-      // console.log(elementID);
+      console.log("clickOnElement");
+      console.log(elementID);
 
       $scope.isEmailModuleSelected = false;
       $scope.showSendingOptions = false;
 
-      var _tmp = elementID.replace(dndElementIdentifier + '_', '');
-      _tmp = _tmp.replace(clickableElementIdentifier + '_', '');
-      _tmp = _tmp.split('_');
+      // var _tmp = elementID.replace(dndElementIdentifier + '_', '');
+      // _tmp = _tmp.replace(clickableElementIdentifier + '_', '');
+      // _tmp = _tmp.split('_');
 
-      var containerId;
-      var _moduleID = _tmp[0];
-      var _id = _tmp[1];
-      // console.log(_moduleID);
-      // console.log(_id);
+      // var containerId;
+      // var _moduleID = _tmp[0];
+      // var _id = _tmp[1];
+      // // console.log(_moduleID);
+      // // console.log(_id);
 
-      if (_id == 'C')
-      {
-        var _tmp2 = elementID.replace(dndElementIdentifier + '_' + _moduleID + '_' + _id + '_', '');
+      // if (_id == 'C')
+      // {
+      //   var _tmp2 = elementID.replace(dndElementIdentifier + '_' + _moduleID + '_' + _id + '_', '');
 
-        _tmp2 = _tmp2.replace(clickableElementIdentifier + '_', '');
-        _tmp2 = _tmp2.split('_');
-        containerId = _moduleID;
-        _moduleID = _tmp2[0];
-        _id = _tmp2[1];
-      }
+      //   _tmp2 = _tmp2.replace(clickableElementIdentifier + '_', '');
+      //   _tmp2 = _tmp2.split('_');
+      //   containerId = _moduleID;
+      //   _moduleID = _tmp2[0];
+      //   _id = _tmp2[1];
+      // }
 
-      // console.log('containerId:'+containerId);
-      // console.log('_moduleID:'+_moduleID);
-      // console.log('_id:'+_id);
+      var ids = elementIdToPositions(dndElementIdentifier, clickableElementIdentifier, elementID);
+      var containerId = ids.containerId;
+      var _moduleID = ids.moduleId;
+      var _id = ids.id;
+
+      console.log('containerId:'+containerId);
+      console.log('_moduleID:'+_moduleID);
+      console.log('_id:'+_id);
 
       //$scope.currentEntry = $scope.rssData[_moduleID][_id];
       $scope.currentEntry = {};
@@ -713,12 +755,14 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         }
 
         var preBody = currentModule.preBody;
-
-        for (var varCounter = 0; varCounter < currentModule.bodyVariables.length; varCounter++) 
+        if(currentModule.bodyVariables)
         {
-          var variableName = currentModule.bodyVariables[varCounter].name;
-          preBody = preBody.replace("{{" + variableName + "}}", '{{' + moduleDataStr + '.bodyData.' + variableName + '}}');
-          preBody = preBody.replace("{{" + variableName + "}}", '{{' + moduleDataStr + '.bodyData.' + variableName + '}}');
+          for (var varCounter = 0; varCounter < currentModule.bodyVariables.length; varCounter++) 
+          {
+            var variableName = currentModule.bodyVariables[varCounter].name;
+            preBody = preBody.replace("{{" + variableName + "}}", '{{' + moduleDataStr + '.bodyData.' + variableName + '}}');
+            preBody = preBody.replace("{{" + variableName + "}}", '{{' + moduleDataStr + '.bodyData.' + variableName + '}}');
+          }
         }
         moduleHtml += preBody;
 
@@ -847,16 +891,20 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
           var _addAd = false;
           var _adIndex = -1;
-          for (var adCounter = 0; adCounter < currentModule.ads.length; adCounter++) 
+
+          if(currentModule.ads)
           {
-            //console.log('CHECK AD _pos:'+currentModule.ads[adCounter].pos + ' == '+(parseInt(x)-parseInt(noSkippedEntries)+1));
-            if (currentModule.ads[adCounter].pos == (parseInt(x) - parseInt(noSkippedEntries) + 1) + '') 
+            for (var adCounter = 0; adCounter < currentModule.ads.length; adCounter++) 
             {
-              //console.log('ADD FOUND');
-              if (entryState == 1) 
+              //console.log('CHECK AD _pos:'+currentModule.ads[adCounter].pos + ' == '+(parseInt(x)-parseInt(noSkippedEntries)+1));
+              if (currentModule.ads[adCounter].pos == (parseInt(x) - parseInt(noSkippedEntries) + 1) + '') 
               {
-                _adIndex = adCounter;
-                _addAd = true;
+                //console.log('ADD FOUND');
+                if (entryState == 1) 
+                {
+                  _adIndex = adCounter;
+                  _addAd = true;
+                }
               }
             }
           }
@@ -875,16 +923,19 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         var _adIndex = -1;
         var x = Math.min(moduleFeedPositions.length, moduleData.numberOfEntries);
         //console.log(x);
-        for (var adCounter = 0; adCounter < currentModule.ads.length; adCounter++)
+        if(currentModule.ads)
         {
-          //console.log('CHECK AD _pos:'+currentModule.ads[adCounter].pos+ ' >= '+(parseInt(x)-parseInt(noSkippedEntries)+1));
-          if (parseInt(currentModule.ads[adCounter].pos) >= (parseInt(x) - parseInt(noSkippedEntries) + 1) + '')
+          for (var adCounter = 0; adCounter < currentModule.ads.length; adCounter++)
           {
-            //console.log('ADD FOUND1');
+            //console.log('CHECK AD _pos:'+currentModule.ads[adCounter].pos+ ' >= '+(parseInt(x)-parseInt(noSkippedEntries)+1));
+            if (parseInt(currentModule.ads[adCounter].pos) >= (parseInt(x) - parseInt(noSkippedEntries) + 1) + '')
+            {
+              //console.log('ADD FOUND1');
 
-            _adIndex = adCounter;
+              _adIndex = adCounter;
 
-            moduleHtml += _getAdView(isEdit, currentModule, moduleCounter, _adIndex);
+              moduleHtml += _getAdView(isEdit, currentModule, moduleCounter, _adIndex);
+            }
           }
         }
 
@@ -894,11 +945,14 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         }
 
         var postBody = currentModule.postBody;
-        for (var varCounter = 0; varCounter < currentModule.bodyVariables.length; varCounter++)
+        if(currentModule.bodyVariables)
         {
-          var variableName = currentModule.bodyVariables[varCounter].name;
-          postBody = postBody.replace("{{" + variableName + "}}", '{{' + moduleDataStr + '.bodyData.' + variableName + '}}');
-          postBody = postBody.replace("{{" + variableName + "}}", '{{' + moduleDataStr + '.bodyData.' + variableName + '}}');
+          for (var varCounter = 0; varCounter < currentModule.bodyVariables.length; varCounter++)
+          {
+            var variableName = currentModule.bodyVariables[varCounter].name;
+            postBody = postBody.replace("{{" + variableName + "}}", '{{' + moduleDataStr + '.bodyData.' + variableName + '}}');
+            postBody = postBody.replace("{{" + variableName + "}}", '{{' + moduleDataStr + '.bodyData.' + variableName + '}}');
+          }
         }
         moduleHtml += postBody;
 
@@ -1166,10 +1220,13 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
           $scope.rssData[moduleCounter].bodyData = {};
           $scope.rssData[moduleCounter].bodyVariables = {};
-          for (var x = 0; x < $scope.emailTemplates.modules[moduleCounter].bodyVariables.length; x++) 
+          if($scope.emailTemplates.modules[moduleCounter].bodyVariables)
           {
-            $scope.rssData[moduleCounter].bodyData[$scope.emailTemplates.modules[moduleCounter].bodyVariables[x].name] = $scope.emailTemplates.modules[moduleCounter].bodyVariables[x].defaultValue;
-            $scope.rssData[moduleCounter].bodyVariables[$scope.emailTemplates.modules[moduleCounter].bodyVariables[x].name] = $scope.emailTemplates.modules[moduleCounter].bodyVariables[x];
+            for (var x = 0; x < $scope.emailTemplates.modules[moduleCounter].bodyVariables.length; x++) 
+            {
+              $scope.rssData[moduleCounter].bodyData[$scope.emailTemplates.modules[moduleCounter].bodyVariables[x].name] = $scope.emailTemplates.modules[moduleCounter].bodyVariables[x].defaultValue;
+              $scope.rssData[moduleCounter].bodyVariables[$scope.emailTemplates.modules[moduleCounter].bodyVariables[x].name] = $scope.emailTemplates.modules[moduleCounter].bodyVariables[x];
+            }
           }
 
           if (_module.type == "1") 

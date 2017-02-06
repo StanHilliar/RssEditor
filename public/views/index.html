@@ -48,21 +48,28 @@
 
 				<div>
 					<div class="row">
-						<div class="col-md-12">
 						<h3>drag and drop area</h3>
+						<div class="col-md-12">
 							<div class="pickUpArea">
 								<div id="sortable">
-									<div class="emailModule" ng-repeat="module in emailTemplates.dropzoneModules" data-module-id="{{module._id}}">
-										<div class="emailModuleHandle">
-										{{module.name}}
+									<div class="emailModule col-sm-6 col-md-3" ng-repeat="module in emailTemplates.dropzoneModules" data-module-id="{{module._id}}">
+										<div class="thumbnail emailModuleHandle">
+											<center>
+											<span class="glyphicon glyphicon-th-large" style="font-size:24px" aria-hidden="true"></span>
+											</center>
+											<div class="caption">
+												{{module.name}}
+											</div>
 										</div>
-										<div class="sortableContent"></div>
 									</div>
 								</div>
-								<h3>trash</h3>
-								<div id="trash" class="trashBin">
-								</div>
+								
 							</div>
+						</div>
+					</div>
+					<div class="row">
+						<h3>trash</h3>
+							<div id="trash" class="trashBin">
 						</div>
 					</div>
 				</div>

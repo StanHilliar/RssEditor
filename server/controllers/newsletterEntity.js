@@ -19,10 +19,10 @@ module.exports = function(circles) {
         async.eachSeries(modules, function (module, callback) 
         {
             console.log('each '+module._id);
-            console.log(module.type);
+            console.log(module.placeholderType);
             if(module._id != "")
             {
-                if(module.type == 'DROPZONE')
+                if(module.placeholderType == 'DROPZONE')
                 {
                     console.log('IS dropzone');
                     cache[module.moduleIdentifier] = module;
@@ -186,12 +186,20 @@ module.exports = function(circles) {
                 getEmailModuleByArrayOfIds(newsletterEntity.modules, 
                 function(err, modules)
                 {
-                    console.log(modules);
+                    if(err)
+                    {
+                        console.error(err);
+                    }
+                    console.log(modules.length);
                     var myDropzoneModules = _.map(newsletterEntity.dropzoneModules, function(id){ return {_id: id}; });;
                     getEmailModuleByArrayOfIds(myDropzoneModules, 
-                    function(err, dropzoneModules)
+                    function(dropErr, dropzoneModules)
                     {
-                        // console.log(dropzoneModules);
+                        if(dropErr)
+                        {
+                            console.error(dropErr);
+                        }
+                        console.log(dropzoneModules.length);
                         // newsletterEntity.modules = [];
 
                         console.log('modules:');
