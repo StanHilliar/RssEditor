@@ -685,16 +685,34 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     $scope.clickOnEmailModule = function (elementID) 
     {
-      console.log("clickOnElement");
+      console.log("clickOnEmailModule");
       console.log(elementID);
       $scope.changeTab(1);
 
       var _id = elementID.replace('emailModuleSelector_', '');
 
+      var ids = elementIdToPositions('emailModuleSelector', 'emailModuleSelector', elementID);
+      var containerId = ids.containerId;
+      var _moduleID = ids.moduleId;
+      var _id = ids.id;
+      console.log('containerId:'+containerId);
+      console.log('_moduleID:'+_moduleID);
+      console.log('_id:'+_id);
+
+
       $scope.isEmailModuleSelected = true;
       $scope.showSendingOptions = false;
+      if(containerId)
+      {
+        $scope.currentEmailModuleData = $scope.rssData[containerId][_moduleID];
+        $scope.currentEmailModule     = $scope.entity.modules[containerId].modules[_moduleID];
 
-      $scope.currentEmailModule = _id;
+      }
+      else
+      {
+        $scope.currentEmailModuleData = $scope.rssData[_moduleID];
+        $scope.currentEmailModule     = $scope.entity.modules[_moduleID];
+      }
 
       $scope.$apply();
     };
@@ -1197,14 +1215,22 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         $scope.feedPositions[moduleCounter][subModuleCounter] = [];
         $scope.skipedEntries[moduleCounter][subModuleCounter] = {};
 
-        $scope.rssData[moduleCounter][subModuleCounter] = [];
-        $scope.rssData[moduleCounter][subModuleCounter].state = 1; //'active'; 
+        $scope.rssData[moduleCounter][subModuleCounter]                 = [];
+        $scope.rssData[moduleCounter][subModuleCounter].state           = 1; //'active'; 
         $scope.rssData[moduleCounter][subModuleCounter].numberOfEntries = _module.defaultNumberOfEntries;
+        $scope.rssData[moduleCounter][subModuleCounter].data            = [];
+        $scope.rssData[moduleCounter][subModuleCounter].bodyData        = {};
+        $scope.rssData[moduleCounter][subModuleCounter].bodyVariables   = {};
         //console.log('defaultNumberOfEntries: '+$scope.emailTemplates.modules[moduleCounter].defaultNumberOfEntries);
-        $scope.rssData[moduleCounter][subModuleCounter].data = [];
 
-        $scope.rssData[moduleCounter][subModuleCounter].bodyData = {};
-        $scope.rssData[moduleCounter][subModuleCounter].bodyVariables = {};
+        if(_module.bodyVariables)
+        {
+          for (var x = 0; x < _module.bodyVariables.length; x++) 
+          {
+            $scope.rssData[moduleCounter][subModuleCounter].bodyData[_module.bodyVariables[x].name]       = _module.bodyVariables[x].defaultValue;
+            $scope.rssData[moduleCounter][subModuleCounter].bodyVariables[_module.bodyVariables[x].name]  = _module.bodyVariables[x];
+          }
+        }
 
         if (_module.type == "3") 
         {
@@ -1222,7 +1248,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       }
       else
       {
-
         if (_module.placeholderType == 'DROPZONE')
         {
           var deferred = $q.defer();
