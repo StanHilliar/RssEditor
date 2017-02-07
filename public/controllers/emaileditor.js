@@ -663,6 +663,25 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       $scope.$apply();
     };
 
+    $scope.getCurrentEntryModule = function ()
+    {
+      if ($scope.currentEntry)   
+      {
+        if ($scope.currentEntry.containerId)
+        {
+          return $scope.entity.modules[$scope.currentEntry.containerId].modules[$scope.currentEntry.moduleId];
+        }
+        else
+        {
+          return  $scope.entity.modules[$scope.currentEntry.moduleId];
+        }
+      }
+      else
+      {
+        return {};
+      }
+    }
+
     $scope.getCurrentEntryData = function ()
     {
       if ($scope.currentEntry)   
@@ -1268,6 +1287,19 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           }
         }
 
+        if (_module.type == "2") 
+        {
+          var deferred = $q.defer();
+          promise = deferred.promise;
+          $scope.loadXMLModuleWithFeed(_module, moduleCounter, subModuleCounter, 0, _module.defaultNumberOfEntries).then(function(moduleData)
+          {
+            $scope.rssData[moduleData.modulePos][moduleData.subModulePos].data = moduleData.entries;
+            $scope.feedPositions[moduleData.modulePos][moduleData.subModulePos] = moduleData.positions;
+            console.log(moduleData);
+            deferred.resolve();
+          });
+        }
+
         if (_module.type == "3") 
         {
           var deferred = $q.defer();
@@ -1675,16 +1707,18 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       return deferred.promise;
     };
 
-    $scope.loadXMLModuleWithFeed = function (module, modulePos, from, to)
+    $scope.loadXMLModuleWithFeed = function (module, modulePos, subModuleCounter, from, to)
     {
       var deferred = $q.defer();
       $scope.loading = false;
 
       loadXMLFeed(module.defaultURL, modulePos).then(function ()
       {
-        $scope.loadXMLModule(module, modulePos, from, to);
-        console.log('loadXMLModuleWithFeed --> resolve');
-        deferred.resolve();
+        $scope.loadXMLModule(module, modulePos, subModuleCounter, from, to).then(function(moduleData)
+        {
+          console.log('loadXMLModuleWithFeed --> resolve');
+          deferred.resolve(moduleData);
+        });
       });
 
       return deferred.promise;
@@ -1767,55 +1801,57 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       return deferred.promise;
     };
 
-    $scope.loadXMLModule = function (module, modulePos, from, to) 
+    $scope.loadXMLModule = function (currentModule, modulePos, subModulePos, from, to) 
     {
       console.log('loadXMLModule');
       var deferred = $q.defer();
       $scope.loading = false;
+
+      var moduleData = {};
+      moduleData.entries = [];
+      moduleData.positions = [];
+      moduleData.modulePos = modulePos;
+      moduleData.subModulePos = subModulePos;
 
       //console.log(feeds[modulePos]);
       var xmlFeed = feeds[modulePos];
 
       for (var i = from; ((i < to) && (i < xmlFeed.length)); i++) 
       {
-        $scope.rssData[modulePos].data[i] = $scope.rssData[modulePos].data[i] || {};
-        $scope.rssData[modulePos].data[i].state = 1;
+        moduleData.entries[i] = moduleData.entries[i] || {};
+        moduleData.entries[i].state = 1;
 
-        for (var xmlVarCounter = 0; xmlVarCounter < $scope.emailTemplates.modules[modulePos].xmlVariables.length; xmlVarCounter++) 
+        for (var xmlVarCounter = 0; xmlVarCounter < currentModule.xmlVariables.length; xmlVarCounter++) 
         {
-          var feedValue = xmlFeed[i][$scope.emailTemplates.modules[modulePos].xmlVariables[xmlVarCounter].name];
+          var feedValue = xmlFeed[i][currentModule.xmlVariables[xmlVarCounter].name];
 
-          $scope.rssData[modulePos].data[i][$scope.emailTemplates.modules[modulePos].xmlVariables[xmlVarCounter].name] = feedValue[0];
+          moduleData.entries[i][currentModule.xmlVariables[xmlVarCounter].name] = feedValue[0];
         }
 
-        $scope.rssData[modulePos].data[i]._view = $scope.emailTemplates.modules[modulePos].views[0];
+        moduleData.entries[i]._view = currentModule.views[0];
 
 
-        $scope.rssData[modulePos].data[i].data = {};
-        $scope.rssData[modulePos].data[i].variables = {};
+        moduleData.entries[i].data = {};
+        moduleData.entries[i].variables = {};
 
-        for (var x = 0; x < $scope.emailTemplates.modules[modulePos].variables.length; x++) 
+        for (var x = 0; x < currentModule.variables.length; x++) 
         {
-          $scope.rssData[modulePos].data[i].data[$scope.emailTemplates.modules[modulePos].variables[x].name] = $scope.emailTemplates.modules[modulePos].variables[x].defaultValue;
-          $scope.rssData[modulePos].data[i].variables[$scope.emailTemplates.modules[modulePos].variables[x].name] = $scope.emailTemplates.modules[modulePos].variables[x];
+          moduleData.entries[i].data[currentModule.variables[x].name] = currentModule.variables[x].defaultValue;
+          moduleData.entries[i].variables[currentModule.variables[x].name] = currentModule.variables[x];
         }
 
 
-        $scope.rssData[modulePos].data[i]._view.label = $scope.rssData[modulePos].data[i]._view.name;
-        $scope.rssData[modulePos].data[i]._view.source = $scope.rssData[modulePos].data[i]._view.source.replace(/(\r\n|\n|\r)/gm, "");
-        $scope.rssData[modulePos].data[i]._pos = i;
+        moduleData.entries[i]._view.label = moduleData.entries[i]._view.name;
+        moduleData.entries[i]._view.source = moduleData.entries[i]._view.source.replace(/(\r\n|\n|\r)/gm, "");
+        moduleData.entries[i]._pos = i;
 
-        $scope.feedPositions[modulePos][i] = i;
+        moduleData.positions[i] = i;
       }
 
       //console.log($scope.rssData);
 
-      deferred.resolve();
-
-
       console.log('loadXMLModule() callback done');
-
-
+      deferred.resolve(moduleData);
       return deferred.promise;
     };
 

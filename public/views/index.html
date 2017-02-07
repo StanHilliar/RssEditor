@@ -71,7 +71,6 @@
 					</div>
 					<br/>
 					<br/>
-					{{adData}}
 					<div class="row">
 						<div class="col-md-12">
 						<h3>recycle bin</h3>
@@ -199,7 +198,7 @@
 						</div>
 						
 					
-						<div data-ng-repeat="xmlVar in emailTemplates.modules[currentEntry.moduleId].xmlVariables">
+						<div data-ng-repeat="xmlVar in getCurrentEntryModule().xmlVariables">
 							<label for="" class="dark">{{xmlVar.label}}</label>
 							<input type="text" class="form-control" placeholder="" ng-model="getCurrentEntryData()[xmlVar.name]" name="">					
 						</div>
