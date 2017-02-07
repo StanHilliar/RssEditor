@@ -19,15 +19,10 @@ angular.module('mean.emaileditor').directive('ngDndEditor', function ()
         console.log(param);
     }
 
-    return {
-        
+    return {    
         restrict: 'E',
         transclude: true,
         controller: ['$scope', DnDEditorController],
-        scope: 
-        {
-            
-        },
         template: '<div class="dndEditor" ng-transclude></div>'
     };
     /*

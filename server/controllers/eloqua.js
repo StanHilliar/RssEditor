@@ -110,7 +110,7 @@ module.exports = function(amazingEloqua) {
         createEmail: function(req, res, next) 
         {
           console.log('create');
-          amazingEloqua.createHTMLEmail(req.body.name, req.body.eloquaFolder, req.body.eloquaFooter, req.body.eloquaHeader, req.body.eloquaEmailGroup, req.body.subject, req.body.html, req.body.fromAddress, req.body.senderName, req.body.bounceBackAddress, req.body.replyToName, req.body.replyToEmail,  function(err, response)
+          amazingEloqua.createHTMLEmail(req.body.name, req.body.eloquaFolder, req.body.eloquaFooter, req.body.eloquaHeader, req.body.eloquaEmailGroup, req.body.encodingId, req.body.subject, req.body.html, req.body.fromAddress, req.body.senderName, req.body.bounceBackAddress, req.body.replyToName, req.body.replyToEmail,  function(err, response)
           {
             console.log('create eloquaEmail callback');
             if(err)

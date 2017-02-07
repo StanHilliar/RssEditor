@@ -25,15 +25,13 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     var sendRightNow = false;
     var emailId = null;
 
-    $scope.storedEmail = {};
-    $scope.storedEmail.subject = '';
-
     $scope.feedURL = 'http://feeds.wired.com/wired/index';
 
     $scope.rssData = [];
     $scope.adData = [];
 
-    $scope.EmailName = '';
+    $scope.EmailName    = '';
+    $scope.EmailSubject = '';
 
     $scope.your_variable = '';
     $scope.rssContent = 'omg';
@@ -42,6 +40,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     $scope.showSendingOptions = true;
 
     $scope.feedPositions = [];
+    $scope.modulePositions = [];
     $scope.skipedEntries = [];
     $scope.skipedEmailModules = {};
 
@@ -180,7 +179,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       //console.log($scope.rssData);
       console.log($scope.EmailName);
       console.log($scope.EmailSubject);
-      console.log($scope.emailSubject);
       $scope.saveInProgress = true;
 
       var myData = [];
@@ -201,7 +199,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       {
         //console.log('storedEmail NOT null');
         $scope.storedEmail.name = $scope.EmailName;
-        $scope.storedEmail.subject = $scope.emailSubject;
+        $scope.storedEmail.subject = $scope.EmailSubject;
         $scope.storedEmail.scheduledDate = $scope.dt;
         $scope.storedEmail.scheduledTime = $scope.dt;
         $scope.storedEmail.positions = $scope.feedPositions;
@@ -223,7 +221,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         {
           name: $scope.EmailName,
           segment: $scope.segment,
-          subject: $scope.emailSubject,
+          subject: $scope.EmailSubject,
           scheduledDate: $scope.dt,
           scheduledTime: $scope.dt,
           newsletterEntity: $stateParams.newsletterid,
@@ -594,6 +592,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         var newModule = angular.copy($scope.entity.dropzoneModules[moduleIndex]);
 
         $scope.entity.modules[dropzoneModuleIndex].modules.push(newModule);
+        $scope.modulePositions[dropzoneModuleIndex].splice(position, 0, countModulesInDropzone);
 
         initModule(newModule, dropzoneModuleIndex, countModulesInDropzone).then(function () 
         {
@@ -801,9 +800,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       var moduleHtml = '';
       if (currentModule.placeholderType == 'DROPZONE')
       {
-        moduleHtml += '<div id="modulesContainer" data-dropzone-id=' + moduleIdStr + '>';
-        moduleHtml += $scope.generateContainer(isEdit, currentModule, moduleData, moduleFeedPositions, moduleDataStr, moduleIdStr + '_C_');
-        moduleHtml += '</div>';
+     
       }
       else
       {
@@ -1034,32 +1031,33 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       return moduleHtml;
     };
 
-    $scope.generateContainer = function (isEdit, container, data, containerFeedPositions, dataStr, containerIdStr)
+    $scope.generateContainer = function (isEdit, container, data, modulePositions, containerFeedPositions, dataStr, containerIdStr)
     {
-      console.log('generateContainer')
+      console.log('generateContainer');
+      console.log(modulePositions);
       var formatedEntries = '';
       if (container && container.modules)
       {
-        for (var moduleCounter = 0; moduleCounter < container.modules.length; moduleCounter++) 
+        for (var moduleCounter = 0; moduleCounter < modulePositions.length; moduleCounter++) 
         {
-          //console.log('module '+moduleCounter);
-          var noSkippedEntries = 0;
-          var moduleState = data[moduleCounter].state;
-          //console.log( $scope.entity.modules[moduleCounter].childTagName);
+          console.log('module '+moduleCounter);
+          var moduleIndex = modulePositions[moduleCounter];
+          console.log('moduleIndex '+moduleIndex);
 
-          if (moduleState == 1 || isEdit) 
-          {
-            var _moduleData = $scope.generateModule(isEdit, container.modules[moduleCounter], data[moduleCounter], containerFeedPositions[moduleCounter], moduleCounter, dataStr + '[' + moduleCounter + ']', containerIdStr + moduleCounter);
+          if(moduleIndex != undefined || moduleIndex != null)
+          {          
+            var noSkippedEntries  = 0;
+            var _moduleData       = '';
+            var moduleIdStr       = containerIdStr + moduleIndex;
+            var moduleState       = data[moduleIndex].state;
 
-            if (isEdit) 
+            console.log('moduleState:'+moduleState);
+            if (moduleState == 1 || isEdit) 
             {
-              formatedEntries += _moduleData;
-            }
-            else 
-            {
-              formatedEntries += $scope.compileEmailAndData(_moduleData);
-            }
-          } //if (moduleState == 1 || isEdit) 
+              //console.log( $scope.entity.modules[moduleIndex].childTagName);
+              formatedEntries += $scope.generateModule(isEdit, container.modules[moduleIndex], data[moduleIndex], containerFeedPositions[moduleIndex], moduleIndex, dataStr + '[' + moduleIndex + ']', moduleIdStr);
+            } //if (moduleState == 1 || isEdit)
+          }
         }
       }
 
@@ -1071,7 +1069,45 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       //console.log('generateEmail');
       var formatedEntries = '';
 
-      formatedEntries += $scope.generateContainer(isEdit, $scope.entity, $scope.rssData, $scope.feedPositions, 'rssData', '');
+      // formatedEntries += $scope.generateContainer(isEdit, $scope.entity, $scope.rssData, $scope.modulePositions, $scope.feedPositions, 'rssData', '');
+
+      if ($scope.entity && $scope.entity.modules)
+      {
+        for (var moduleCounter = 0; moduleCounter < $scope.entity.modules.length; moduleCounter++) 
+        {
+          console.log('module '+moduleCounter);
+             
+          var noSkippedEntries = 0;
+          var _moduleData = '';
+          var dataStr     = 'rssData';
+          var moduleIdStr = '' + moduleCounter;
+
+          if($scope.entity.modules[moduleCounter].placeholderType == 'DROPZONE')
+          {
+              _moduleData += '<div id="modulesContainer" data-dropzone-id=' + moduleIdStr + '>';
+              _moduleData += $scope.generateContainer(isEdit, $scope.entity.modules[moduleCounter], $scope.rssData[moduleCounter], $scope.modulePositions[moduleCounter], $scope.feedPositions[moduleCounter], dataStr + '[' + moduleCounter + ']', moduleIdStr + '_C_');
+              _moduleData += '</div>';
+          }
+          else
+          {
+              var moduleState = $scope.rssData[moduleCounter].state;
+              if (moduleState == 1 || isEdit) 
+              {
+                //console.log( $scope.entity.modules[moduleCounter].childTagName);
+                _moduleData = $scope.generateModule(isEdit, $scope.entity.modules[moduleCounter],  $scope.rssData[moduleCounter], $scope.feedPositions[moduleCounter], moduleCounter, dataStr + '[' + moduleCounter + ']', moduleIdStr);
+              } //if (moduleState == 1 || isEdit)
+          }
+
+          if (isEdit) 
+          {
+            formatedEntries += _moduleData;
+          }
+          else 
+          {
+            formatedEntries += $scope.compileEmailAndData(_moduleData);
+          }
+        }
+      }
 
       //console.log($scope.emailTemplates.header + formatedEntries + $scope.emailTemplates.footer);
       //console.log($scope.adData);
@@ -1253,6 +1289,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           var deferred = $q.defer();
           //console.log('foreach '+moduleCounter+ ' module type: '+_module.type);
           $scope.adData[moduleCounter] = [];
+          $scope.modulePositions[moduleCounter] = [];
 
           $scope.loading = false;
 
@@ -1298,6 +1335,8 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
             }
           }
 
+          $scope.modulePositions[moduleCounter] = 0;
+
           if (_module.type == "1") 
           {
             promise = ($scope.loadRSSModuleWithFeed(_module, moduleCounter, 0, _module.defaultNumberOfEntries));
@@ -1336,7 +1375,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       return promise;
     };
 
-    $scope.checkAd2 = function (moduleCounter, index)
+    $scope.checkAd2 = function (adData, index)
     {
       //console.log('checkAd2 ('+moduleCounter+', '+index+')');
       var deferred = $q.defer();
@@ -1344,7 +1383,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
       Emaileditor.checkAdvertisment().query(
         {
-          url: $scope.adData[moduleCounter][index].img
+          url: adData[index].img
         },
         function (dimensions)
         {
@@ -1352,30 +1391,30 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           //console.log(dimensions[0].height);
           if (dimensions == null || dimensions.length == 0)
           {
-            $scope.adData[moduleCounter][index].booked = false;
+            adData[index].booked = false;
           }
           else
           {
             if (dimensions[0].height == 1)
             {
-              $scope.adData[moduleCounter][index].booked = false;
+              adData[index].booked = false;
               //console.log('yes');
             }
             else
             {
-              $scope.adData[moduleCounter][index].booked = true;
+              adData[index].booked = true;
               //console.log('no');
             }
           }
 
           deferred.resolve();
-        }, function (error)
+        },function (error)
         {
           console.error('checkAdvertisment error');
           $scope.errorMsgs = [];
-          $scope.errorMsgs.push({ param: $scope.adData[moduleCounter][index].img, msg: 'couldnt check if the ad was booked' });
+          $scope.errorMsgs.push({ param: adData[index].img, msg: 'couldnt check if the ad was booked' });
 
-          $scope.adData[moduleCounter][index].booked = true;
+          adData[index].booked = true;
           deferred.resolve();
         }
       );
@@ -1398,7 +1437,15 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       {
         for (var i = 0; i < $scope.adData[moduleCounter].length; i++)
         {
-          promises.push($scope.checkAd2(moduleCounter, i));
+          if($scope.adData[moduleCounter].constructor === Array)
+          {
+            //TODO
+            console.warn('ads in submodules not yet supported')
+          }
+          else
+          {
+            promises.push($scope.checkAd2($scope.adData[moduleCounter], i));
+          }
         }
 
         moduleCounter++;
