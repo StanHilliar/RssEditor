@@ -15,7 +15,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     $scope.modalInstance = '';
     var modalInstance = null;
     var entity = {};
-
+    
     var EloquaEmail = Eloqua.eloquaEmail();
     var EloquaCampaign = Eloqua.eloquaCampaign();
     var EloquaTestEmail = Eloqua.eloquaTestEmail();
@@ -146,7 +146,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         scope: $scope
     }
 
-    $scope.emailTemplates = Emaileditor.getEmailTemplate().query({company: MeanUser.company.id, entityId: $stateParams.newsletterid}, function(newsletterEntityArray)
+    Emaileditor.getEmailTemplate().query({company: MeanUser.company.id, entityId: $stateParams.newsletterid}, function(newsletterEntityArray)
     {
       //console.log('entity loaded');
       $scope.entity =newsletterEntityArray[0];
@@ -930,6 +930,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       //console.log($scope.adData);
 
       //console.log('generateEmail done');
+      console.log($scope.emailTemplates);
       return $scope.emailTemplates.header + formatedEntries + $scope.emailTemplates.footer;
     };
 
