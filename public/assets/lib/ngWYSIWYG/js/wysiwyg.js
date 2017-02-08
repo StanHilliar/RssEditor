@@ -366,8 +366,17 @@
 									// console.log(evt.oldIndex);
 									// console.log(evt.newIndex);
 									// console.log('data-dropzone-id:' + elInner.getAttribute('data-dropzone-id'));
-									scope.api.scope.onAddModuleToEmail(myIFrame.find(evt.item).attr('data-module-id'), elInner.getAttribute('data-dropzone-id'), evt.newIndex);
-								}
+									scope.api.scope.onAddModuleToEmail(elInner.getAttribute('data-dropzone-id'), evt.item.getAttribute('data-module-id'), evt.newIndex);
+								},
+								onRemove: function (/**Event*/evt) 
+								{
+        							// same properties as onUpdate
+									console.log('onRemove ('+evt.oldIndex+'/'+evt.newIndex+')');
+									// console.log(evt.item);
+									// console.log(evt.item.attr('id'));
+							
+									scope.api.scope.onRemoveModuleFromEmail(evt.item.getAttribute('id'), evt.oldIndex);
+    							},
 							});
 
 						for (var i = 0; i < elInner.children.length; i++)

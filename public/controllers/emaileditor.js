@@ -569,7 +569,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     var countModulesInDropzone = 0;
 
-    $scope.onAddModuleToEmail = function (moduleId, dropzoneModuleIndex, position) 
+    $scope.onAddModuleToEmail = function (dropzoneModuleIndex, moduleId, position) 
     {
       console.log('onAddModuleToEmail');
       console.log(moduleId);
@@ -604,6 +604,26 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         });
         //  $scope.generateEmail($scope.isEditMode);
       }
+    };
+
+    $scope.onRemoveModuleFromEmail = function (moduleId, position) 
+    {
+      console.log('onRemoveModuleFromEmail ('+moduleId+') #'+position);
+      // console.log(moduleId);
+      
+      var ids = elementIdToPositions('emailModule', 'emailModule', moduleId);
+      var containerId = ids.containerId;
+      var _moduleID = ids.moduleId;
+      var _id = ids.id;
+
+      console.log('containerId:'+containerId);
+      console.log('_moduleID:'+_moduleID);
+      console.log('_id:'+_id);
+
+      delete $scope.entity.modules[containerId].modules[_moduleID];
+      // console.log($scope.modulePositions[containerId]);
+      $scope.modulePositions[containerId].splice(position, 1);
+      // console.log($scope.modulePositions[containerId]);
     };
 
     $scope.clickOnElement = function (elementID) 
@@ -680,7 +700,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       {
         return {};
       }
-    }
+    };
 
     $scope.getCurrentEntryData = function ()
     {
@@ -699,7 +719,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       {
         return {};
       }
-    }
+    };
 
     $scope.clickOnEmailModule = function (elementID) 
     {
@@ -817,17 +837,13 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       // console.log(moduleDataStr);
       // console.log(moduleIdStr);
       var moduleHtml = '';
-      if (currentModule.placeholderType == 'DROPZONE')
-      {
-     
-      }
-      else
+      if (currentModule)
       {
         var isDraggable = (moduleFeedPositions.length > 1);
 
         if (isEdit) 
         {
-          moduleHtml += '<div data-ng-hide="' + moduleDataStr + '.state==0" data-ng-class="{emailModule:true, inactiveEmailModule:' + moduleDataStr + '.state==2}">';
+          moduleHtml += '<div data-ng-hide="' + moduleDataStr + '.state==0" id="emailModule_' + moduleIdStr + '" data-ng-class="{emailModule:true, inactiveEmailModule:' + moduleDataStr + '.state==2}">';
           moduleHtml += '<div class="emailModuleHandle" id="emailModuleHandle_' + moduleIdStr + '"><i class="fa fa-arrows fa-3"></i></div>';
           moduleHtml += '<div class="emailModuleSelector" id="emailModuleSelector_' + moduleIdStr + '"><i class="fa fa-cog fa-3"></i></div>';
         }
