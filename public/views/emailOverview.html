@@ -1,7 +1,7 @@
 <div class="" data-ng-controller="EmailOverviewController">
 	<div class="row">
 		<div class="col-sm-12 col-md-12">
-			<h3>Newsletters <span ng-if="loadingEntites||loadingEmails" class="glyphicon glyphicon-refresh spinning"></span></h3>
+			<h3>Emails <span ng-if="loadingEntites||loadingEmails" class="glyphicon glyphicon-refresh spinning"></span></h3>
 		 	<div class="panel panel-default" ng-repeat="newsletter in newsletters track by newsletter._id">
 			  	<div class="panel-heading">
 			        <a class="dark" href="#" ng-click="clickEntity(newsletter._id); newsletter.open = !newsletter.open">{{newsletter.name}}</a> <span class="badge">{{noOfEmailsPerEntity[newsletter._id]}}</span>

@@ -408,6 +408,8 @@
 							scope.api.scope.clickOnEmailModule(myIFrame.find(this).attr('id'));
 						});
 					}
+
+					myIFrame.find('a').on('click', function(e) { e.preventDefault(); });
 				}
 
 				function initSubSortable(myIFrame, elementContainer)
