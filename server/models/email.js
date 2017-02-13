@@ -145,7 +145,6 @@ var EmailSchema = new Schema(
   }
 });
 
-
 EmailSchema.pre('save', function(next)
 {
   var now = new Date();

@@ -108,10 +108,10 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 			//scope.feedNumberOfEntries = '1122';
 			//scope.rss = scope.rssData;
 			scope.rssData = scope.api.scope.rssData;
+			scope.hiddenPreviewText = scope.api.scope.hiddenPreviewText;
 			scope.adData = scope.api.scope.adData;
 			
 			$compile($element.contents())(scope);
-
 
 
 			if(typeof($element[0].contentWindow.init) == "function")
@@ -288,7 +288,6 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 	    {
 	    	if(isEdit != isEditMode)
 	    	{
-
 	    		isEditMode = isEdit;
 
 		    	if(isEditMode == false)
@@ -323,7 +322,6 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 			    ctrl.$setViewValue($body.html());
 			});
 	    }
-	    
 	    
 	    var getSelectionBoundaryElement = function(win, isStart) {
 		var range, sel, container = null;

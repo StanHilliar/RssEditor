@@ -25,7 +25,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     var sendRightNow = false;
  
-
     var emailId = null;
     $scope.storedEmail = null;
 
@@ -35,7 +34,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     $scope.adData =  [] ;
 
     $scope.EmailName = '';
-    $scope.hiddenPreviewText = '';
 
     $scope.your_variable = '';
     $scope.rssContent = 'omg';
@@ -149,7 +147,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     Emaileditor.getEmailTemplate().query({company: MeanUser.company.id, entityId: $stateParams.newsletterid}, function(newsletterEntityArray)
     {
       //console.log('entity loaded');
-      $scope.entity =newsletterEntityArray[0];
+      $scope.entity = newsletterEntityArray[0];
 
       if($scope.segment == '')
       {
@@ -327,7 +325,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     {
       $scope.checkAds(function()
       {
-         
         if(storedEloquaEmail == null)
         {
           storedEloquaEmail = new EloquaEmail(
@@ -368,7 +365,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           storedEloquaEmail.html = $scope.generateEmail(false);
         }
 
-       // console.log(storedEloquaEmail.html);
+        // console.log(storedEloquaEmail.html);
 
         storedEloquaEmail.company = MeanUser.company.id;
         storedEloquaEmail.$save(function(data, headers) 
@@ -915,14 +912,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
             _moduleData += $scope.emailTemplates.modules[moduleCounter].postModule;
           }
 
-          if(isEdit)
-          {
-            formatedEntries += _moduleData;
-          }
-          else
-          {
-            formatedEntries += $scope.compileEmailAndData(_moduleData);
-          }
+          formatedEntries += _moduleData;
         }
       }
 
@@ -930,8 +920,16 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       //console.log($scope.adData);
 
       //console.log('generateEmail done');
-      console.log($scope.emailTemplates);
-      return $scope.emailTemplates.header + formatedEntries + $scope.emailTemplates.footer;
+      // console.log($scope.emailTemplates);
+      var fullEmail = $scope.emailTemplates.header + formatedEntries + $scope.emailTemplates.footer;
+      console.log(fullEmail);
+      fullEmail = fullEmail.replace("{{hiddenPreviewText}}", '{{api.scope.hiddenPreviewText}}');
+      if(!isEdit)
+      {
+        fullEmail = $scope.compileEmailAndData(fullEmail);
+      }
+       
+      return fullEmail;
     };
 
     function _getAdView(isEdit, moduleCounter, _adIndex )
@@ -942,7 +940,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         _adview += '<div class="static">';
       }
       
-
       _adview += $scope.emailTemplates.modules[moduleCounter].adViews[0].source;
 
       _adview = _adview.replace("[[adLink]]",   '{{adData['+moduleCounter+']['+_adIndex+'].link}}');
@@ -970,7 +967,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         }
       }
     }
-
 
     $scope.initAfterLoad = function()
     {
