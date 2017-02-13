@@ -25,6 +25,8 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     var sendRightNow = false;
     var emailId = null;
 
+    $scope.enableDropZone = false;
+
     $scope.feedURL = 'http://feeds.wired.com/wired/index';
 
     $scope.rssData = [];
@@ -73,13 +75,11 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     $scope.maxDate = new Date(2020, 5, 22);
     $scope.minDate = new Date();
 
-    $scope.tabs = [];
+    $scope.tabs    = [];
     $scope.tabs[0] = {};
     $scope.tabs[1] = {};
     $scope.tabs[2] = {};
-    $scope.tabs[2].class = "active",
-
-   
+    $scope.tabs[2].class = "active", 
 
     $scope.api =
       {
@@ -101,6 +101,12 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       $scope.entity.footer = $scope.entity.footer.replace(/(\r\n|\n|\r)/gm, "");
 
       $scope.your_variable = $scope.entity.header + $scope.entity.footer;
+      if($scope.entity.dropzoneModules.length > 0)
+      {
+        $scope.enableDropZone = true;
+         $scope.changeTab(0);
+      }
+
       // console.log( $scope.your_variable);
       if ($stateParams.emailid != null) 
       {
@@ -289,7 +295,8 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         $scope.tabs[2].class = "active";
       }
     };
-    $scope.changeTab(0);
+    
+    $scope.changeTab(2);
 
     function saveEloquaEmail(cb) 
     {

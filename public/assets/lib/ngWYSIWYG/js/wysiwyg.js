@@ -392,25 +392,29 @@
 
 						// console.log(".clickableElement:");
 						// console.log(myIFrame.find(".dndelement.clickableElement"));
-						myIFrame.find(".clickableElement").click(function ()
-						{
-							//win.jQuery(this).attr('id');
-							//console.log('click');
-							//console.log(win.jQuery(this).attr('id'));
-							scope.api.scope.clickOnElement(myIFrame.find(this).attr('id'));
-						});
-
-						myIFrame.find(".emailModuleSelector").click(function()
-						{
-							//win.jQuery(this).attr('id');
-							console.log('click');
-							//console.log(win.jQuery(this).attr('id'));
-							scope.api.scope.clickOnEmailModule(myIFrame.find(this).attr('id'));
-						});
 					}
+					else
+					{
+						var mySortables = angular.element('#frame').contents().find('.sortable1');
+						for (var x = 0; x < mySortables.length; x++)
+						{						
+							initSubSortable(myIFrame, mySortables[x]);
+						}
+					}
+
+					myIFrame.find(".clickableElement").click(function ()
+					{
+						scope.api.scope.clickOnElement(myIFrame.find(this).attr('id'));
+					});
+
+					myIFrame.find(".emailModuleSelector").click(function()
+					{
+						scope.api.scope.clickOnEmailModule(myIFrame.find(this).attr('id'));
+					});
 
 					myIFrame.find('a').on('click', function(e) { e.preventDefault(); });
 				}
+				
 
 				function initSubSortable(myIFrame, elementContainer)
 				{
