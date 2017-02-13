@@ -1302,7 +1302,18 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
             $scope.rssData[moduleCounter][subModuleCounter].bodyVariables[_module.bodyVariables[x].name]  = _module.bodyVariables[x];
           }
         }
-
+        if (_module.type == "1") 
+        {
+          var deferred = $q.defer();
+          promise = deferred.promise;
+          $scope.loadRSSModuleWithFeed(_module, moduleCounter, subModuleCounter, 0, _module.defaultNumberOfEntries).then(function(moduleData)
+          {
+            $scope.rssData[moduleData.modulePos][moduleData.subModulePos].data = moduleData.entries;
+            $scope.feedPositions[moduleData.modulePos][moduleData.subModulePos] = moduleData.positions;
+            console.log(moduleData);
+            deferred.resolve();
+          });;
+        }
         if (_module.type == "2") 
         {
           var deferred = $q.defer();
@@ -1387,13 +1398,29 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
           if (_module.type == "1") 
           {
-            promise = ($scope.loadRSSModuleWithFeed(_module, moduleCounter, 0, _module.defaultNumberOfEntries));
+            var deferred = $q.defer();
+            promise = deferred.promise;
+            $scope.loadRSSModuleWithFeed(_module, moduleCounter, subModuleCounter, 0, _module.defaultNumberOfEntries).then(function(moduleData)
+            {
+              $scope.rssData[moduleData.modulePos].data  = moduleData.entries;
+              $scope.feedPositions[moduleData.modulePos] = moduleData.positions;
+              console.log(moduleData);
+              deferred.resolve();
+            });;
           }
           else 
           {
             if (_module.type == "2") 
             {
-              promise = ($scope.loadXMLModuleWithFeed(_module, moduleCounter, 0, _module.defaultNumberOfEntries));
+              var deferred = $q.defer();
+              promise = deferred.promise;
+              $scope.loadXMLModuleWithFeed(_module, moduleCounter, subModuleCounter, 0, _module.defaultNumberOfEntries).then(function(moduleData)
+              {
+                $scope.rssData[moduleData.modulePos].data  = moduleData.entries;
+                $scope.feedPositions[moduleData.modulePos] = moduleData.positions;
+                console.log(moduleData);
+                deferred.resolve();
+              });
             }
             else 
             {
@@ -1404,7 +1431,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
                 promise = deferred.promise;
                 $scope.loadManualModule(_module, moduleCounter, subModuleCounter, 0, _module.defaultNumberOfEntries).then(function (moduleData)
                 {
-                  $scope.rssData[moduleData.modulePos].data = moduleData.entries;
+                  $scope.rssData[moduleData.modulePos].data  = moduleData.entries;
                   $scope.feedPositions[moduleData.modulePos] = moduleData.positions;
                   deferred.resolve();
                 });
@@ -1708,16 +1735,18 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       return deferred.promise;
     }
 
-    $scope.loadRSSModuleWithFeed = function (module, modulePos, from, to) 
+    $scope.loadRSSModuleWithFeed = function (module, modulePos, subModuleCounter, from, to) 
     {
       var deferred = $q.defer();
       $scope.loading = false;
 
       loadRssFeed(module.defaultURL, modulePos).then(function () 
       {
-        $scope.loadRSSModule(module, modulePos, from, to);
-        console.log('loadRSSModuleWithFeed --> resolve');
-        deferred.resolve();
+        $scope.loadRSSModule(module, modulePos, subModuleCounter, from, to).then(function(moduleData)
+        {
+          console.log('loadRSSModuleWithFeed --> resolve');
+          deferred.resolve(moduleData);
+        });
       });
 
       return deferred.promise;
@@ -1740,18 +1769,23 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       return deferred.promise;
     };
 
-    $scope.loadRSSModule = function (module, modulePos, from, to)
+    $scope.loadRSSModule = function (currentModule, modulePos, subModulePos, from, to)
     {
       console.log('loadRSSModule ' + modulePos);
       var deferred = $q.defer();
       $scope.loading = false;
+
+      var moduleData          = {};
+      moduleData.entries      = [];
+      moduleData.positions    = [];
+      moduleData.modulePos    = modulePos;
+      moduleData.subModulePos = subModulePos;
 
       //console.log(feeds[modulePos]);
       var rssFeed = feeds[modulePos];
 
       if (rssFeed != null)
       {
-
         var i = parseInt(from);
         //console.log(i+' = '+parseInt(from)+'; (('+i+' < '+to+') && ('+i+' < '+rssFeed.length+'));');
         //console.log(i < to);
@@ -1760,51 +1794,47 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         for (var i = parseInt(from); ((i < parseInt(to)) && (i < rssFeed.length)); i++)
         {
           //console.log('i:'+i);
-          $scope.rssData[modulePos].data[i] = $scope.rssData[modulePos].data[i] || {};
-          $scope.rssData[modulePos].data[i].state = 1;
-          $scope.rssData[modulePos].data[i].author = rssFeed[i].author;
-          $scope.rssData[modulePos].data[i].categories = rssFeed[i].categories;
-          //$scope.rssData[modulePos].data[i].htmlContent  = $sce.trustAsHtml(rssFeed[i].content);
-          $scope.rssData[modulePos].data[i].content = rssFeed[i].content;
-          $scope.rssData[modulePos].data[i].image = rssFeed[i].imageUrl;
-          //$scope.rssData[modulePos].data[i].contentSnippet = rssFeed[i].contentSnippet;
+          moduleData.entries[i]                 = moduleData.entries[i] || {};
+          moduleData.entries[i].state           = 1;
+          moduleData.entries[i].author          = rssFeed[i].author;
+          moduleData.entries[i].categories      = rssFeed[i].categories;
+          moduleData.entries[i].content         = rssFeed[i].content;
+          moduleData.entries[i].image           = rssFeed[i].imageUrl;
+          //moduleData.entries[i].contentSnippet= rssFeed[i].contentSnippet;
+          moduleData.entries[i].link            = rssFeed[i].link;
+          moduleData.entries[i].publishedDate   = rssFeed[i].publishedDate;
+          moduleData.entries[i].author          = rssFeed[i].author;
+          moduleData.entries[i].enclosure       = rssFeed[i].enclosure;
+          // moduleData.entries[i].htmlTitle    = $sce.trustAsHtml(rssFeed[i].title);
+          moduleData.entries[i].title           = rssFeed[i].title;
+          moduleData.entries[i]._view           = currentModule.views[0];
 
-          $scope.rssData[modulePos].data[i].link = rssFeed[i].link;
-          $scope.rssData[modulePos].data[i].publishedDate = rssFeed[i].publishedDate;
-          $scope.rssData[modulePos].data[i].author = rssFeed[i].author;
-          $scope.rssData[modulePos].data[i].enclosure = rssFeed[i].enclosure;
-          // $scope.rssData[modulePos].data[i].htmlTitle    = $sce.trustAsHtml(rssFeed[i].title);
-          $scope.rssData[modulePos].data[i].title = rssFeed[i].title;
-          $scope.rssData[modulePos].data[i]._view = $scope.emailTemplates.modules[modulePos].views[0];
-
-          for (var x = 0; x < $scope.emailTemplates.modules[modulePos].views.length; x++)
+          for (var x = 0; x < currentModule.views.length; x++)
           {
-            if ($scope.emailTemplates.modules[modulePos].views[x].isDefault == true)
+            if (currentModule.views[x].isDefault == true)
             {
-              $scope.rssData[modulePos].data[i]._view = $scope.emailTemplates.modules[modulePos].views[x];
+              moduleData.entries[i]._view = currentModule.views[x];
             }
           }
 
-
-          $scope.rssData[modulePos].data[i].data = {};
-          $scope.rssData[modulePos].data[i].variables = {};
-          for (var x = 0; x < $scope.emailTemplates.modules[modulePos].variables.length; x++)
+          moduleData.entries[i].data = {};
+          moduleData.entries[i].variables = {};
+          for (var x = 0; x < currentModule.variables.length; x++)
           {
-            $scope.rssData[modulePos].data[i].data[$scope.emailTemplates.modules[modulePos].variables[x].name] = $scope.emailTemplates.modules[modulePos].variables[x].defaultValue;
-            $scope.rssData[modulePos].data[i].variables[$scope.emailTemplates.modules[modulePos].variables[x].name] = $scope.emailTemplates.modules[modulePos].variables[x];
+            moduleData.entries[i].data[currentModule.variables[x].name]      = currentModule.variables[x].defaultValue;
+            moduleData.entries[i].variables[currentModule.variables[x].name] = currentModule.variables[x];
           }
 
-          $scope.rssData[modulePos].data[i]._view.label = $scope.rssData[modulePos].data[i]._view.name;
-          $scope.rssData[modulePos].data[i]._view.source = $scope.rssData[modulePos].data[i]._view.source.replace(/(\r\n|\n|\r)/gm, "");
-          $scope.rssData[modulePos].data[i]._pos = i;
+          moduleData.entries[i]._view.label   = moduleData.entries[i]._view.name;
+          moduleData.entries[i]._view.source  = moduleData.entries[i]._view.source.replace(/(\r\n|\n|\r)/gm, "");
+          moduleData.entries[i]._pos = i;
 
-          //console.log($scope.rssData[modulePos].data[i]);
-          $scope.feedPositions[modulePos][i] = i;
+          //console.log(moduleData.entries[i]);
+          moduleData.positions[i] = i;
         }
 
         //console.log($scope.rssData[modulePos]);
-
-        deferred.resolve();
+        deferred.resolve(moduleData);
       }
       else
       {
@@ -1812,7 +1842,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       }
 
       //console.log('parseRSSFeed() callback done');
-
 
       return deferred.promise;
     };
@@ -1823,10 +1852,10 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       var deferred = $q.defer();
       $scope.loading = false;
 
-      var moduleData = {};
-      moduleData.entries = [];
-      moduleData.positions = [];
-      moduleData.modulePos = modulePos;
+      var moduleData          = {};
+      moduleData.entries      = [];
+      moduleData.positions    = [];
+      moduleData.modulePos    = modulePos;
       moduleData.subModulePos = subModulePos;
 
       //console.log(feeds[modulePos]);
