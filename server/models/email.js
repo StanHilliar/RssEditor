@@ -120,13 +120,22 @@ var EmailSchema = new Schema(
     /*required:  true*/
   },
   data:
-  [{
-     state: String,
-     numberOfEntries: String, 
-     data: Array,
-     bodyData: {}
-  }],
+  // [{
+  //    state: String,
+  //    numberOfEntries: String, 
+  //    data: Array,
+  //    bodyData: {}
+  // }],
+  {
+    type: Array,
+    default: []
+  },
   positions:
+  {
+    type: Array,
+    default: []
+  },
+  modulePositions:
   {
     type: Array,
     default: []

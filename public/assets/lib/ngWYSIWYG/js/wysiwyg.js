@@ -354,8 +354,9 @@
 									pull: true,
 									put: true
 								},
-								draggable: '.emailModule',
-								ghostClass: 'emailModuleGhost',
+								draggable	: '.emailModule',
+								ghostClass	: 'emailModuleGhost',
+								dragClass	: 'emailModuleDrag',
 								onAdd: function (/**Event*/evt)
 								{
 									var itemEl = evt.item;  // dragged HTMLElement
@@ -415,7 +416,6 @@
 					myIFrame.find('a').on('click', function(e) { e.preventDefault(); });
 				}
 				
-
 				function initSubSortable(myIFrame, elementContainer)
 				{
 					// var subSortable = document.getElementById('subsortable');
@@ -424,6 +424,7 @@
 							draggable: ".dndelement",
 							// filter: ".static",
 							dataIdAttr: 'id',
+							dragClass: 'emailModuleDrag',
 							// Element dragging ended
 							onEnd: function (/**Event*/evt)
 							{
