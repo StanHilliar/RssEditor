@@ -53,6 +53,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     var feeds = [];
 
     $scope.newsletterEntity = '000';
+    $scope.containsHiddenPreview = false;
     
     /*
     $scope.emailSegements = 
@@ -171,7 +172,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
         $scope.emailTemplates.header = $scope.emailTemplates.header.replace(/(\r\n|\n|\r)/gm,"");
         $scope.emailTemplates.footer = $scope.emailTemplates.footer.replace(/(\r\n|\n|\r)/gm,"");
-
 
         $scope.your_variable = $scope.emailTemplates.header + $scope.emailTemplates.footer;
         // console.log( $scope.your_variable);
@@ -1038,6 +1038,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         {
           console.log('ALL PROMISES DONE');
           $scope.your_variable  = $scope.generateEmail(true);
+          $scope.checkIfTemplateContainsHiddenPreviewAndSetFlag();
           $scope.api.initSortable();
           $scope.firstInit = false;
           $scope.loading = false;  
@@ -1131,11 +1132,21 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         {
           console.log('ALL PROMISES DONE');
           $scope.your_variable  = $scope.generateEmail(true);
+          $scope.checkIfTemplateContainsHiddenPreviewAndSetFlag();
           $scope.api.initSortable();
           $scope.firstInit = false;
           $scope.loading = false;  
         });
     };
+
+    $scope.checkIfTemplateContainsHiddenPreviewAndSetFlag = function()
+    {
+      if($scope.your_variable.indexOf('{{api.scope.hiddenPreviewText}}') > -1)
+      {
+        $scope.containsHiddenPreview = true;
+      }
+      
+    }
 
     $scope.checkAd2 = function(moduleCounter, index)
     {
