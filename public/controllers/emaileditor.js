@@ -195,34 +195,34 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       $scope.saveInProgress = true;
 
       var myData = [];
-      // for (var i = 0; i < $scope.rssData.length; i++) 
-      // {
-      //   //console.log($scope.rssData[i].bodyData);
-      //   if($scope.rssData[i] instanceof Array)
-      //   { 
-      //     console.log($scope.rssData[i]);
-      //     console.log('ISARRAY');
-      //     myData[i]= [];
-      //     for (var x = 0; x < $scope.rssData[i].length; x++) 
-      //     {
-      //         myData[i][x]                 = {};
-      //         myData[i][x].state           = $scope.rssData[i][x].state;
-      //         myData[i][x].numberOfEntries = $scope.rssData[i][x].numberOfEntries;
-      //         myData[i][x].data            = $scope.rssData[i][x].data;
-      //         myData[i][x].bodyData        = $scope.rssData[i][x].bodyData;
-      //     }
-      //   }
-      //   else
-      //   {
-      //     myData[i]                 = {};
-      //     myData[i].state           = $scope.rssData[i].state;
-      //     myData[i].numberOfEntries = $scope.rssData[i].numberOfEntries;
-      //     myData[i].data            = $scope.rssData[i].data;
-      //     myData[i].bodyData        = $scope.rssData[i].bodyData;
-      //   }
-      //   console.log(myData[i]);
-      // }
-      myData = $scope.rssData;
+      for (var i = 0; i < $scope.rssData.length; i++) 
+      {
+        //console.log($scope.rssData[i].bodyData);
+        if($scope.rssData[i] instanceof Array && $scope.rssData[i].length> 0)
+        { 
+        //   console.log($scope.rssData[i]);
+        //   console.log('ISARRAY');
+          myData[i]= [];
+          for (var x = 0; x < $scope.rssData[i].length; x++) 
+          {
+              myData[i][x]                 = {};
+              myData[i][x].state           = $scope.rssData[i][x].state;
+              myData[i][x].numberOfEntries = $scope.rssData[i][x].numberOfEntries;
+              myData[i][x].data            = $scope.rssData[i][x].data;
+              myData[i][x].bodyData        = $scope.rssData[i][x].bodyData;
+          }
+        }
+        else
+        {
+          myData[i]                 = {};
+          myData[i].state           = $scope.rssData[i].state;
+          myData[i].numberOfEntries = $scope.rssData[i].numberOfEntries;
+          myData[i].data            = $scope.rssData[i].data;
+          myData[i].bodyData        = $scope.rssData[i].bodyData;
+        }
+        console.log(myData[i]);
+      }
+      // myData = $scope.rssData;
       console.log(myData);
 
       // console.log($scope.storedEmail);
@@ -1238,10 +1238,11 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       console.log($scope.entity.modules);
       angular.forEach($scope.entity.modules, function (_module) 
       {
+        $scope.skipedEntries[moduleCounter] = {};
         if(_module.placeholderType != 'DROPZONE')
         {
           console.log('foreach ' + moduleCounter + ' module type: ' + _module.type);
-          $scope.adData[moduleCounter] = _module.ads;
+          $scope.adData[moduleCounter] = _module.ads;    
 
           $scope.loading = false;
 
@@ -1272,6 +1273,22 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
               }
             }
           }
+        }
+        else
+        {
+           $scope.adData[moduleCounter] = [];
+           if($scope.rssData && $scope.rssData[moduleCounter] && $scope.rssData[moduleCounter].length > 0)
+           {
+             for(var x = 0; x <  $scope.rssData[moduleCounter].length; x++)
+             {
+                // $scope.adData[moduleCounter][x] = _module.ads;
+
+                $scope.skipedEntries[moduleCounter][x] = {};
+
+             }
+           }
+
+
         }
         moduleCounter++;
       });
