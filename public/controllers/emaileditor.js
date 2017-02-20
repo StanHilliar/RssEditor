@@ -84,6 +84,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     }
 
     $scope.dropzoneIdtoIndex = {};
+    var countModulesInDropzone = 0;
 
     $scope.emailTemplates = Emaileditor.getEmailTemplate().query({ company: MeanUser.company.id, entityId: $stateParams.newsletterid }, function (newsletterEntityArray) 
     {
@@ -167,7 +168,16 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
                   $scope.entity.modules[i].modules[x] = newModule;
                 }
               }
-            } 
+              for(var  x = 0; x <  $scope.modulePositions[i].length; x++)
+              {
+                if($scope.modulePositions[i][x].index > countModulesInDropzone)
+                {
+                  countModulesInDropzone = $scope.modulePositions[i][x].index;
+                }
+              }
+              
+            }
+            countModulesInDropzone++; 
             console.log('~~~~~~~~~~~~~~~~~~~~~~~~');
 
           // $scope.entity.modules[dropzoneModuleIndex].modules.push(newModule);
@@ -593,12 +603,12 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       }
     };
 
-    var countModulesInDropzone = 0;
-
+  
     $scope.onAddModuleToEmail = function (dropzoneModuleIndex, moduleId, position) 
     {
       console.log('onAddModuleToEmail');
       console.log(moduleId);
+      console.log('countModulesInDropzone: '+countModulesInDropzone);
       var moduleIndex = -1;
       for (var i = 0; i < $scope.entity.dropzoneModules.length; i++)
       {
@@ -719,8 +729,8 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       {
         $scope.currentEntry =
         {
-          containerId : containerId,
-          moduleId    : _moduleId,
+          // containerId : containerId,
+          moduleId    : _moduleID,
           id          : _id,
           views       : $scope.entity.modules[_moduleID].views,
           module      : $scope.entity.modules[_moduleID],
@@ -730,19 +740,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       
       $scope.$apply();
     };
-
-    function message(type, param, msg)
-    {
-      if(type == 1)
-      {
-        $scope.errorMsgs.push({ param: param, msg: msg });
-      }
-    }
-   
-    function errorMessage(param, msg)
-    {
-      message(1, param, msg);
-    }
 
     $scope.clickOnEmailModule = function (elementID) 
     {
@@ -1657,7 +1654,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       return rssFeed;
     }
 
-    function loadRssFeed(url, modulePos)
+    function loadRssFeed(url, modulePos, subModulePos)
     {
       var deferred = $q.defer();
       console.log('loadRssFeed(' + url + ',' + modulePos + ')');
@@ -1669,7 +1666,19 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
         if ((rss != null) && (rss[0] != null) && (rss[0].entries != null))
         {
-          feeds[modulePos] = improveRSSfeed(rss[0].entries);
+          if(subModulePos)
+          {
+            if(!feeds[modulePos])
+            {
+              feeds[modulePos] = [];
+            }
+
+            feeds[modulePos][subModulePos] = improveRSSfeed(rss[0].entries);
+          }
+          else
+          {
+            feeds[modulePos] = improveRSSfeed(rss[0].entries);
+          }
         }
         else
         {
@@ -1690,7 +1699,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       return deferred.promise;
     }
 
-    function loadXMLFeed(url, modulePos)
+    function loadXMLFeed(url, modulePos, subModulePos)
     {
       var deferred = $q.defer();
 
@@ -1717,6 +1726,14 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
               var dataArray = feed[0][keys[0]][subKeys[0]];
 
               feeds[modulePos] = dataArray;
+              if(subModulePos)
+              {
+                feeds[modulePos][subModulePos] = dataArray;
+              }
+              else
+              {
+                feeds[modulePos] = dataArray;
+              }
               _isValid = true;
               deferred.resolve();
               //}
@@ -1734,14 +1751,14 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       return deferred.promise;
     }
 
-    $scope.loadRSSModuleWithFeed = function (module, modulePos, subModuleCounter, from, to) 
+    $scope.loadRSSModuleWithFeed = function (module, modulePos, subModulePos, from, to) 
     {
       var deferred = $q.defer();
       $scope.loading = false;
 
-      loadRssFeed(module.defaultURL, modulePos).then(function () 
+      loadRssFeed(module.defaultURL, modulePos, subModulePos).then(function () 
       {
-        $scope.loadRSSModule(module, modulePos, subModuleCounter, from, to).then(function(moduleData)
+        $scope.loadRSSModule(module, modulePos, subModulePos, from, to).then(function(moduleData)
         {
           // console.log('loadRSSModuleWithFeed --> resolve');
           deferred.resolve(moduleData);
@@ -1751,14 +1768,14 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       return deferred.promise;
     };
 
-    $scope.loadXMLModuleWithFeed = function (module, modulePos, subModuleCounter, from, to)
+    $scope.loadXMLModuleWithFeed = function (module, modulePos, subModulePos, from, to)
     {
       var deferred = $q.defer();
       $scope.loading = false;
 
-      loadXMLFeed(module.defaultURL, modulePos).then(function ()
+      loadXMLFeed(module.defaultURL, modulePos, subModulePos).then(function ()
       {
-        $scope.loadXMLModule(module, modulePos, subModuleCounter, from, to).then(function(moduleData)
+        $scope.loadXMLModule(module, modulePos, subModulePos, from, to).then(function(moduleData)
         {
           // console.log('loadXMLModuleWithFeed --> resolve');
           deferred.resolve(moduleData);
@@ -1781,7 +1798,15 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       moduleData.subModulePos = subModulePos;
 
       //console.log(feeds[modulePos]);
-      var rssFeed = feeds[modulePos];
+      var rssFeed;
+      if(subModulePos)
+      {
+        rssFeed = feeds[modulePos][subModulePos];
+      }
+      else
+      {
+        rssFeed = feeds[modulePos];
+      }
 
       if (rssFeed != null)
       {
@@ -1858,7 +1883,15 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       moduleData.subModulePos = subModulePos;
 
       //console.log(feeds[modulePos]);
-      var xmlFeed = feeds[modulePos];
+      var xmlFeed;
+      if(subModulePos)
+      {
+        xmlFeed = feeds[modulePos][subModulePos];
+      }
+      else
+      {
+        xmlFeed = feeds[modulePos];
+      }
 
       for (var i = from; ((i < to) && (i < xmlFeed.length)); i++) 
       {
@@ -1946,4 +1979,17 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     {
       $scope.popup1.opened = true;
     };
+
+    function message(type, param, msg)
+    {
+      if(type == 1)
+      {
+        $scope.errorMsgs.push({ param: param, msg: msg });
+      }
+    }
+   
+    function errorMessage(param, msg)
+    {
+      message(1, param, msg);
+    }
   }]);

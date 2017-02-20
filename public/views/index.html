@@ -49,6 +49,7 @@
 					<li role="presentation" ng-class="tabs[1].class"><a href="#" ng-click="changeTab(1)">Edit</a></li>
 					<li role="presentation" ng-class="tabs[2].class" ><a href="#" ng-click="changeTab(2)">Send</a></li>
 				</ul>
+				
 				<div data-ng-show="showDragAndDrop && enableDropZone">
 					<fieldset>
 						<br>
@@ -69,10 +70,6 @@
 							</div>
 						</div>
 					</div>
-					<br/>
-					{{modulePositions}}
-					<div ng-repeat="data in rssData">	{{data.state}}</div>
-					<br/>
 					<div class="row">
 						<div class="col-md-12">
 						<h3>recycle bin</h3>
