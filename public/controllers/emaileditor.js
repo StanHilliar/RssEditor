@@ -854,6 +854,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     {
       console.log('generateModule (' + moduleDataStr + ' / ' + moduleIdStr + ')');
       console.log('moduleFeedPositions.length:' + moduleFeedPositions.length);
+      var noSkippedEntries  = 0;
       // console.log(moduleDataStr);
       // console.log(moduleIdStr);
       var moduleHtml = '';
