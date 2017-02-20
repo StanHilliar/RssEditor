@@ -1725,7 +1725,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
               // console.log(arrayholder);
               var dataArray = feed[0][keys[0]][subKeys[0]];
 
-              feeds[modulePos] = dataArray;
+              // feeds[modulePos] = dataArray;
               if(subModulePos)
               {
                 feeds[modulePos][subModulePos] = dataArray;
