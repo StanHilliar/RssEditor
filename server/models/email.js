@@ -94,6 +94,10 @@ var EmailSchema = new Schema(
     type: String,
     required:  true
   },
+  eloquaEmailEncoding:
+  {
+    type: String
+  },
   bounceBackAddress:
   {
     type: String,
@@ -140,7 +144,6 @@ var EmailSchema = new Schema(
 
 EmailSchema.pre('save', function(next)
 {
-
   var now = new Date();
 
   this.updatedAt = now;

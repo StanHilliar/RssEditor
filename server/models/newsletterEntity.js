@@ -110,6 +110,10 @@ var NewsletterEntitySchema = new Schema(
     type: String,
     required:  true
   },
+  eloquaEmailEncoding:
+  {
+    type: String
+  },
   header:
   {
     type: String
@@ -137,9 +141,7 @@ NewsletterEntitySchema.pre('save', function(next)
   this.updatedAt = now;
   if ( !this.createdAt ) 
   {
-
       this.createdAt = now;
-
   }
   
   next();
