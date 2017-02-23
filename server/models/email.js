@@ -123,6 +123,10 @@ var EmailSchema = new Schema(
     type: String,
     /*required:  true*/
   },
+  hiddenPreviewText:
+  {
+    type: String
+  },
   data:
   [{
      state: String,
@@ -140,7 +144,6 @@ var EmailSchema = new Schema(
     type: String
   }
 });
-
 
 EmailSchema.pre('save', function(next)
 {

@@ -1,4 +1,4 @@
-<div class="" data-ng-controller="EmaileditorController">
+<div class="" data-ng-controller="EmaileditorController" ng-init="load()">
 	<div class="row">
 		<div class="col-sm-5 col-md-5 sidebar">
 		  	<div class="row">
@@ -45,7 +45,6 @@
 		  		</div>
 		  	</div>
 
-		 
 		  	<div class=".hr-sm">
 		  		<hr>
 		  	</div>
@@ -69,6 +68,12 @@
 			    	<div class="col-md-12">
 						<label for="EmailSubject" class="dark">email subject</label>
 		      			<input type="text" class="form-control" placeholder="Subject." ng-model="EmailSubject" id="EmailSubject" name="EmailSubject">
+		      		</div>
+		      	</div>
+		      	<div class="row" ng-show="containsHiddenPreview">
+			    	<div class="col-md-12">
+						<label for="hiddenPreviewText" class="dark">hidden preview text</label>
+		      			<textarea type="text" class="form-control" placeholder="enter your hidden preview text here" ng-model="hiddenPreviewText" id="hiddenPreviewText" name="EmailSubject"></textarea>
 		      		</div>
 		      	</div>
 			    <div class="row ">
