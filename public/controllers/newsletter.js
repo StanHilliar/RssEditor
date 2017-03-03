@@ -17,6 +17,8 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     $scope.errorMsgs                = [];
     $scope.templateErrorMsgs        = [];
     $scope.availableSEmailGroups    = [];
+    $scope.availableEmailHeaders    = [];
+    $scope.availableEmailFooters    = [];
     $scope.availableSegments        = [];
     $scope.availableSecurityCircles = [];
     /* [
@@ -135,6 +137,18 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     {
       console.log(emailGroups);
       $scope.availableSEmailGroups = emailGroups;
+    });
+
+    Eloqua.emailHeaders().query({company: MeanUser.company.id}, function(emailHeaders)
+    {
+      console.log(emailHeaders);
+      $scope.availableEmailHeaders = emailHeaders;
+    });
+
+    Eloqua.emailFooters().query({company: MeanUser.company.id}, function(emailFooters)
+    {
+      console.log(emailFooters);
+      $scope.availableEmailFooters = emailFooters;
     });
 
     Circles.mineCompany({company: MeanUser.company.id}, function(acl) 
@@ -346,8 +360,14 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       {
         if($scope.availableSEmailGroups[i].id == $scope.entity.eloquaEmailGroup)
         {
-          $scope.entity.eloquaHeader = $scope.availableSEmailGroups[i].emailHeaderId;
-          $scope.entity.eloquaFooter = $scope.availableSEmailGroups[i].emailFooterId;
+          if(!$scope.entity.setEloquaHeaderManually)
+          {
+            $scope.entity.eloquaHeader = $scope.availableSEmailGroups[i].emailHeaderId;
+          }
+          if(!$scope.entity.setEloquaFooterManually)
+          {
+            $scope.entity.eloquaFooter = $scope.availableSEmailGroups[i].emailFooterId;
+          }
         }
       }
 

@@ -35,6 +35,22 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
             });
         }
 
+        function getEmailHeaders()
+        {
+            return $resource('/api/:company/emaileditor/emailheaders/',
+            {
+                company: '@company'
+            });
+        }
+
+        function getEmailFooters()
+        {
+            return $resource('/api/:company/emaileditor/emailfooters/',
+            {
+                company: '@company'
+            });
+        }
+
         function eloquaEmail()
         {
            return $resource('/api/:company/emaileditor/eloquaemail/:eloquaEmailId/', 
@@ -73,6 +89,8 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
             emailModule: getEmailModule,
             segments: getSegments,
             emailGroups: getEmailGroups,
+            emailHeaders: getEmailHeaders,
+            emailFooters: getEmailFooters,
             eloquaEmail: eloquaEmail,
             eloquaCampaign: eloquaCampaign,
             eloquaTestEmail: eloquaTestEmail,

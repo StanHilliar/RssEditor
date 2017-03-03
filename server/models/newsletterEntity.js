@@ -105,11 +105,19 @@ var NewsletterEntitySchema = new Schema(
     type: String,
     required:  true
   },  
+  setEloquaFooterManually:
+  {
+    type: Boolean
+  },
   eloquaHeader:
   {
     type: String,
     required:  true
-  },  
+  }, 
+  setEloquaHeaderManually:
+  {
+    type: Boolean
+  },
   eloquaEmailGroup:
   {
     type: String,
