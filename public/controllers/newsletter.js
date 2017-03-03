@@ -246,7 +246,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
           {
             moduleIdentifier = match[0].substr(2);
             placeholderType = 'DROPZONE';
-            $scope.hasDropzone
+            $scope.hasDropzone = true;
           }
           
           moduleIdentifier = moduleIdentifier.substr(0, moduleIdentifier.length-2); 
@@ -325,7 +325,6 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
         _currentPos = $scope.entity.modules[0].templatePosEnd;
         $scope.entity._currentPos = _currentPos;
       }
-
 
       if($scope.entity.modules.length > 1)
       {

@@ -136,6 +136,8 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
               $scope.rssData          = email.data;
               $scope.feedPositions    = email.positions;
               $scope.modulePositions  = email.modulePositions;
+              $scope.segment          = email.segment;
+      
               // status: 'draft'
             }
 
@@ -269,6 +271,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       {
         //console.log('storedEmail NOT null');
         $scope.storedEmail.name                 = $scope.EmailName;
+        $scope.storedEmail.segment              = $scope.segment;      
         $scope.storedEmail.subject              = $scope.EmailSubject;
         $scope.storedEmail.scheduledDate        = $scope.dt;
         $scope.storedEmail.scheduledTime        = $scope.dt;
