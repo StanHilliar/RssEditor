@@ -163,21 +163,23 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       $scope.loading.encoding = false;
     });
 
-    $scope.loading.circles = true;
-
+    $scope.loading.headers = true;
     Eloqua.emailHeaders().query({company: MeanUser.company.id}, function(emailHeaders)
     {
       console.log(emailHeaders);
       $scope.availableEmailHeaders = emailHeaders;
+      $scope.loading.headers = false;
     });
 
+    $scope.loading.footers = true;
     Eloqua.emailFooters().query({company: MeanUser.company.id}, function(emailFooters)
     {
       console.log(emailFooters);
       $scope.availableEmailFooters = emailFooters;
+      $scope.loading.footers = false;
     });
 
-
+    $scope.loading.circles = true;
     Circles.mineCompany({company: MeanUser.company.id}, function(acl) 
     { 
       $scope.availableSecurityCircles = acl.allowed;

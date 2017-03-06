@@ -98,13 +98,13 @@
  </div>
  <div class="row rowSpaced">
 		<div class="col-xs-6 col-md-5">
-		  	<label for="eloquaHeader">emailHeader  <!--{{entity.eloquaHeader}}--></label>
+		  	<label for="eloquaHeader">emailHeader  <!--{{entity.eloquaHeader}}--><span ng-if="loading.headers" class="glyphicon glyphicon-refresh spinning"></span></label>
 			<input type="checkbox" ng-model="entity.setEloquaHeaderManually" name="setEloquaHeaderManually"> <label for="setEloquaHeaderManually">&nbsp;|&nbsp;set manually&nbsp;</label>
 		  	<select class="form-control" name="eloquaHeader" ng-model="entity.eloquaHeader" ng-options="header.id as header.name for header in availableEmailHeaders" ng-disabled="!entity.setEloquaHeaderManually">
 			</select>
 		</div>
 		<div class="col-xs-6 col-md-5">
-		  	<label for="eloquaFooter">emailFooter  <!--{{entity.eloquaFooter}}--></label>
+		  	<label for="eloquaFooter">emailFooter  <!--{{entity.eloquaFooter}}--><span ng-if="loading.footers" class="glyphicon glyphicon-refresh spinning"></span></label>
 			<input type="checkbox" ng-model="entity.setEloquaFooterManually" name="setEloquaFooterManually"> <label for="setEloquaFooterManually">&nbsp;|&nbsp;set manually&nbsp;</label>
 		  	<select class="form-control" name="eloquaFooter" ng-model="entity.eloquaFooter" ng-options="footer.id as footer.name for footer in availableEmailFooters" ng-disabled="!entity.setEloquaFooterManually">
 			</select>
