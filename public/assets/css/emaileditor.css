@@ -21,6 +21,28 @@
     z-index: 1000;
 }
 
+.sidebar .nav-tabs > li:not(.active)
+{
+  background-color: rgba(240,240,240, 100);
+  border: 1px solid #e0e0e0;
+}
+
+.sidebar .nav-tabs > li:not(.active):focus
+{
+  background-color: rgba(240,240,240, 100);
+}
+
+.sidebar .nav-tabs > li:not(.active) > a
+{
+  color: rgba(0,0,0,100);
+}
+
+.sidebar .nav-tabs > li:not(.active):hover > a
+{
+  background-color: rgba(150,150,150, 100);
+  color: #f4d03f;
+}
+
 .emailSettings
 {
   position: relative;
@@ -102,4 +124,27 @@
 .rowSpaced 
 {
   margin: 10px 10px 15px 10px;
+}
+
+.trashBin 
+{
+    border: 3px dashed #FFABAB;
+    min-height: 80px;
+    background: repeating-linear-gradient( -45deg, #ddd, #ddd 10px, #eee 10px, #eee 20px );
+}
+
+.trashBin > div
+{
+   border: 2px solid #bbb;
+   background-color: #ddd;
+   height: 75px!important;
+   width: 75px!important;
+   position: relative;
+   float: left;
+   margin-right: 5px;
+}
+
+.trashBin > div > * 
+{ 
+  display: none; 
 }

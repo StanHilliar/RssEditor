@@ -134,6 +134,60 @@ module.exports = function(amazingEloqua) {
               }
             });   
         },
+        getEmailHeaders: function(req, res, next) 
+        { 
+            console.dir('getEmailHeaders');
+      
+            amazingEloqua.searchEmailHeaders('*', '1', '300', 'complete', function(err, response)
+            {
+              console.log('searchEmailHeaders callback');
+              console.log(err);
+              console.log(response);
+
+              if(err != null)
+              {
+                res.status(400).json(err);
+              }
+              else
+              {
+                if(response != null)
+                {
+                  res.jsonp(response.elements);
+                }
+                else
+                {
+                   res.status(400).json('response is null');
+                }
+              }
+            });   
+        },
+        getEmailFooters: function(req, res, next) 
+        { 
+            console.dir('getEmailFooters');
+      
+            amazingEloqua.searchEmailFooters('*', '1', '300', 'complete', function(err, response)
+            {
+              console.log('searchEmailFooters callback');
+              console.log(err);
+              console.log(response);
+
+              if(err != null)
+              {
+                res.status(400).json(err);
+              }
+              else
+              {
+                if(response != null)
+                {
+                  res.jsonp(response.elements);
+                }
+                else
+                {
+                   res.status(400).json('response is null');
+                }
+              }
+            });   
+        },
         createEmail: function(req, res, next) 
         {
           console.log('create');

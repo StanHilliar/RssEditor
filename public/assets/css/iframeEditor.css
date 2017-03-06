@@ -1,3 +1,22 @@
+#modulesContainer
+{
+	/*padding-top:15px;*/
+	/*margin: 20px;*/
+}
+
+#modulesContainer:empty
+{
+	border: 1px solid #000;
+	min-height: 80px;
+	background: repeating-linear-gradient(
+	  -45deg,
+	  #ddd,
+	  #ddd 10px,
+	  #eee 10px,
+	  #eee 20px
+	);
+}
+
 .dndelement
 {
 	border: 1px dashed grey;
@@ -46,6 +65,21 @@
 {
 	position: relative;
 	z-index: 10;
+}
+
+.emailModuleGhost
+{
+	/*position: relative;*/
+	/*z-index: 10;*/
+	border: 1px solid #000;
+	min-height: 80px;
+	background: repeating-linear-gradient(
+	  -45deg,
+	  #ddd,
+	  #ddd 10px,
+	  #eee 10px,
+	  #eee 20px
+	);
 }
 
 .clickableElement.inactiveEmailEntry
@@ -104,6 +138,32 @@
 {
 	visibility: visible;
 }
+.emailModuleHandle:hover
+{
+	cursor: pointer;
+}
+
+.emailModuleHandle
+{
+	width: 50px;
+	height: 50px;
+	background-color: rgba(80, 80, 80, 0.9);
+    border: 1px solid #000;
+	position: absolute;
+	top: 0px;
+	left: 65px;
+	padding: 2px 0 6px 11px;	
+	font-size: 45px;
+	visibility: hidden;
+	color: #ddd;
+	z-index: 30;
+}
+
+.emailModule:hover > .emailModuleHandle
+{
+	visibility: visible;
+}
+
 
 /*
 .clickableElement:hover 

@@ -85,6 +85,11 @@ var NewsletterEntitySchema = new Schema(
     type: Array,
     default: []
   },
+  dropzoneModules:
+  {
+    type: Array,
+    default: []
+  },
   eloquaFolder:
   {
     type: String,
@@ -100,11 +105,19 @@ var NewsletterEntitySchema = new Schema(
     type: String,
     required:  true
   },  
+  setEloquaFooterManually:
+  {
+    type: Boolean
+  },
   eloquaHeader:
   {
     type: String,
     required:  true
-  },  
+  }, 
+  setEloquaHeaderManually:
+  {
+    type: Boolean
+  },
   eloquaEmailGroup:
   {
     type: String,
@@ -135,7 +148,6 @@ var NewsletterEntitySchema = new Schema(
 
 NewsletterEntitySchema.pre('save', function(next)
 {
-
   var now = new Date();
 
   this.updatedAt = now;

@@ -90,10 +90,26 @@
 	</div>
 	<div class="row rowSpaced">
 		<div class="col-xs-6 col-md-5">
+
 		  	<label>Encoding   <!--{{entity.eloquaEmailEncoding}}--><span ng-if="loading.encoding" class="glyphicon glyphicon-refresh spinning"></span></label>
 		  	<select class="form-control" ng-model="entity.eloquaEmailEncoding" ng-options="encoding.id as encoding.name for encoding in availableEmailEncodings">
 			</select>
 		</div>
+ </div>
+ <div class="row rowSpaced">
+		<div class="col-xs-6 col-md-5">
+		  	<label for="eloquaHeader">emailHeader  <!--{{entity.eloquaHeader}}--></label>
+			<input type="checkbox" ng-model="entity.setEloquaHeaderManually" name="setEloquaHeaderManually"> <label for="setEloquaHeaderManually">&nbsp;|&nbsp;set manually&nbsp;</label>
+		  	<select class="form-control" name="eloquaHeader" ng-model="entity.eloquaHeader" ng-options="header.id as header.name for header in availableEmailHeaders" ng-disabled="!entity.setEloquaHeaderManually">
+			</select>
+		</div>
+		<div class="col-xs-6 col-md-5">
+		  	<label for="eloquaFooter">emailFooter  <!--{{entity.eloquaFooter}}--></label>
+			<input type="checkbox" ng-model="entity.setEloquaFooterManually" name="setEloquaFooterManually"> <label for="setEloquaFooterManually">&nbsp;|&nbsp;set manually&nbsp;</label>
+		  	<select class="form-control" name="eloquaFooter" ng-model="entity.eloquaFooter" ng-options="footer.id as footer.name for footer in availableEmailFooters" ng-disabled="!entity.setEloquaFooterManually">
+			</select>
+		</div>	
+
 	</div>
 	<div class="row rowSpaced">
 		<div class="col-xs-6 col-md-5">
@@ -118,8 +134,7 @@
 		</div>	
 
 	</div>
-
-	<!--
+    <!--
 	<div class="row rowSpaced">
 		<div class="col-md-12">
 		 	<label for="">eloquaCampaignFolder</label>
@@ -162,7 +177,7 @@
 			</button>
 		</div>
 	</div>
-	<div class="row rowSpaced" data-ng-repeat="module in entity.modules">	
+	<div class="row rowSpaced" data-ng-repeat="module in entity.modules" ng-if="!module.placeholderType||module.placeholderType=='MODULE'">	
 		<div class="col-md-8" >	
 			<label for="module_$index">Module {{module.moduleIdentifier}} <span ng-if="loading.modules" class="glyphicon glyphicon-refresh spinning"></span></label>
 			<select class="form-control" ng-model="module._id" ng-options="element._id as element.name for element in availableModules" name="module_$index"></select>
@@ -174,34 +189,37 @@
 		    </label>
 		</div>
 	</div>
-	<!--
-	<div class="row rowSpaced">
-		<div class="col-md-10">
-		header
-		<div ui-ace="{
-		  useWrapMode : true,
-		  showGutter: true,
-		  theme:'idle_fingers',
-		  mode: 'html',
-		  firstLineNumber: 1,
-		  vscroll: true
-		      }" ng-model="entity.header"></div>
+	<div class="row rowSpaced" ng-show="hasDropzone">
+		<div class="col-xs-6 col-md-5">
+		  	<label>available modules</label>
+		  	<select multiple class="form-control" ng-model="selectedAvailableModules" ng-options="module as module.name for module in availableDropzoneModules">
+			</select>
 		</div>
-	</div>
-	<div class="row rowSpaced">
-		<div class="col-xs-6 col-md-10">
-			footer
-			<div ui-ace="{
-			  useWrapMode : true,
-			  showGutter: true,
-			  theme:'idle_fingers',
-			  mode: 'html',
-			  firstLineNumber: 1,
-			  vscroll: true
-			      }" ng-model="entity.footer"></div>
-		 </div>
-	</div> -->
+		<div class="col-xs-1 col-md-1">
+			<br/>
+		  	<A href="#"  ng-click="moveAll(availableDropzoneModules, selectedDropzoneModules)">
+		  		&nbsp;<span class="glyphicon glyphicon-fast-forward" aria-hidden="true"></span>
+		  	</A><br/>
 
+		  	<A href="#"  ng-click="moveItem(selectedAvailableModules[0], availableDropzoneModules, selectedDropzoneModules)">
+		  		<span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
+		  	</A><br/><br/>
+
+		  	<A href="#"  ng-click="moveItem(selecteddropZoneModules[0], selectedDropzoneModules, availableDropzoneModules)">
+		  		<span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
+		  	</A><br/>
+		  	
+			<A href="#"  ng-click="moveAll(selectedDropzoneModules, availableDropzoneModules)">
+				&nbsp;<span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span>
+			</A><br/>
+		</div>
+		<div class="col-xs-6 col-md-6">
+		    <label>selected modules</label>
+		  	<select multiple class="form-control" ng-model="selecteddropZoneModules" ng-options="module as module.name for module in selectedDropzoneModules">
+			</select>
+		</div>
+		
+	</div>
 	<div class="row rowSpaced">
 		<div class="col-md-10">
 			<br/>
