@@ -117,6 +117,8 @@ module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circl
 
   app.route('/api/:company/emaileditor/segments/:id').get(eloqua.getSegments);
   app.route('/api/:company/emaileditor/emailgroups/').get(eloqua.getEmailgroups);
+  app.route('/api/:company/emaileditor/emailheaders/').get(eloqua.getEmailHeaders);
+  app.route('/api/:company/emaileditor/emailfooters/').get(eloqua.getEmailFooters);
 
   app.route('/api/:company/emaileditor/eloquaemail/').post(eloqua.createEmail);
   app.route('/api/:company/emaileditor/eloquaemail/:eloquaEmailId').post(eloqua.updateEmail);

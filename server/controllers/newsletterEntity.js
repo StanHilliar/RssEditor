@@ -3,21 +3,80 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-  NewsletterEntity = mongoose.model('NewsletterEntity'),
-  emailModules = require('./emailModule')(),
-  async = require('async'),
-  config = require('meanio').loadConfig(),
-  crypto = require('crypto'),
-  _ = require('lodash'),
-  jwt = require('jsonwebtoken'); //https://npmjs.org/package/node-jsonwebtoken
-
-
+var mongoose            = require('mongoose');
+var NewsletterEntity    = mongoose.model('NewsletterEntity');
+var emailModules        = require('./emailModule')();
+var async               = require('async');
+var config              = require('meanio').loadConfig();
+var _                   = require('lodash');
 
 module.exports = function(circles) {
+
+    function getEmailModuleByArrayOfIds(modules, cb)
+    {
+        console.log('getEmailModuleByArrayOfIds--------------------');
+        var cache = [];
+        async.eachSeries(modules, function (module, callback) 
+        {
+            console.log('each '+module._id);
+            console.log(module.placeholderType);
+            if(module._id != "")
+            {
+                if(module.placeholderType == 'DROPZONE')
+                {
+                    console.log('IS dropzone');
+                    cache[module.moduleIdentifier] = module;
+                    return callback(null,  cache[module.moduleIdentifier]);
+                }
+                else
+                {
+                    if (_.contains(cache, module._id)) 
+                    {
+                        async.setImmediate(function () 
+                        {
+                            return callback(null, cache[module._id]);
+                        });
+                    } 
+                    else 
+                    {
+                        emailModules.getModuleById(module._id, function(err, emailModule)
+                        {
+                            console.log('getemailModules');
+                            if(err != null)
+                            {
+                                return callback(err);
+                            }
+
+                            if(emailModule != null)
+                            {
+                                console.log(module._id)
+                                //cache[module._module._id] = emailModule;
+                                cache[module._id]       = emailModule._doc;
+                                return callback(null, cache[module._id]);
+                            }
+                            else
+                            {
+                                return callback('getfull - emailModule is null');
+                            }
+                        });
+                    }
+                }
+            }
+            else
+            {
+                return callback('module id is null');
+            }
+        }, 
+        function(err)
+        {
+            console.log('getEmailModuleByArrayOfIds done');
+            return cb(err, cache);
+        });
+    }
+
     return {
         /**
-         * Create user
+         * Create entity
          */
         create: function(req, res, next) 
         {
@@ -81,7 +140,7 @@ module.exports = function(circles) {
             });
         },
         /**
-         * Find user by id
+         * Find entity by id
          */
         get: function(req, res) 
         {
@@ -106,7 +165,7 @@ module.exports = function(circles) {
             });
         },       
         /**
-         * Find user by id
+         * get entity and modules by id
          */
         getfull: function(req, res) 
         {
@@ -125,64 +184,108 @@ module.exports = function(circles) {
                     return res.status(500).send('Failed to load newsletterEntity ' + id);
                 }    
 
-                var cache = [];
-
-                async.eachSeries(newsletterEntity.modules, function (module, callback) 
+                getEmailModuleByArrayOfIds(newsletterEntity.modules, 
+                function(err, modules)
                 {
-                    console.log('each '+module._id);
-                    if(module._id != "")
+                    if(err)
                     {
-                        if (_.contains(cache, module._id)) 
+                        console.error(err);
+                    }
+                    console.log(modules.length);
+                    var myDropzoneModules = _.map(newsletterEntity.dropzoneModules, function(id){ return {_id: id}; });;
+                    getEmailModuleByArrayOfIds(myDropzoneModules, 
+                    function(dropErr, dropzoneModules)
+                    {
+                        if(dropErr)
                         {
-                            async.setImmediate(function () 
-                            {
-                                callback(null, cache[module._id]);
-                            });
-                        } 
-                        else 
-                        {
-                            emailModules.getModuleById(module._id, function(err, emailModule)
-                            {
-                                console.log('getemailModules');
-                                if(err != null)
-                                {
-                                    return callback(err);
-                                }
-
-                                if(emailModule != null)
-                                {
-                                    console.log(module._id)
-                                    //cache[module._id] = emailModule;
-                                    cache[module._id] = _.extend(emailModule._doc, module);
-                                    return callback(null, cache[module._id]);
-                                }
-                                else
-                                {
-                                    return callback('getfull - emailModule is null');
-                                }
-                            });
+                            console.error(dropErr);
                         }
-                    }
-                    else
-                    {
-                        callback(null, module);
-                    }
-                }, function()
-                {
-                    
-                    newsletterEntity.modules = [];
+                        console.log(dropzoneModules.length);
+                        // newsletterEntity.modules = [];
 
-                    for(var key in cache)
-                    {
-                        if(cache.hasOwnProperty(key))
+                        console.log('modules:');
+                        for(var i = 0; i < newsletterEntity.modules.length; i++)
                         {
-                            newsletterEntity.modules.push(cache[key]);
+                            newsletterEntity.modules[i]._id
+                            // newsletterEntity.modules[i].type
+                            _.extend(newsletterEntity.modules[i], modules[newsletterEntity.modules[i]._id]);
+                        //  cache[module._id]       = _.extend(emailModule._doc, module);
                         }
-                    }
-                    console.log('done');
-                    
-                    res.jsonp([newsletterEntity]);
+                       
+
+                        newsletterEntity.dropzoneModules = [];
+
+                        for(var key in dropzoneModules)
+                        {
+                            if(dropzoneModules.hasOwnProperty(key))
+                            {
+                                newsletterEntity.dropzoneModules.push(dropzoneModules[key]);
+                            }
+                        }
+                        console.log('done');
+                        
+                        res.jsonp([newsletterEntity]);
+                    });
                 });
+                // var cache = [];
+
+                // async.eachSeries(newsletterEntity.modules, function (module, callback) 
+                // {
+                //     console.log('each '+module._id);
+                //     if(module._id != "")
+                //     {
+                //         if (_.contains(cache, module._id)) 
+                //         {
+                //             async.setImmediate(function () 
+                //             {
+                //                 callback(null, cache[module._id]);
+                //             });
+                //         } 
+                //         else 
+                //         {
+                //             emailModules.getModuleById(module._id, function(err, emailModule)
+                //             {
+                //                 console.log('getemailModules');
+                //                 if(err != null)
+                //                 {
+                //                     return callback(err);
+                //                 }
+
+                //                 if(emailModule != null)
+                //                 {
+                //                     console.log(module._id)
+                //                     //cache[module._id] = emailModule;
+                //                     cache[module._id] = _.extend(emailModule._doc, module);
+                //                     return callback(null, cache[module._id]);
+                //                 }
+                //                 else
+                //                 {
+                //                     return callback('getfull - emailModule is null');
+                //                 }
+                //             });
+                //         }
+                //     }
+                //     else
+                //     {
+                //         callback('module id is null');
+                //     }
+                // }, 
+                // function()
+                // {
+                    
+                //     newsletterEntity.modules = [];
+
+                //     for(var key in cache)
+                //     {
+                //         if(cache.hasOwnProperty(key))
+                //         {
+                //             newsletterEntity.modules.push(cache[key]);
+                //         }
+                //     }
+                //     console.log('done');
+                    
+                //     res.jsonp([newsletterEntity]);
+                // });
 
                
               
