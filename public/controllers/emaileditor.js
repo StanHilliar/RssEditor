@@ -20,10 +20,13 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     var EloquaCampaign            = Eloqua.eloquaCampaign();
     var EloquaTestEmail           = Eloqua.eloquaTestEmail();
     var EloquaCampaignUnschedule  = Eloqua.eloquaCampaignUnschedule();
+
     var storedEloquaEmail = null;
     var storedEloquaCampaign = null;
     var sendRightNow = false;
+
     var emailId = null;
+    $scope.storedEmail = new Email();
 
     $scope.enableDropZone = false;
 
@@ -50,6 +53,23 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     var feeds = [];
 
     $scope.newsletterEntity = '000';
+    $scope.containsHiddenPreview = false;
+    
+    /*
+    $scope.emailSegements = 
+      [
+        { 
+          id: 0,
+          label: 'Segment 1',
+          
+        },
+        { 
+          id: 1,
+          label: 'Segment 2'
+        } 
+      ];
+      
+    $scope.emailSegement = $scope.emailSegements[0];*/
 
     $scope.segment = '';
 
@@ -83,6 +103,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       scope: $scope
     }
 
+
     $scope.dropzoneIdtoIndex = {};
     var countModulesInDropzone = 0;
 
@@ -93,10 +114,8 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
       if ($scope.segment == '') 
       {
-        $scope.segment = $scope.entity.segments[0].id;
-      }
-      $scope.emailTemplates = newsletterEntityArray[0];
-
+        // console.log('entity loaded');
+        $scope.entity = newsletterEntityArray[0];
       $scope.entity.header = $scope.entity.header.replace(/(\r\n|\n|\r)/gm, "");
       $scope.entity.footer = $scope.entity.footer.replace(/(\r\n|\n|\r)/gm, "");
 
@@ -127,6 +146,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
             {
               $scope.EmailName = email.name;
               $scope.EmailSubject = email.subject;
+              $scope.hiddenPreviewText = email.hiddenPreviewText;
 
               if (email.scheduledDate) 
               {
@@ -189,8 +209,9 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
             $scope.api.initSortable();
           });
 
-          //console.log($scope.storedEmail);
-          //console.log($scope.storedEmail.eloquaEmail);
+            //console.log($scope.storedEmail);
+            //console.log($scope.storedEmail.eloquaEmail);
+
 
           // $scope.initAfterLoad();
         });
@@ -203,6 +224,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         $scope.init();
       }
     });
+
 
     $scope.setMode = function ()
     {
@@ -266,7 +288,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       console.log(myData);
 
       // console.log($scope.storedEmail);
-
       if ($scope.storedEmail != null) 
       {
         //console.log('storedEmail NOT null');
@@ -274,6 +295,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         $scope.storedEmail.name                 = $scope.EmailName;
         $scope.storedEmail.segment              = $scope.segment;      
         $scope.storedEmail.subject              = $scope.EmailSubject;
+        $scope.storedEmail.hiddenPreviewText    = $scope.hiddenPreviewText;
         $scope.storedEmail.scheduledDate        = $scope.dt;
         $scope.storedEmail.scheduledTime        = $scope.dt;
         $scope.storedEmail.positions            = $scope.feedPositions;
@@ -295,10 +317,10 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         //console.log('storedEmail == null');
         $scope.storedEmail = new Email(
         {
-
           name                  : $scope.EmailName,
           segment               : $scope.segment,
           subject               : $scope.EmailSubject,
+          hiddenPreviewText     : $scope.hiddenPreviewText,
           scheduledDate         : $scope.dt,
           scheduledTime         : $scope.dt,
           newsletterEntity      : $stateParams.newsletterid,
@@ -342,6 +364,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     {
       $scope.checkAds(function () 
       {
+
         if (storedEloquaEmail == null) 
         {
           storedEloquaEmail = new EloquaEmail(
@@ -382,7 +405,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           storedEloquaEmail.html = $scope.generateEmail(false);
         }
 
-       // console.log(storedEloquaEmail.html);
+        // console.log(storedEloquaEmail.html);
 
 
         storedEloquaEmail.company = MeanUser.company.id;
@@ -1155,6 +1178,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
               } //if (moduleState == 1 || isEdit)
           }
 
+
           if (isEdit) 
           {
             formatedEntries += _moduleData;
@@ -1170,7 +1194,16 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       //console.log($scope.adData);
 
       //console.log('generateEmail done');
-      return $scope.emailTemplates.header + formatedEntries + $scope.emailTemplates.footer;
+      // console.log($scope.emailTemplates);
+      var fullEmail = $scope.emailTemplates.header + formatedEntries + $scope.emailTemplates.footer;
+      console.log(fullEmail);
+      fullEmail = fullEmail.replace("{{hiddenPreviewText}}", '{{api.scope.hiddenPreviewText}}');
+      if(!isEdit)
+      {
+        fullEmail = $scope.compileEmailAndData(fullEmail);
+      }
+       
+      return fullEmail;
     };
 
     function _getAdView(isEdit, currentModule, moduleCounter, _adIndex) 
@@ -1180,6 +1213,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       {
         _adview += '<div class="static">';
       }
+
 
       _adview += currentModule.adViews[0].source;
 
@@ -1209,7 +1243,8 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       }
     }
 
-    $scope.initAfterLoad = function () 
+
+    $scope.initAfterLoad = function() 
     {
       console.log('init');
 
@@ -1284,7 +1319,8 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     $scope.init = function (cb) 
     {
-      console.log('init');
+      console.log('
+                  ');
 
       var defer = $q.defer();
       var promises = [];
@@ -1487,6 +1523,15 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
       return promise;
     };
+                                                                 
+    $scope.checkIfTemplateContainsHiddenPreviewAndSetFlag = function()
+    {
+      if($scope.your_variable.indexOf('{{api.scope.hiddenPreviewText}}') > -1)
+      {
+        $scope.containsHiddenPreview = true;
+      }
+      
+    }
 
     $scope.checkAd2 = function (adData, index)
     {

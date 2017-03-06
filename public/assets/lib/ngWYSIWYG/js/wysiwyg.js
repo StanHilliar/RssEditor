@@ -89,6 +89,7 @@
 
 				var isDNDInit = false;
 
+
 				/*var scriptTag = "<script type='text/javascript' src='https://code.jquery.com/jquery-1.11.3.min.js'><";
 				scriptTag +=  "/script>";
 				jQuery("iframe").contents().find("head").append(scriptTag);*/
@@ -116,6 +117,7 @@
 					//scope.feedNumberOfEntries = '1122';
 					//scope.rss = scope.rssData;
 					scope.rssData = scope.api.scope.rssData;
+          scope.hiddenPreviewText = scope.api.scope.hiddenPreviewText;
 					scope.adData = scope.api.scope.adData;
 
 					$compile($element.contents())(scope);
