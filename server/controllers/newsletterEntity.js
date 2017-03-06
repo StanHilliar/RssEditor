@@ -144,7 +144,8 @@ module.exports = function(circles) {
          */
         get: function(req, res) 
         {
-            NewsletterEntity.findOne({
+            NewsletterEntity.findOne(
+            {
                 _id: req.params.entityId
             }).exec(function(err, newsletterEntity) 
             {
@@ -153,16 +154,16 @@ module.exports = function(circles) {
                     console.error('error1');
                     return res.status(500).send(err);
                 }
+
                 if (!newsletterEntity)
                 {
                     console.error('error2');
-                    return res.status(500).send('Failed to load newsletterEntity ' + id);
+                    return res.status(500).send('Failed to load newsletterEntity ' + req.params.entityId);
                 }    
 
-               
                 res.jsonp([newsletterEntity]);
             });
-        },
+        },       
         /**
          * get entity and modules by id
          */
@@ -170,7 +171,7 @@ module.exports = function(circles) {
         {
             NewsletterEntity.findOne({
                 _id: req.params.entityId
-            }).exec(function(err, newsletterEntity) 
+            }).exec(function(err, newsletterEntity)  
             {
                 if (err) 
                 {
@@ -431,4 +432,3 @@ module.exports = function(circles) {
 
 
 }
-

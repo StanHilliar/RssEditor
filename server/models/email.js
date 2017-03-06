@@ -94,6 +94,10 @@ var EmailSchema = new Schema(
     type: String,
     required:  true
   },
+  eloquaEmailEncoding:
+  {
+    type: String
+  },
   bounceBackAddress:
   {
     type: String,

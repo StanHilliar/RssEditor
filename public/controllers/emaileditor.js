@@ -270,6 +270,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       if ($scope.storedEmail != null) 
       {
         //console.log('storedEmail NOT null');
+
         $scope.storedEmail.name                 = $scope.EmailName;
         $scope.storedEmail.segment              = $scope.segment;      
         $scope.storedEmail.subject              = $scope.EmailSubject;
@@ -282,6 +283,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         $scope.storedEmail.eloquaCampaignFolder = $scope.entity.eloquaCampaignFolder;
         $scope.storedEmail.eloquaFooter         = $scope.entity.eloquaFooter;
         $scope.storedEmail.eloquaHeader         = $scope.entity.eloquaHeader;
+        $scope.storedEmail.eloquaEmailEncoding  = $scope.entity.eloquaEmailEncoding;       
         $scope.storedEmail.bounceBackAddress    = $scope.entity.bounceBackAddress;
         $scope.storedEmail.replyToName          = $scope.entity.replyToName;
         $scope.storedEmail.replyToEmail         = $scope.entity.replyToEmail;
@@ -293,6 +295,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         //console.log('storedEmail == null');
         $scope.storedEmail = new Email(
         {
+
           name                  : $scope.EmailName,
           segment               : $scope.segment,
           subject               : $scope.EmailSubject,
@@ -304,6 +307,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           eloquaCampaignFolder  : $scope.entity.eloquaCampaignFolder,
           eloquaFooter          : $scope.entity.eloquaFooter,
           eloquaHeader          : $scope.entity.eloquaHeader,
+          eloquaEmailEncoding   : $scope.entity.eloquaEmailEncoding,  
           eloquaEmailGroup      : $scope.entity.eloquaEmailGroup,
           bounceBackAddress     : $scope.entity.bounceBackAddress,
           replyToName           : $scope.entity.replyToName,
@@ -349,6 +353,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
               eloquaHeader: $scope.storedEmail.eloquaHeader,
               eloquaFooter: $scope.storedEmail.eloquaFooter,
               eloquaEmailGroup: $scope.storedEmail.eloquaEmailGroup,
+              eloquaEmailEncoding: $scope.storedEmail.eloquaEmailEncoding,
               bounceBackAddress: $scope.storedEmail.bounceBackAddress,
               replyToName: $scope.storedEmail.replyToName,
               replyToEmail: $scope.storedEmail.replyToEmail,
@@ -367,6 +372,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           storedEloquaEmail.eloquaHeader = $scope.storedEmail.eloquaHeader;
           storedEloquaEmail.eloquaFooter = $scope.storedEmail.eloquaFooter;
           storedEloquaEmail.eloquaEmailGroup = $scope.storedEmail.eloquaEmailGroup;
+          storedEloquaEmail.eloquaEmailEncoding = $scope.storedEmail.eloquaEmailEncoding;
           storedEloquaEmail.bounceBackAddress = $scope.storedEmail.bounceBackAddress;
           storedEloquaEmail.replyToName = $scope.storedEmail.replyToName;
           storedEloquaEmail.replyToEmail = $scope.storedEmail.replyToEmail;
@@ -376,8 +382,8 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           storedEloquaEmail.html = $scope.generateEmail(false);
         }
 
+       // console.log(storedEloquaEmail.html);
 
-        // console.log(storedEloquaEmail.html);
 
         storedEloquaEmail.company = MeanUser.company.id;
         storedEloquaEmail.$save(function (data, headers) 

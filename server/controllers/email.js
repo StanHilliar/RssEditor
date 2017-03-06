@@ -42,6 +42,7 @@ function _getEmailById(id, cb)
 
 function _checkNewsletterEntityForCircles(circles, req, newsletterEntityId, cb)
 { 
+    console.log('_checkNewsletterEntityForCircles');
     NewsletterEntity.findOne(
         {_id: newsletterEntityId},
         'name createdBy createdAt updatedBy updatedAt circles'
@@ -49,11 +50,13 @@ function _checkNewsletterEntityForCircles(circles, req, newsletterEntityId, cb)
     .lean()
     .exec(function(getEntityErr, newsletterEntity) 
     {
+        console.log('findONe');
+        console.log(newsletterEntity);
+        var hasAccess = false;
         var hasAccess = false;
         if(getEntityErr != null)
         {
             console.error(getEntityErr)
-            
         }
         else
         {
@@ -73,7 +76,9 @@ function _checkNewsletterEntityForCircles(circles, req, newsletterEntityId, cb)
 module.exports = function(circles) {
     return {
         /**
-         * Create user
+         * Create use{ param: 'name', msg: 'You must enter a name' })  // directly from Upsales
+7        * 
+         * Create use{ param: 'name', msg: 'You must enter a name' })  // directly from Upsales
          */
         create: function(req, res, next) 
         {

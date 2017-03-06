@@ -123,6 +123,10 @@ var NewsletterEntitySchema = new Schema(
     type: String,
     required:  true
   },
+  eloquaEmailEncoding:
+  {
+    type: String
+  },
   header:
   {
     type: String

@@ -61,6 +61,17 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     $scope.newsletterExsists  = false;
     $scope.selectedSegments   = [];
     $scope.selectedModules    = [];
+    $scope.availableEmailEncodings = [];
+    
+    $scope.loading = {};
+    
+    $scope.loading.entity   = false;
+    $scope.loading.modules = false;
+    $scope.loading.segments = false;
+    $scope.loading.groups = false;
+    $scope.loading.encoding = false;
+    $scope.loading.circles = false;
+    
     $scope.saveInProgress     = false;
     $scope.hasDropzone        = false;
 
@@ -69,7 +80,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       $scope.newsletterExsists = true;
         
       console.log('loadNewsletterEntitiy');
-
+      $scope.loading.entity = true;
       NewsletterEntity.query({company: MeanUser.company.id, entityId: $stateParams.newsletterid}, function(newsletterEntityArray)
       {
         $scope.entity = newsletterEntityArray[0];
@@ -118,9 +129,11 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
         removeSelectedSegmentsfromAvailabeleSegments();
         removeSelectedCirclesfromAvailabeleCircles();
         removeSelectedDropzoneModulesfromAvailabeleDropzoneModules();
+        $scope.loading.entity = false;
       });     
     }
 
+    $scope.loading.segments = true;
     Eloqua.segments().query({company: MeanUser.company.id, id: $meanConfig.eloqua.segmentFolder}, function(segments)
     {
       //console.log(segments);
@@ -131,13 +144,26 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
 
       removeSelectedSegmentsfromAvailabeleSegments();
       removeSelectedDropzoneModulesfromAvailabeleDropzoneModules();
+      $scope.loading.segments = false;
     });  
 
+    $scope.loading.groups = true;
     Eloqua.emailGroups().query({company: MeanUser.company.id}, function(emailGroups)
     {
       console.log(emailGroups);
       $scope.availableSEmailGroups = emailGroups;
+      $scope.loading.groups = false;
     });
+
+    $scope.loading.encoding = true;
+    Eloqua.eloquaEmailEncoding().query({company: MeanUser.company.id}, function(emailEncodings)
+    {
+      console.log(emailEncodings);
+      $scope.availableEmailEncodings = emailEncodings;
+      $scope.loading.encoding = false;
+    });
+
+    $scope.loading.circles = true;
 
     Eloqua.emailHeaders().query({company: MeanUser.company.id}, function(emailHeaders)
     {
@@ -151,10 +177,12 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       $scope.availableEmailFooters = emailFooters;
     });
 
+
     Circles.mineCompany({company: MeanUser.company.id}, function(acl) 
     { 
       $scope.availableSecurityCircles = acl.allowed;
       removeSelectedCirclesfromAvailabeleCircles();
+      $scope.loading.circles = false;
     });
 
     function removeSelectedSegmentsfromAvailabeleSegments()
@@ -490,7 +518,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     $scope.listModules = function()
     {
       //console.log('list Email Modules');
-
+      $scope.loading.modules = true;
       EmailModule.query({company: MeanUser.company.id},function(response)
       {
         $scope.availableModules         = response;
@@ -507,11 +535,10 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
             }
           }
         }
+        $scope.loading.modules = false;
       });
     };
 
     $scope.listModules();   
-
-
   }
 ]);

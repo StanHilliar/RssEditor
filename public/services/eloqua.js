@@ -85,6 +85,14 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
             });
         }
 
+        function eloquaEmailEncoding()
+        {
+           return $resource('/api/:company/emaileditor/emailencoding', 
+            {
+                company: '@company'
+            });
+        }
+
         return {
             emailModule: getEmailModule,
             segments: getSegments,
@@ -94,7 +102,8 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
             eloquaEmail: eloquaEmail,
             eloquaCampaign: eloquaCampaign,
             eloquaTestEmail: eloquaTestEmail,
-            eloquaCampaignUnschedule: eloquaCampaignUnschedule
+            eloquaCampaignUnschedule: eloquaCampaignUnschedule,
+            eloquaEmailEncoding: eloquaEmailEncoding
         };
     }
 ]);
