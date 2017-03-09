@@ -166,7 +166,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
                 console.log('~~~~~~~~~~~~~~~~~~~~~~~~');
                 console.log($scope.entity.dropzoneModules);
                 console.log('~~~~~~~~~~~~~~~~~~~~~~~~');
-                if($scope.modulePosition)
+                if($scope.modulePositions)
                 {
                   for(var  i = 0; i <  $scope.modulePositions.length; i++)
                   {
@@ -182,8 +182,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
                         console.log(sortedModulePositions[x].moduleId);
                         console.log($scope.dropzoneIdtoIndex[sortedModulePositions[x].moduleId]);
                         console.log($scope.entity.dropzoneModules[$scope.dropzoneIdtoIndex[sortedModulePositions[x].moduleId]]);
-
-                      
 
                         var newModule = angular.copy($scope.entity.dropzoneModules[$scope.dropzoneIdtoIndex[sortedModulePositions[x].moduleId]]);
 
