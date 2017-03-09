@@ -168,6 +168,7 @@ describe('EmaileditorController', function ()
 
             spyOn(Email, 'query').and.callFake(function(a,cb) 
             {
+                console.log('spyOn(Email, query)');
                 console.log(a);
                 return cb([{name: 'this is a test'}]);
             });
@@ -317,9 +318,11 @@ describe('EmaileditorController', function ()
             // $scope.password = 'longerthaneightchars';
             // $scope.grade();
             expect($scope.rssContent).toEqual('omg');
-            $scope.init();
-            var email = $scope.generateEmail(false);
-            expect(email).toEqual('<html><head></head><body></body></html>');
+            $scope.init(function()
+            {
+                var email = $scope.generateEmail(false);
+                expect(email).toEqual('<html><head></head><body></body></html>');
+            });
 
             // expect($scope.clickableElementIdentifier).toEqual('dndelement');
         });
@@ -361,9 +364,11 @@ describe('EmaileditorController', function ()
 
             // $scope.password = 'longerthaneightchars';
             // $scope.grade();
-            $scope.init();
-            var email = $scope.generateEmail(false);
-            expect(email).toEqual('<html><head></head><body><div></div></body></html>');
+            $scope.init(function()
+            {
+                var email = $scope.generateEmail(false);
+                expect(email).toEqual('<html><head></head><body><div></div></body></html>');
+            });
             // expect($scope.clickableElementIdentifier).toEqual('dndelement');
         });
 
@@ -400,14 +405,18 @@ describe('EmaileditorController', function ()
             $scope.hiddenPreviewText = '';
 
             $scope.emailTemplates = $scope.entity;
+            $scope.feedPositions = [];
+            $scope.feedPositions[0] = [0];
             
             var controller = $controller('EmaileditorController', { $scope: $scope });
 
             // $scope.password = 'longerthaneightchars';
             // $scope.grade();
-            $scope.init();
-            var email = $scope.generateEmail(false);
-            expect(email).toEqual('<html><head></head><body><div></div></body></html>');
+            $scope.init(function()
+            {
+                var email = $scope.generateEmail(false);
+                expect(email).toEqual('<html><head></head><body><div></div></body></html>');
+            });
             // expect($scope.clickableElementIdentifier).toEqual('dndelement');
         });
 
@@ -450,9 +459,12 @@ describe('EmaileditorController', function ()
 
             // $scope.password = 'longerthaneightchars';
             // $scope.grade();
-            $scope.init();
-            var email = $scope.generateEmail(false);
-            expect(email).toEqual('<html><head></head><body>hiddenText<div></div></body></html>');
+            $scope.init(function()
+            {
+                var email = $scope.generateEmail(false);
+                expect(email).toEqual('<html><head></head><body>hiddenText<div></div></body></html>');
+            });
+         
             // expect($scope.clickableElementIdentifier).toEqual('dndelement');
         });
 
@@ -495,9 +507,11 @@ describe('EmaileditorController', function ()
 
             // $scope.password = 'longerthaneightchars';
             // $scope.grade();
-            $scope.init();
-            var email = $scope.generateEmail(false);
-            expect(email).toEqual('<html><head></head><body>hiddenText<div>hiddenText</div></body></html>');
+            $scope.init(function()
+            {
+                var email = $scope.generateEmail(false);
+                expect(email).toEqual('<html><head></head><body>hiddenText<div>hiddenText</div></body></html>');
+            });
             // expect($scope.clickableElementIdentifier).toEqual('dndelement');
         });
     });

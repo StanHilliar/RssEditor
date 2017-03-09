@@ -105,125 +105,139 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     $scope.dropzoneIdtoIndex = {};
     var countModulesInDropzone = 0;
-
-    Emaileditor.getEmailTemplate().query({ company: MeanUser.company.id, entityId: $stateParams.newsletterid }, function (newsletterEntityArray) 
+    $scope.load = function(cb)
     {
-      //console.log('entity loaded');
-      $scope.entity = newsletterEntityArray[0];
-
-      if ($scope.segment == '') 
+      Emaileditor.getEmailTemplate().query({ company: MeanUser.company.id, entityId: $stateParams.newsletterid }, function (newsletterEntityArray) 
       {
-        // console.log('entity loaded');
+        //console.log('entity loaded');
         $scope.entity = newsletterEntityArray[0];
-        $scope.entity.header = $scope.entity.header.replace(/(\r\n|\n|\r)/gm, "");
-        $scope.entity.footer = $scope.entity.footer.replace(/(\r\n|\n|\r)/gm, "");
 
-        $scope.your_variable = $scope.entity.header + $scope.entity.footer;
-        if($scope.entity.dropzoneModules.length > 0)
+        if ($scope.segment == '') 
         {
-          $scope.enableDropZone = true;
-          $scope.changeTab(0);
-          for(var i =0; i < $scope.entity.dropzoneModules.length; i++)
+          // console.log('entity loaded');
+          $scope.entity = newsletterEntityArray[0];
+          $scope.entity.header = $scope.entity.header.replace(/(\r\n|\n|\r)/gm, "");
+          $scope.entity.footer = $scope.entity.footer.replace(/(\r\n|\n|\r)/gm, "");
+
+          $scope.your_variable = $scope.entity.header + $scope.entity.footer;
+          if($scope.entity.dropzoneModules && $scope.entity.dropzoneModules.length > 0)
           {
-            $scope.dropzoneIdtoIndex[$scope.entity.dropzoneModules[i]._id] = i;
+            $scope.enableDropZone = true;
+            $scope.changeTab(0);
+            for(var i =0; i < $scope.entity.dropzoneModules.length; i++)
+            {
+              $scope.dropzoneIdtoIndex[$scope.entity.dropzoneModules[i]._id] = i;
+            }
+          }
+
+          // console.log( $scope.your_variable);
+          if ($stateParams.emailid != null) 
+          {
+            emailId = $stateParams.emailid;
+            Email.query({ company: MeanUser.company.id, emailId: $stateParams.emailid }, function (emails) 
+            {
+              var email = emails[0];
+              $scope.storedEmail = emails[0];
+
+              console.log('load email cb');
+              $scope.init(function()
+              {
+                console.log('init cb');
+                if (email != null) 
+                {
+                  console.log('email != null');
+                  $scope.EmailName          = email.name;
+                  $scope.EmailSubject       = email.subject;
+                  $scope.hiddenPreviewText  = email.hiddenPreviewText;
+
+                  if (email.scheduledDate) 
+                  {
+                    $scope.dt = new Date(email.scheduledDate);
+                  }
+                  //$scope.dt             = email.scheduledTime
+                  $scope.rssData          = email.data;
+                  $scope.feedPositions    = email.positions;
+                  $scope.modulePositions  = email.modulePositions;
+                  $scope.segment          = email.segment;
+          
+                  // status: 'draft'
+                }
+
+                console.log('~~~~~~~~~~~~~~~~~~~~~~~~');
+                console.log($scope.entity.dropzoneModules);
+                console.log('~~~~~~~~~~~~~~~~~~~~~~~~');
+                if($scope.modulePosition)
+                {
+                  for(var  i = 0; i <  $scope.modulePositions.length; i++)
+                  {
+                    console.log('++++++++++++++++++++++++++++++++++++++');
+                    console.log($scope.modulePositions[i]);
+                    if(angular.isArray($scope.modulePositions[i]))
+                    {
+                      var sortedModulePositions = $filter('orderBy')($scope.modulePositions[i], 'index', false);
+                      console.log(sortedModulePositions);
+
+                      for(var  x = 0; x <  sortedModulePositions.length; x++)
+                      {
+                        console.log(sortedModulePositions[x].moduleId);
+                        console.log($scope.dropzoneIdtoIndex[sortedModulePositions[x].moduleId]);
+                        console.log($scope.entity.dropzoneModules[$scope.dropzoneIdtoIndex[sortedModulePositions[x].moduleId]]);
+
+                      
+
+                        var newModule = angular.copy($scope.entity.dropzoneModules[$scope.dropzoneIdtoIndex[sortedModulePositions[x].moduleId]]);
+
+                        if(!$scope.entity.modules[i].modules)
+                        {
+                          $scope.entity.modules[i].modules = [];
+                        }
+                        $scope.entity.modules[i].modules[x] = newModule;
+                      }
+                    }
+                    for(var  x = 0; x <  $scope.modulePositions[i].length; x++)
+                    {
+                      if($scope.modulePositions[i][x].index > countModulesInDropzone)
+                      {
+                        countModulesInDropzone = $scope.modulePositions[i][x].index;
+                      }
+                    }
+                    
+                  }
+                }
+                countModulesInDropzone++; 
+                console.log('~~~~~~~~~~~~~~~~~~~~~~~~');
+
+              // $scope.entity.modules[dropzoneModuleIndex].modules.push(newModule);
+              // $scope.modulePositions[dropzoneModuleIndex].splice(position, 0, {index:countModulesInDropzone, moduleId:newModule._id});
+
+                $scope.your_variable = $scope.generateEmail(true);
+                $scope.api.initSortable();
+                if(cb) return cb();
+              });
+
+                //console.log($scope.storedEmail);
+                //console.log($scope.storedEmail.eloquaEmail);
+
+
+              // $scope.initAfterLoad();
+            });
+          }
+          else 
+          {
+            $scope.EmailName = $scope.entity.name + '_' + ($scope.minDate.getYear() - 100) + '' + ($scope.minDate.getMonth() < 9 ? '0' : '') + '' + ($scope.minDate.getMonth() + 1) + '' + ($scope.minDate.getDate() < 9 ? '0' : '') + '' + ($scope.minDate.getDate()) + '_Username';
+            $scope.EmailName = $scope.EmailName.replace(/ /gm, '');
+
+            $scope.init();
+            if(cb) return cb();
           }
         }
-
-        // console.log( $scope.your_variable);
-        if ($stateParams.emailid != null) 
-        {
-          emailId = $stateParams.emailid;
-          Email.query({ company: MeanUser.company.id, emailId: $stateParams.emailid }, function (emails) 
-          {
-            var email = emails[0];
-            $scope.storedEmail = emails[0];
-
-            //console.log('load email cb');
-            $scope.init(function()
-            {
-              if (email != null) 
-              {
-                $scope.EmailName = email.name;
-                $scope.EmailSubject = email.subject;
-                $scope.hiddenPreviewText = email.hiddenPreviewText;
-
-                if (email.scheduledDate) 
-                {
-                  $scope.dt = new Date(email.scheduledDate);
-                }
-                //$scope.dt             = email.scheduledTime
-                $scope.rssData          = email.data;
-                $scope.feedPositions    = email.positions;
-                $scope.modulePositions  = email.modulePositions;
-                $scope.segment          = email.segment;
-        
-                // status: 'draft'
-              }
-
-              console.log('~~~~~~~~~~~~~~~~~~~~~~~~');
-              console.log($scope.entity.dropzoneModules);
-              console.log('~~~~~~~~~~~~~~~~~~~~~~~~');
-              for(var  i = 0; i <  $scope.modulePositions.length; i++)
-              {
-                console.log('++++++++++++++++++++++++++++++++++++++');
-                console.log($scope.modulePositions[i]);
-                if(angular.isArray($scope.modulePositions[i]))
-                {
-                  var sortedModulePositions = $filter('orderBy')($scope.modulePositions[i], 'index', false);
-                  console.log(sortedModulePositions);
-
-                  for(var  x = 0; x <  sortedModulePositions.length; x++)
-                  {
-                    console.log(sortedModulePositions[x].moduleId);
-                    console.log($scope.dropzoneIdtoIndex[sortedModulePositions[x].moduleId]);
-                    console.log($scope.entity.dropzoneModules[$scope.dropzoneIdtoIndex[sortedModulePositions[x].moduleId]]);
-
-                  
-
-                    var newModule = angular.copy($scope.entity.dropzoneModules[$scope.dropzoneIdtoIndex[sortedModulePositions[x].moduleId]]);
-
-                    if(!$scope.entity.modules[i].modules)
-                    {
-                      $scope.entity.modules[i].modules = [];
-                    }
-                    $scope.entity.modules[i].modules[x] = newModule;
-                  }
-                }
-                for(var  x = 0; x <  $scope.modulePositions[i].length; x++)
-                {
-                  if($scope.modulePositions[i][x].index > countModulesInDropzone)
-                  {
-                    countModulesInDropzone = $scope.modulePositions[i][x].index;
-                  }
-                }
-                
-              }
-              countModulesInDropzone++; 
-              console.log('~~~~~~~~~~~~~~~~~~~~~~~~');
-
-            // $scope.entity.modules[dropzoneModuleIndex].modules.push(newModule);
-            // $scope.modulePositions[dropzoneModuleIndex].splice(position, 0, {index:countModulesInDropzone, moduleId:newModule._id});
-
-              $scope.your_variable = $scope.generateEmail(true);
-              $scope.api.initSortable();
-            });
-
-              //console.log($scope.storedEmail);
-              //console.log($scope.storedEmail.eloquaEmail);
-
-
-            // $scope.initAfterLoad();
-          });
-        }
-        else 
-        {
-          $scope.EmailName = $scope.entity.name + '_' + ($scope.minDate.getYear() - 100) + '' + ($scope.minDate.getMonth() < 9 ? '0' : '') + '' + ($scope.minDate.getMonth() + 1) + '' + ($scope.minDate.getDate() < 9 ? '0' : '') + '' + ($scope.minDate.getDate()) + '_Username';
-          $scope.EmailName = $scope.EmailName.replace(/ /gm, '');
-
-          $scope.init();
-        }
-      }
-    });
+      },
+      function(loadError)
+      {
+        console.log('loadError');
+        if(cb) return cb();
+      });    
+    };
 
     $scope.setMode = function ()
     {
@@ -917,13 +931,13 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           moduleHtml += '<div class="sortable1">';
         }
 
-        //console.log(moduleFeedPositions.length + '  '+ $scope.rssData[moduleCounter].numberOfEntries);
+        console.log(moduleFeedPositions.length + '  '+ $scope.rssData[moduleCounter].numberOfEntries);
         for (var x = 0; (x < moduleFeedPositions.length && x < moduleData.numberOfEntries); x++) 
         {
           //console.log('feedPositions '+x);
           var _tmpData = '';
           var i = moduleFeedPositions[x];
-          //console.log(i);
+          console.log(i);
 
           var entryState = moduleData.data[i].state;
 
@@ -1327,24 +1341,34 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       var moduleCounter = 0;
       //console.log($scope.entity.modules);
 
-      for (var i = 0; i < $scope.entity.modules.length; i++)
+      if($scope.entity.modules && $scope.entity.modules.length > 0)
       {
-        promises.push(initModule($scope.entity.modules[i], i));
-      }
+        for (var i = 0; i < $scope.entity.modules.length; i++)
+        {
+          promises.push(initModule($scope.entity.modules[i], i));
+        }
 
-      $q.all(promises).then(function () 
+        $q.all(promises).then(function () 
+        {
+          console.log('ALL PROMISES DONE');
+          $scope.your_variable = $scope.generateEmail(true);
+          $scope.api.initSortable();
+          $scope.checkIfTemplateContainsHiddenPreviewAndSetFlag();
+          $scope.firstInit = false;
+          $scope.loading = false;
+          if(cb)
+          {
+            return cb();
+          }
+        });
+      }
+      else
       {
-        console.log('ALL PROMISES DONE');
-        $scope.your_variable = $scope.generateEmail(true);
-        $scope.api.initSortable();
-        $scope.checkIfTemplateContainsHiddenPreviewAndSetFlag();
-        $scope.firstInit = false;
-        $scope.loading = false;
         if(cb)
         {
           return cb();
         }
-      });
+      }
     };
 
     function initModule(_module, moduleCounter, subModuleCounter) 
@@ -1505,8 +1529,10 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
                 promise = deferred.promise;
                 $scope.loadManualModule(_module, moduleCounter, subModuleCounter, 0, _module.defaultNumberOfEntries).then(function (moduleData)
                 {
+                  console.log('loadManualModule cb');
                   $scope.rssData[moduleData.modulePos].data  = moduleData.entries;
                   $scope.feedPositions[moduleData.modulePos] = moduleData.positions;
+                  console.log(moduleData);
                   deferred.resolve();
                 });
               }

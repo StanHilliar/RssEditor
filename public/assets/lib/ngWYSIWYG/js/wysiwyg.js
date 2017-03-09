@@ -117,7 +117,7 @@
 					//scope.feedNumberOfEntries = '1122';
 					//scope.rss = scope.rssData;
 					scope.rssData = scope.api.scope.rssData;
-          scope.hiddenPreviewText = scope.api.scope.hiddenPreviewText;
+         			scope.hiddenPreviewText = scope.api.scope.hiddenPreviewText;
 					scope.adData = scope.api.scope.adData;
 
 					$compile($element.contents())(scope);
@@ -136,8 +136,6 @@
 
 					$element[0].contentWindow.foo = function ()
 					{
-						//console.log ("Look at me, executed inside an 1!", window);
-
 						if (resizeTimer)
 						{
 							$timeout.cancel(resizeTimer);
@@ -145,18 +143,17 @@
 
 						resizeTimer = $timeout(function ()
 						{
-							//console.log( 'resize timer');
-							//console.log( $element[0].contentWindow.document.body.scrollHeight);
-							//console.log( $element[0].contentWindow.document.body.offsetHeight);	
+							// console.log( 'resize timer');
+							// console.log( $element[0].contentWindow.document.body.scrollHeight);
+							// console.log( $element[0].contentWindow.document.body.offsetHeight);	
 
 							$element.css(
-								{
-									height: $element[0].contentWindow.document.body.offsetHeight + 20 + "px"
-								});
+							{
+								height: Math.max($element[0].contentWindow.document.body.scrollHeight, $element[0].contentWindow.document.body.offsetHeight) + 20 + "px"
+							});
 
 						}, 1000/*ms*/, true /*invoke apply*/);
 					}
-
 
 					$element[0].contentWindow.foo();
 					angular.element('#frame').ready(function () 
@@ -313,7 +310,6 @@
 								draggable: '.emailModule',
 								ghostClass: 'emailModuleGhost',
 								dragClass: 'emailModuleDrag'
-
 							});
 
 						var elementTrashBin = angular.element('#trash')[0];
@@ -427,6 +423,8 @@
 							// filter: ".static",
 							dataIdAttr: 'id',
 							dragClass: 'emailModuleDrag',
+							ghostClass: 'emailSubModuleGhost',
+							animation: 150,
 							// Element dragging ended
 							onEnd: function (/**Event*/evt)
 							{
