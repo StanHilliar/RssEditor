@@ -380,13 +380,22 @@
 
 						for (var i = 0; i < elInner.children.length; i++)
 						{
-							for (var x = 0; x < elInner.children[i].children.length; x++)
+							var childrenWithSortable = angular.element(elInner.children[i]).find('.sortable1');
+							if(childrenWithSortable)
+							for (var x = 0; x < childrenWithSortable.length; x++)
 							{
-								if (elInner.children[i].children[x].className == 'sortable1')
+								if (childrenWithSortable[x].className == 'sortable1')
 								{
-									initSubSortable(myIFrame, elInner.children[i].children[x]);
+									initSubSortable(myIFrame, childrenWithSortable[x]);
 								}
 							}
+							// for (var x = 0; x < elInner.children[i].children.length; x++)
+							// {
+							// 	if (elInner.children[i].children[x].className == 'sortable1')
+							// 	{
+							// 		initSubSortable(myIFrame, elInner.children[i].children[x]);
+							// 	}
+							// }
 						}
 
 						// console.log(".clickableElement:");

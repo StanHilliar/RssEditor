@@ -54,7 +54,23 @@ function _parseAndUpdateModule(module)
                 //console.log(emailModule.views[i]._id);
             }
 
-            var fragment = parse5.parseFragment(emailModule.views[i].source.replace(/[^\x20-\x7E]+/g, ''));
+            var source = emailModule.views[i].source;
+            console.log(source);
+            console.log('-----------------------');
+            source =  source.replace(/[^\x20-\x7E]+/g, '');
+            console.log(source);
+            console.log('-----------------------');
+            source =  source.replace(/\r?\n|\r/g,"");
+            console.log(source);
+            console.log('-----------------------');
+            console.log('-----------------------');
+            var ser = parse5.serialize(source);
+            
+            // source =  source.replace(/ /g,'');
+            console.log(ser);
+            console.log('-----------------------');
+
+            var fragment = parse5.parseFragment(source);
             console.log(fragment);
             emailModule.views[i].childTagName = 'div';
             if(fragment != null)
@@ -62,6 +78,36 @@ function _parseAndUpdateModule(module)
                 if(fragment.childNodes.length == 1)
                 {   
                     emailModule.views[i].childTagName = fragment.childNodes[0].tagName;
+                }
+                else
+                {
+                    if(fragment.childNodes.length > 1)
+                    {   
+                        console.log('childNodes.length >1 ');
+                        var firstChildTagName = fragment.childNodes[0].tagName;
+                        var isTheSameForAllChildren = true;
+                        for(var x = 0; x < fragment.childNodes.length; x++)
+                        {
+                            console.log(fragment.childNodes[x].tagName+' !== '+firstChildTagName)
+                            if(fragment.childNodes[x].nodeName === '#text' && fragment.childNodes[x].value.trim() === '')
+                            {
+                                //ignore empy text elements
+                            }
+                            else
+                            {
+                                if(fragment.childNodes[x].tagName !== firstChildTagName)
+                                {
+                                    isTheSameForAllChildren = false;
+                                }
+                            }
+                        }
+
+                        if(isTheSameForAllChildren)
+                        {
+                            emailModule.views[i].childTagName = firstChildTagName;
+                        }
+                        console.log('emailModule.views[i].childTagName '+emailModule.views[i].childTagName );
+                    }
                 }
             }
         }
@@ -123,57 +169,66 @@ module.exports = function(MeanUser) {
             }
             console.log('4');
 
-            emailModule.createdBy = req.user.username;
-            emailModule.updatedBy = req.user.username;
-
-
-            //console.log('newsletter entity create 1');
-            emailModule.save(function(err, resEmailModule) 
+            if(req.user)
             {
-                console.log('5');
-                //console.log('newsletter entity create 222');
-                if (err) 
+                emailModule.createdBy = req.user.username;
+                emailModule.updatedBy = req.user.username;
+                
+                //console.log('newsletter entity create 1');
+                emailModule.save(function(err, resEmailModule) 
                 {
-                    switch (err.code) 
+                    console.log('5');
+                    //console.log('newsletter entity create 222');
+                    if (err) 
                     {
-                        case 11000:
-                        case 11001:
-                        return res.status(400).json([
+                        switch (err.code) 
                         {
-                            msg: 'Name already taken',
-                            param: 'name'
-                        }]);
-                        break;
-                        default:
-                        var modelErrors = [];
-
-                        if (err.errors) 
-                        {                    
-                            for (var x in err.errors) 
+                            case 11000:
+                            case 11001:
+                            return res.status(400).json([
                             {
-                                modelErrors.push(
+                                msg: 'Name already taken',
+                                param: 'name'
+                            }]);
+                            break;
+                            default:
+                            var modelErrors = [];
+
+                            if (err.errors) 
+                            {                    
+                                for (var x in err.errors) 
                                 {
-                                    param: x,
-                                    msg: err.errors[x].message,
-                                    value: err.errors[x].value
-                                });
+                                    modelErrors.push(
+                                    {
+                                        param: x,
+                                        msg: err.errors[x].message,
+                                        value: err.errors[x].value
+                                    });
+                                }
+
+                                return res.status(400).json(modelErrors);
                             }
-
-                            return res.status(400).json(modelErrors);
                         }
-                    }
 
-                    console.log('newsletter entity create 888');
-                    return res.status(400);
-                }
-                else
-                {
-                    //console.log('newsletter entity create');
-                    return res.jsonp(resEmailModule);
-                }
-            });
+                        console.log('newsletter entity create 888');
+                        return res.status(400);
+                    }
+                    else
+                    {
+                        //console.log('newsletter entity create');
+                        return res.jsonp(resEmailModule);
+                    }
+                });
+            }
+            else
+            {
+                return res.status(400).send([{msg: 'user is not setup'}]);
+            }
         },
-      
+        __parseAndUpdateModule: function(module)
+        {
+            return _parseAndUpdateModule(module);
+        },
 
         /**
          * Find user by id

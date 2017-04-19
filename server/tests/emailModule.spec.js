@@ -4,7 +4,6 @@
 
 var crypto = require('crypto');
 
-
 /**
  * Create a random hex string of specific length and
  * @todo consider taking out to a common unit testing javascript helper
@@ -21,12 +20,14 @@ function getRandomString(len) {
  * Module dependencies.
  */
 
-var expect = require('expect.js')
-var request = require('supertest'); 
-var mongoose = require('mongoose');
+var expect    = require('expect.js')
+var request   = require('supertest'); 
+var async     = require('async'); 
+var mongoose  = require('mongoose');
+var sinon     = require('sinon');
 require('../models/emailModule');
 var EmailModule = mongoose.model('EmailModule');
-var emailModules = require('../controllers/emailModule')();
+var EmailModuleCtrl = require('../controllers/emailModule')();
 
 /**
  * Globals
@@ -53,7 +54,6 @@ var res = {
 
 var next = function(){console.log('next');};
 
-
 function deleteModule(module, cb)
 {
   EmailModule.find(
@@ -75,6 +75,8 @@ function deleteModule(module, cb)
   });
 }
 
+var testEmailModules = [];
+
 /**
  * Test Suites
  */
@@ -85,7 +87,11 @@ describe('<Unit Test>', function()
     emailModule1 = 
     {
         name: 'TestEmailModule',
-        type: '0'
+        type: '0',
+        user: 
+        {
+          username: 'simon'
+        }
     }; 
 
     emailModule2 = 
@@ -105,17 +111,48 @@ describe('<Unit Test>', function()
     };
 
     emailModule4 = 
-      {
-        name: 'MyTestEmailModule',
-        type: '0',
-        preBody: '<table><tr><td></td></tr></table><table>',
-        postBody: '</table>'
-      };
+    {
+      name: 'MyTestEmailModule',
+      type: '0',
+      preBody: '<table><tr><td></td></tr></table><table>',
+      postBody: '</table>'
+    };
+
+    testEmailModules.push(emailModule1);
+    testEmailModules.push(emailModule2);
+    testEmailModules.push(emailModule3);
+    testEmailModules.push(emailModule4);
 
     done();
   });
 
-  describe('REST API:', function()
+  describe('Module:', function()
+  {
+    beforeEach(function()
+    {
+      sinon.stub(EmailModule.prototype, 'save');
+    });
+
+    afterEach(function() 
+    { 
+  
+      EmailModule.prototype.save.restore();
+    });
+
+    it('create', function(done)
+    {
+      var req;
+      var res;
+
+      EmailModule.prototype.save.yields(null, true);
+
+      EmailModuleCtrl.create(req, res, next);
+    });
+
+    //TODO move tests from 'REST API' to controller in order to test the functionality directly without auth and routing
+  });
+
+  describe.skip('REST API:', function()
   {
     it('emailModules api - create - missing name/type', function(done) 
     {
@@ -125,7 +162,7 @@ describe('<Unit Test>', function()
       };
 
       request(url)
-      .post('/api/emaileditor/emailmodule')
+      .post('/api/leadteq/emaileditor/emailmodule')
       .send(emptyModule)
       //.expect(200)
       .end(function(err, res)
@@ -142,11 +179,17 @@ describe('<Unit Test>', function()
     it('emailModules api - create - simple', function(done) 
     {
       request(url)
-      .post('/api/emaileditor/emailmodule')
+      .post('/api/leadteq/emaileditor/emailmodule')
       .send(emailModule1)
       //.expect(200)
       .end(function(err, res)
       {
+        // console.log(err);
+        // console.log(res);
+
+        expect(err).to.be(null);
+        expect(res.error).to.eql(false); 
+
         expect(res.body.createdAt).to.be.an('string');
         expect(res.body.updatedAt).to.be.an('string');
         expect(res.body.name).to.be.eql(emailModule1.name);
@@ -172,7 +215,7 @@ describe('<Unit Test>', function()
     it('emailModules api - create - pre/postbody', function(done) 
     {
       request(url)
-      .post('/api/emaileditor/emailmodule')
+      .post('/api/leadteq/emaileditor/emailmodule')
       .send(emailModule2)
       //.expect(200)
       .end(function(err, res)
@@ -191,12 +234,11 @@ describe('<Unit Test>', function()
       });
     });
 
-
     it('emailModules api - create - childTagName', function(done) 
     {
 
       request(url)
-      .post('/api/emaileditor/emailmodule')
+      .post('/api/leadteq/emaileditor/emailmodule')
       .send(emailModule3)
       //.expect(200)
       .end(function(err, res)
@@ -219,7 +261,7 @@ describe('<Unit Test>', function()
     {
 
       request(url)
-      .post('/api/emaileditor/emailmodule')
+      .post('/api/leadteq/emaileditor/emailmodule')
       .send(emailModule4)
       //.expect(200)
       .end(function(err, res)
@@ -234,9 +276,48 @@ describe('<Unit Test>', function()
         expect(res.body.childTagName).to.be.eql('');
         done();
       });
+
+    });
+
+    it('emailModules api - create - view - childTagName is div', function(done) 
+    {
+
+      var  myEmailModule = 
+      {
+        name: 'MyTestEmailModuleX',
+        type: '0',
+        preBody: '',
+        postBody: '',
+        views: 
+        [
+          {
+            source: '<div> test </div>'
+          }
+        ]
+      };
+      
+      testEmailModules.push(myEmailModule)
+
+      request(url)
+      .post('/api/leadteq/emaileditor/emailmodule')
+      .send(myEmailModule)
+      //.expect(200)
+      .end(function(err, res)
+      {
+        console.log("create cb");
+        console.log("RES::::::::");
+        console.log(res.body);
+
+        expect(res.status).to.eql(200);   
+
+        expect(res.body.childTagName).to.be.an('string');
+        expect(res.body.childTagName).to.be.eql('');
+        expect(res.body.views[0].childTagName).to.be.eql('div');
+        expect(res.body.views[0].childTagName).to.be.eql('AD"§');
+        done();
+      });
     });
    
-
     after(function(done) 
     {
       /** Clean up user objects
@@ -249,19 +330,23 @@ describe('<Unit Test>', function()
        *  _user1.remove();
        *  _user2.remove();
        */
-      deleteModule(emailModule1, function()
+      async.map(testEmailModules, deleteModule, function(err, res)
       {
-        deleteModule(emailModule2, function()
-        {
-          deleteModule(emailModule3, function()
-          {
-            deleteModule(emailModule4, function()
-            {
-              done();
-            });
-          });
-        });
+        done();
       });
+      // deleteModule(emailModule1, function()
+      // {
+      //   deleteModule(emailModule2, function()
+      //   {
+      //     deleteModule(emailModule3, function()
+      //     {
+      //       deleteModule(emailModule4, function()
+      //       {
+      //         done();
+      //       });
+      //     });
+      //   });
+      // });
     });
   });
 

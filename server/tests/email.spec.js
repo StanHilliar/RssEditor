@@ -23,7 +23,7 @@ var url = 'http://127.0.0.1:3001';
 /**
  * Test Suites
  */
-describe('<email.spec.js', function () 
+describe('email.spec.js', function () 
 {
     describe('REST API:', function () 
     {

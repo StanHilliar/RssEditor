@@ -149,7 +149,7 @@
 	position: absolute;
 	top: 0px;
 	left: 0px;
-	padding: 2px 0 6px 11px;	
+	padding: 4px 2px 3px 4px;	
 	font-size: 45px;
 	visibility: hidden;
 	color: #ddd;
@@ -173,8 +173,8 @@
     border: 1px solid #000;
 	position: absolute;
 	top: 0px;
-	left: 65px;
-	padding: 2px 0 6px 11px;	
+	left: 60px;
+	padding: 4px 2px 3px 4px;	
 	font-size: 45px;
 	visibility: hidden;
 	color: #ddd;
