@@ -929,7 +929,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           moduleHtml += '<div class="sortable1">';
         }
 
-        console.log(moduleFeedPositions.length + '  '+ $scope.rssData[moduleCounter].numberOfEntries);
+        console.log(moduleFeedPositions.length + '  '+ moduleData.numberOfEntries);
         for (var x = 0; (x < moduleFeedPositions.length && x < moduleData.numberOfEntries); x++) 
         {
           //console.log('feedPositions '+x);
@@ -946,27 +946,24 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
             var clickableTagNameOpen = 'div';
             var clickableTagNameClose = 'div';
 
-            if ($scope.rssData != null) 
-            {
-              //console.log('rssData !=  null');
-              //console.log($scope.rssData.length);
+        
 
-              if ($scope.rssData.length > 0 && moduleData != null) 
+            if (moduleData != null) 
+            {
+              //console.log('rssData['+moduleCounter+'] !=  null');
+              //console.log(moduleData[i]._view);
+              for (var viewIter = 0; viewIter < currentModule.views.length; viewIter++)
               {
-                //console.log('rssData['+moduleCounter+'] !=  null');
-                //console.log(moduleData[i]._view);
-                for (var viewIter = 0; viewIter < currentModule.views.length; viewIter++)
+                //console.log(currentModule.views[viewIter]._id +' == '+ moduleData[i]._view._id)
+                if (currentModule.views[viewIter]._id == moduleData.data[i]._view._id) 
                 {
-                  //console.log(currentModule.views[viewIter]._id +' == '+ moduleData[i]._view._id)
-                  if (currentModule.views[viewIter]._id == moduleData.data[i]._view._id) 
-                  {
-                    _entryView = currentModule.views[viewIter].source;
-                    childTagName = currentModule.views[viewIter].childTagName;
-                    // console.log('Set view '+viewIter);
-                  }
+                  _entryView = currentModule.views[viewIter].source;
+                  childTagName = currentModule.views[viewIter].childTagName;
+                  // console.log('Set view '+viewIter);
                 }
               }
             }
+            
 
             //console.log(moduleData[x]._view);
     
@@ -1617,16 +1614,19 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       //console.log($scope.entity.modules);
       angular.forEach($scope.adData, function (_module)
       {
-        for (var i = 0; i < $scope.adData[moduleCounter].length; i++)
+        if($scope.adData[moduleCounter])
         {
-          if($scope.adData[moduleCounter].constructor === Array)
+          for (var i = 0; i < $scope.adData[moduleCounter].length; i++)
           {
-            //TODO
-            console.warn('ads in submodules not yet supported')
-          }
-          else
-          {
-            promises.push($scope.checkAd2($scope.adData[moduleCounter], i));
+            if($scope.adData[moduleCounter].constructor === Array)
+            {
+              //TODO
+              console.warn('ads in submodules not yet supported')
+            }
+            else
+            {
+              promises.push($scope.checkAd2($scope.adData[moduleCounter], i));
+            }
           }
         }
 
@@ -1656,6 +1656,14 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         moduleData.entries[i]           = moduleData.entries[i] || {};
         moduleData.entries[i].state     = 1;
         moduleData.entries[i]._view     = currentModule.views[0];
+        
+        for (var x = 0; x < currentModule.views.length; x++)
+        {
+          if (currentModule.views[x].isDefault == true)
+          {
+            moduleData.entries[i]._view = currentModule.views[x];
+          }
+        }
         moduleData.entries[i].data      = {};
         moduleData.entries[i].variables = {};
 
@@ -1985,6 +1993,14 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         }
 
         moduleData.entries[i]._view     = currentModule.views[0];
+
+        for (var x = 0; x < currentModule.views.length; x++)
+        {
+          if (currentModule.views[x].isDefault == true)
+          {
+            moduleData.entries[i]._view = currentModule.views[x];
+          }
+        }
         moduleData.entries[i].data      = {};
         moduleData.entries[i].variables = {};
 

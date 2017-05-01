@@ -223,14 +223,17 @@
 	<div class="row rowSpaced">
 		<div class="col-md-10">
 			<br/>
-			<button data-ng-if="(!newsletterExsists && !saveInProgress) && !(loading.entity||loading.modules||loading.segments||loading.groups||loading.encoding||loading.circles)"  ng-click="save()"  class="btn btn-warning">
+			<button data-ng-if="(!newsletterExsists && !saveInProgress) && (errorMsgs.length == 0) && !(loading.entity||loading.modules||loading.segments||loading.groups||loading.encoding||loading.circles)"  ng-click="save()"  class="btn btn-warning">
     			save   
 			</button>
-			<button data-ng-if="(newsletterExsists && !saveInProgress) && !(loading.entity||loading.modules||loading.segments||loading.groups||loading.encoding||loading.circles)"  ng-click="update()"  class="btn btn-warning">
+			<button data-ng-if="(newsletterExsists && !saveInProgress)  && (errorMsgs.length == 0) && !(loading.entity||loading.modules||loading.segments||loading.groups||loading.encoding||loading.circles)"  ng-click="update()"  class="btn btn-warning">
     			Update   
 			</button>
 			<button data-ng-if="saveInProgress || (loading.entity||loading.modules||loading.segments||loading.groups||loading.encoding||loading.circles) " class="btn btn-warning">
     			<span class="glyphicon glyphicon-refresh spinning"></span> Loading...    
+			</button>
+			<button data-ng-if="errorMsgs.length != 0" disabled>
+				save/update
 			</button>
 
 			<a ng-if="entity._id" href="/emaileditor/email/create/{{entity._id}}">create email</a

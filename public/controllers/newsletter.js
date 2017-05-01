@@ -21,11 +21,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     $scope.availableEmailFooters    = [];
     $scope.availableSegments        = [];
     $scope.availableSecurityCircles = [];
-    /* [
-      {_id: '1', name: 'test1'},
-      {_id: '2', name: 'aaa'},
-      {_id: '3', name: 'bbb'}
-    ];    */
+
 
     $scope.availableModules         = [];
     $scope.availableDropzoneModules = [];
@@ -145,13 +141,23 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       removeSelectedSegmentsfromAvailabeleSegments();
       removeSelectedDropzoneModulesfromAvailabeleDropzoneModules();
       $scope.loading.segments = false;
-    });  
+    }, 
+    function(error)
+    {
+      $scope.errorMsgs.push({param:'segments', msg:'error while loading the segments'})
+      $scope.loading.segments = false;
+    });
 
     $scope.loading.groups = true;
     Eloqua.emailGroups().query({company: MeanUser.company.id}, function(emailGroups)
     {
       console.log(emailGroups);
       $scope.availableSEmailGroups = emailGroups;
+      $scope.loading.groups = false;
+    }, 
+    function(error)
+    {
+      $scope.errorMsgs.push({param:'emailGroups', msg:'error while loading the emailGroups'})
       $scope.loading.groups = false;
     });
 
@@ -161,6 +167,11 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       console.log(emailEncodings);
       $scope.availableEmailEncodings = emailEncodings;
       $scope.loading.encoding = false;
+    }, 
+    function(error)
+    {
+      $scope.errorMsgs.push({param:'emailEncodings', msg:'error while loading the emailEncodings'})
+      $scope.loading.encoding = false;
     });
 
     $scope.loading.headers = true;
@@ -169,6 +180,11 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       console.log(emailHeaders);
       $scope.availableEmailHeaders = emailHeaders;
       $scope.loading.headers = false;
+    }, 
+    function(error)
+    {
+      $scope.errorMsgs.push({param:'emailHeaders', msg:'error while loading the emailHeaders'})
+      $scope.loading.headers = false;
     });
 
     $scope.loading.footers = true;
@@ -176,6 +192,11 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     {
       console.log(emailFooters);
       $scope.availableEmailFooters = emailFooters;
+      $scope.loading.footers = false;
+    }, 
+    function(error)
+    {
+      $scope.errorMsgs.push({param:'emailFooters', msg:'error while loading the emailFooters'})
       $scope.loading.footers = false;
     });
 
