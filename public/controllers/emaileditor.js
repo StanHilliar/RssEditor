@@ -1,8 +1,8 @@
 'use strict';
 
 /* jshint -W098 */
-angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope', '$q', '$stateParams', '$compile', '$interpolate', '$sce', 'Global', 'Emaileditor', 'NewsletterEntity', 'Email', 'Eloqua', 'XMLFeed', 'MeanUser',
-  function($scope, $q,  $stateParams, $compile, $interpolate, $sce, Global, Emaileditor, NewsletterEntity, Email, Eloqua, XMLFeed, MeanUser) 
+angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope', '$q', '$stateParams', '$compile', '$interpolate', '$parse', '$sce', 'Global', 'Emaileditor', 'NewsletterEntity', 'Email', 'Eloqua', 'XMLFeed', 'MeanUser',
+  function($scope, $q, $stateParams, $compile, $interpolate, $parse, $sce, Global, Emaileditor, NewsletterEntity, Email, Eloqua, XMLFeed, MeanUser) 
   {
     $scope.global = Global;
     $scope.package = 
@@ -93,6 +93,12 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       $scope.dt = new Date();
     };       
 
+    $scope.timestamp = Date.now();
+
+    var emailContext = {};
+    // emailContext.getTimestamp = function() { return Date.now()};
+    emailContext.timestamp = $scope.timestamp;
+
     $scope.setinXDays = function(days) 
     {
       var oldDateObj = $scope.dt;
@@ -133,6 +139,10 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         $scope.dt = new Date(oldDateObj.getTime());
       }
       //$scope.dt = (newDateObj.getHours()<10?'0':'')+newDateObj.getHours()+':'+ (newDateObj.getMinutes()<10?'0':'')+ newDateObj.getMinutes();
+    };
+
+    $scope.interpolate = function (value) {
+        return $interpolate(value)($scope);
     };
 
     $scope.open1 = function() 
@@ -412,7 +422,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       });
     }
     
-
     $scope.sendEmailRightNow = function()
     {
       console.log('sendEmailRightNow');
@@ -554,7 +563,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       }
     };
 
-
     $scope.openSendEmail = function()
     {
       console.log('openSendEmail');
@@ -678,7 +686,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       $scope.api.reinitSortable();
     }; 
 
-
   /*
     $scope.deleteEmailModule = function() 
     {
@@ -712,6 +719,9 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     {
       //console.log('generateEmail');
       var formatedEntries = '';
+      $scope.timestamp = Date.now();
+      emailContext.timestamp = $scope.timestamp;
+
       for(var moduleCounter = 0; moduleCounter < $scope.entity.modules.length; moduleCounter++)
       {
         //console.log('module '+moduleCounter);
@@ -800,6 +810,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
                 {
                   var variableName = $scope.emailTemplates.modules[moduleCounter].variables[varCounter].name;
                    _entryView = _entryView.replace( new RegExp("\{\{"+variableName+"\}\}",'g'), '{{rssData['+moduleCounter+'].data['+i+'].data.'+variableName+'}}');
+                   $scope.rssData[moduleCounter].data[i].data[variableName] = $interpolate($scope.rssData[moduleCounter].data[i].data[variableName])(emailContext);
                   // _entryView = _entryView.replace("/\{\{"+variableName+"\}\}/g", '{{rssData['+moduleCounter+'].data['+i+'].data.'+variableName+'}}');
                 }
 
@@ -910,13 +921,13 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
             _moduleData += '</div>';  //div.sortable1
           }
 
-        
           var postBody = $scope.emailTemplates.modules[moduleCounter].postBody;
           for(var varCounter= 0; varCounter < $scope.emailTemplates.modules[moduleCounter].bodyVariables.length; varCounter++)
           {
             var variableName = $scope.emailTemplates.modules[moduleCounter].bodyVariables[varCounter].name;
              postBody = postBody.replace("{{"+variableName+"}}", '{{rssData['+moduleCounter+'].bodyData.'+variableName+'}}');
              postBody = postBody.replace("{{"+variableName+"}}", '{{rssData['+moduleCounter+'].bodyData.'+variableName+'}}');
+             $scope.rssData[moduleCounter].bodyData[variableName] = $interpolate($scope.rssData[moduleCounter].bodyData[variableName])(emailContext);
           }
           _moduleData += postBody;
 
@@ -944,6 +955,23 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       var fullEmail = $scope.emailTemplates.header + formatedEntries + $scope.emailTemplates.footer;
       console.log(fullEmail);
       fullEmail = fullEmail.replace("{{hiddenPreviewText}}", '{{api.scope.hiddenPreviewText}}');
+      // fullEmail = fullEmail.replace(new RegExp('{{timestamp}}', 'g'), '{{api.scope.timestamp}}');
+
+      console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+      for(var i = 0; i < $scope.adData.length; i++)
+      {
+        for(var j = 0; j < $scope.adData[i].length; j++)
+        {
+          // $scope.adData[i][j].link = $parse($scope.adData[i][j].link)(emailContext);
+          // var getter = $parse($scope.adData[i][j].img);
+          // console.log(getter(emailContext));
+          // $scope.adData[i][j].img = $parse($scope.adData[i][j].img)(emailContext);
+          $scope.adData[i][j].link = $interpolate($scope.adData[i][j].link)(emailContext);
+          $scope.adData[i][j].img = $interpolate($scope.adData[i][j].img)(emailContext);
+          // $scope.adData[i][j].img = $scope.adData[i][j].img.replace(new RegExp('{{timestamp}}', 'g'), '{{api.scope.timestamp}}')
+        }
+      }
+      //  $parse()
       if(!isEdit)
       {
         fullEmail = $scope.compileEmailAndData(fullEmail);
@@ -963,13 +991,12 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       _adview += $scope.emailTemplates.modules[moduleCounter].adViews[0].source;
 
       _adview = _adview.replace("[[adLink]]",   '{{adData['+moduleCounter+']['+_adIndex+'].link}}');
-      _adview = _adview.replace("[[adImage]]",   '{{adData['+moduleCounter+']['+_adIndex+'].img}}');
+      _adview = _adview.replace("[[adImage]]", '{{adData['+moduleCounter+']['+_adIndex+'].img}}');
 
       if(isEdit)
       {
         _adview += '</div>';
       }
-
 
       if(isEdit)
       {

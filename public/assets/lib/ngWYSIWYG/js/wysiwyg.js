@@ -110,6 +110,7 @@ angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 			scope.rssData = scope.api.scope.rssData;
 			scope.hiddenPreviewText = scope.api.scope.hiddenPreviewText;
 			scope.adData = scope.api.scope.adData;
+			scope.timestamp = scope.api.scope.timestamp;
 			
 			$compile($element.contents())(scope);
 
