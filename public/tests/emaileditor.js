@@ -500,6 +500,162 @@ describe('EmaileditorController', function ()
             expect(email).toEqual('<html><head></head><body>hiddenText<div>hiddenText</div></body></html>');
             // expect($scope.clickableElementIdentifier).toEqual('dndelement');
         });
+
+        it('timestamp - 1', function ()
+        {
+            var $scope = {};
+            $scope.entity = 
+            {
+                header: '<html><head></head><body>#1{{timestamp}}#2',
+                modules: 
+                [
+                    {
+                        defaultNumberOfEntries: 1,
+                        type: '3',
+                        preBody:'',
+                        postBody:'',
+                        preModule:'',
+                        postModule:'',
+                        ads: [],
+                        variables: [],
+                        bodyVariables: [],
+                        views: 
+                        [
+                            {
+                                name: 'defaultView',
+                                source: '<div></div>',
+                                childTagName: 'div',
+                            }
+                        ]
+                    }
+                ],
+                footer: '</body></html>'
+            };      
+            
+            $scope.emailTemplates = $scope.entity;
+            
+            var controller = $controller('EmaileditorController', { $scope: $scope });
+
+            $scope.init();
+            var email = $scope.generateEmail(false);
+            var marker1 = email.indexOf('#1');
+            var marker2 = email.indexOf('#2');
+            // console.log(marker1);
+            // console.log(marker2);
+            expect(marker1).not.toEqual(-1);
+            expect(marker2).not.toEqual(-1);
+            var emailPart1 = email.substring(0, marker1);
+            var timestamp = email.substring(marker1+2, marker2);
+            var emailPart2 = email.substring(marker2+2, email.length);
+
+            expect(emailPart1).toEqual('<html><head></head><body>');
+            expect(timestamp).not.toEqual('');
+            expect(timestamp).not.toEqual('{{timestamp}}');
+            expect(timestamp.length).toEqual(13);
+            expect(emailPart2).toEqual('<div></div></body></html>');
+        });
+
+        it('timestamp in adImage', function ()
+        {
+            var $scope = {};
+            $scope.entity = 
+            {
+                "_id":"5909707da8593cf00b5c96e4",
+                "createdAt":"2017-05-03T05:54:05.024Z",
+                "updatedAt":"2017-05-03T06:05:28.931Z",
+                "updatedBy":"Simon.Eckhardt",
+                "createdBy":"Simon.Eckhardt",
+                "name":"timestamp test",
+                "type":"BBMObject1",
+                "header":"<html><head></head><body>",
+                "footer":"</body></html>",
+                "eloquaFolder":"483",
+                "eloquaCampaignFolder":"482",
+                "eloquaFooter":"1",
+                "eloquaHeader":"1",
+                "bounceBackAddress":"TechnologyPartnerLeadMgtTechSolutionsAB@s1926145509.m.en25.com",
+                "replyToName":"Leadteq",
+                "replyToEmail":"support@leadteq.com",
+                "eloquaEmailGroup":"4",
+                "eloquaEmailEncoding":"15",
+                "fromAddress":"test@leadteq.com",
+                "senderName":"test",
+                "company":"588788e44cb14e490e56997b"
+                ,"__v":2,
+                "modules":
+                [
+                    {
+                        "templatePosEnd":136,
+                        "templatePos":124,
+                        "moduleIdentifier":"1",
+                        "_id":"59097048a8593cf00b5c96e3",
+                        "createdAt":"2017-05-03T05:53:12.976Z",
+                        "updatedAt":"2017-05-03T07:01:45.046Z",
+                        "name":"timestamp test",
+                        "defaultURL":"",
+                        "defaultNumberOfEntries":"5",
+                        "type":"3","header":"",
+                        "footer":"",
+                        "createdBy":"Simon.Eckhardt",
+                        "updatedBy":"Simon.Eckhardt",
+                        "company":"588788e44cb14e490e56997b",
+                        "__v":4,
+                        "childTagName":"div",
+                        "postBody":"</div>",
+                        "preBody":"<div>",
+                        "xmlVariables":[],
+                        "bodyVariables":[],
+                        "variables":[],
+                        "views":[{"_id":"BJZUlxv1-",
+                        "name":"default",
+                        "source":"<div>fsd</div>",
+                        "variables":[],
+                        "isDefault":false,
+                        "childTagName":"div"}],
+                        "adViews":[{"source":"<div>#1[[adImage]]#2</div>",
+                        "name":"",
+                        "_id":""}],
+                        "ads":
+                        [
+                            {
+                                "link":"http://www.leadteq.com",
+                                "img":"http://www.leadteq.com/wp-content/uploads/2014/02/leadteq_logo.png?t={{timestamp}}",
+                                "pos":"2",
+                                "_id":"",
+                                "booked": true
+                            }
+                        ]
+                    }
+                ],
+                "circles":["leadteq"],
+                "segments":[{"id":"3",
+                "name":"test segment - simon only"}]};      
+            
+            $scope.emailTemplates = $scope.entity;
+            
+            var controller = $controller('EmaileditorController', { $scope: $scope });
+
+            $scope.init();
+            var email = $scope.generateEmail(false);
+            // console.log(email);
+            var marker1 = email.indexOf('#1');
+            var marker2 = email.indexOf('#2');
+            // console.log(marker1);
+            // console.log(marker2);
+            expect(marker1).not.toEqual(-1);
+            expect(marker2).not.toEqual(-1);
+            var emailPart1 = email.substring(0, marker1);
+            var adImage = email.substring(marker1+2, marker2);
+            var timestamp = adImage.substring("http://www.leadteq.com/wp-content/uploads/2014/02/leadteq_logo.png?t=".length, adImage.length);
+            var emailPart2 = email.substring(marker2+2, email.length);
+            // console.log(timestamp);
+
+            // expect(emailPart1).toEqual('<html><head></head><body>');
+            expect(timestamp).not.toEqual('');
+            expect(timestamp).not.toEqual('{{timestamp}}');
+            expect(timestamp.length).toEqual(13);
+            // expect(emailPart2).toEqual('<div></div></body></html>');
+        });
     });
 
 });
