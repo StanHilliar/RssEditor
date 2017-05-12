@@ -298,19 +298,19 @@
 						// console.log(el);
 
 						var sortable = Sortable.create(el,
+						{
+							sort: false,
+							handle: '.emailModuleHandle',
+							group:
 							{
-								sort: false,
-								handle: '.emailModuleHandle',
-								group:
-								{
-									name: 'sortable-group',
-									pull: 'clone',
-									put: false
-								},
-								draggable: '.emailModule',
-								ghostClass: 'emailModuleGhost',
-								dragClass: 'emailModuleDrag'
-							});
+								name: 'sortable-group',
+								pull: 'clone',
+								put: false
+							},
+							draggable: '.emailModule',
+							ghostClass: 'emailModuleGhost',
+							dragClass: 'emailModuleDrag'
+						});
 
 						var elementTrashBin = angular.element('#trash')[0];
 						var sortableTrashBin = Sortable.create(elementTrashBin,
@@ -344,49 +344,51 @@
 					if (elInner)
 					{
 						Sortable.create(elInner,
+						{
+							handle: '.emailModuleHandle',
+							group:
 							{
-								handle: '.emailModuleHandle',
-								group:
-								{
-									name: 'sortable-group',
-									pull: true,
-									put: true
-								},
-								draggable	: '.emailModule',
-								ghostClass	: 'emailModuleGhost',
-								dragClass	: 'emailModuleDrag',
-								onAdd: function (/**Event*/evt)
-								{
-									var itemEl = evt.item;  // dragged HTMLElement
-									evt.from;  // previous list
-									// + indexes from onEnd
-									console.log('onAdd ('+evt.oldIndex+'/'+evt.newIndex+')');
-									// console.log(evt);
-									// console.log(evt.oldIndex);
-									// console.log(evt.newIndex);
-									// console.log('data-dropzone-id:' + elInner.getAttribute('data-dropzone-id'));
-									scope.api.scope.onAddModuleToEmail(elInner.getAttribute('data-dropzone-id'), evt.item.getAttribute('data-module-id'), evt.newIndex);
-								},
-								onRemove: function (/**Event*/evt) 
-								{
-        							// same properties as onUpdate
-									console.log('onRemove ('+evt.oldIndex+'/'+evt.newIndex+')');
-									// console.log(evt.item);
-									// console.log(evt.item.attr('id'));
-							
-									scope.api.scope.onRemoveModuleFromEmail(evt.item.getAttribute('id'), evt.oldIndex);
-    							},
-							});
+								name: 'sortable-group',
+								pull: true,
+								put: true
+							},
+							draggable	: '.emailModule',
+							ghostClass	: 'emailModuleGhost',
+							dragClass	: 'emailModuleDrag',
+							onAdd: function (/**Event*/evt)
+							{
+								var itemEl = evt.item;  // dragged HTMLElement
+								evt.from;  // previous list
+								// + indexes from onEnd
+								console.log('onAdd ('+evt.oldIndex+'/'+evt.newIndex+')');
+								// console.log(evt);
+								// console.log(evt.oldIndex);
+								// console.log(evt.newIndex);
+								// console.log('data-dropzone-id:' + elInner.getAttribute('data-dropzone-id'));
+								scope.api.scope.onAddModuleToEmail(elInner.getAttribute('data-dropzone-id'), evt.item.getAttribute('data-module-id'), evt.newIndex);
+							},
+							onRemove: function (/**Event*/evt) 
+							{
+								// same properties as onUpdate
+								console.log('onRemove ('+evt.oldIndex+'/'+evt.newIndex+')');
+								// console.log(evt.item);
+								// console.log(evt.item.attr('id'));
+						
+								scope.api.scope.onRemoveModuleFromEmail(evt.item.getAttribute('id'), evt.oldIndex);
+							},
+						});
 
 						for (var i = 0; i < elInner.children.length; i++)
 						{
 							var childrenWithSortable = angular.element(elInner.children[i]).find('.sortable1');
 							if(childrenWithSortable)
-							for (var x = 0; x < childrenWithSortable.length; x++)
 							{
-								if (childrenWithSortable[x].className == 'sortable1')
+								for (var x = 0; x < childrenWithSortable.length; x++)
 								{
-									initSubSortable(myIFrame, childrenWithSortable[x]);
+									if (childrenWithSortable[x].className == 'sortable1')
+									{
+										initSubSortable(myIFrame, childrenWithSortable[x]);
+									}
 								}
 							}
 							// for (var x = 0; x < elInner.children[i].children.length; x++)
@@ -401,14 +403,14 @@
 						// console.log(".clickableElement:");
 						// console.log(myIFrame.find(".dndelement.clickableElement"));
 					}
-					else
-					{
+					// else
+					// {
 						var mySortables = angular.element('#frame').contents().find('.sortable1');
 						for (var x = 0; x < mySortables.length; x++)
 						{						
 							initSubSortable(myIFrame, mySortables[x]);
 						}
-					}
+					// }
 
 					myIFrame.find(".clickableElement").click(function ()
 					{
@@ -425,6 +427,7 @@
 				
 				function initSubSortable(myIFrame, elementContainer)
 				{
+					console.log('initSubSortable(%s,%s)', myIFrame, elementContainer);
 					// var subSortable = document.getElementById('subsortable');
 					var sortable123 = Sortable.create(elementContainer,
 						{
