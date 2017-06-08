@@ -1,12 +1,10 @@
 'use strict';
 
-var FeedParser = require('feedparser'); 
-var request = require('request');
-
-var  http = require('http');
-var  https = require('https');
+var FeedParser 	= require('feedparser'); 
+var request 	= require('request');
+var http 		= require('http');
+var https 		= require('https');
 var parseString = require('xml2js').parseString;
-
 
 module.exports = function() {
     return {
@@ -21,10 +19,8 @@ module.exports = function() {
         		console.log('loadRSS: '+req.params.url);
 				// var feedReq = request(req.params.url); 
 				var feedparser = new FeedParser();
-
 				var feedparserWasSuccessfull = true;
 
-	
 				request(req.params.url, function (error, response, body) 
 				{
 					if(error)
@@ -85,7 +81,10 @@ module.exports = function() {
 				feedparser.on('error', function(error) 
 				{
 				  console.log('feedparser error');
-				  console.log(error);
+				  if(error)
+				  {
+				  	console.error(error);
+				  }
 				  feedparserWasSuccessfull = false;
 				  // always handle errors
 				  return res.status(400).json([{
@@ -171,7 +170,7 @@ module.exports = function() {
 								'entries': entries
 							};
 						
-						 	res.jsonp([myFeed]);
+						 	return res.jsonp([myFeed]);
 						}
 						else
 						{
@@ -201,7 +200,7 @@ module.exports = function() {
 				{
 					if(error)
 					{
-						console.log(error);
+						console.error(error);
 					}	
 					else
 					{
@@ -228,7 +227,7 @@ module.exports = function() {
 					        	else
 					        	{
 					        		// console.log('success');
-					            	res.jsonp([result]);
+					            	return res.jsonp([result]);
 					        	}
 				         	});
 				  		}
@@ -236,6 +235,7 @@ module.exports = function() {
 				  		{
 				  			// console.error('catch:');
 				  			console.error(exception);
+							return res.status(500).end();
 				  		}
 					}
 					else

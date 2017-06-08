@@ -3,17 +3,17 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-    EmailModule = mongoose.model('EmailModule'),
-    async = require('async'),
-    config = require('meanio').loadConfig();
-    var url = require('url');
-    var http = require('http');
-    //var sizeOf = require('image-size');
-    // var imagesize = require('imagesize');
-    var request = require('request');
-    var size = require('request-image-size');
+var mongoose    = require('mongoose');
+var async       = require('async');
+var config      = require('meanio').loadConfig();
+var url         = require('url');
+var http        = require('http');
+var request     = require('request');
+var size        = require('request-image-size');
+// var imagesize = require('imagesize');
+//var sizeOf = require('image-size');
 
+var EmailModule = mongoose.model('EmailModule');
 
 
 function expandUrl(shortUrl, cb) 
@@ -72,11 +72,20 @@ module.exports = function(MeanUser) {
             { 
                 expandUrl(imgUrl, function(err, url)
                 {
+                    if(err)
+                    {
+                        console.error(err);
+                    }
                     if(isURL(url))
                     {    
                         // console.log('url: '+url);
-                        expandUrl(url, function(err, finalUrl)
+                        expandUrl(url, function(expandErr, finalUrl)
                         {   
+                            if(expandErr)
+                            {
+                                console.error(expandErr);
+                            }
+                            
                             if(finalUrl == undefined || finalUrl == null || finalUrl == '')
                             {
                                 // console.log('error 1');
@@ -87,19 +96,19 @@ module.exports = function(MeanUser) {
                                 if(isURL(finalUrl))
                                 { 
                                     // console.log('finalUrl: '+finalUrl);
-                                    size(finalUrl, function(err, dimensions, length) 
+                                    size(finalUrl, function(sizeErr, dimensions, length) 
                                     {
-                                        if(err != null)
+                                        if(sizeErr != null)
                                         {
                                             // console.log('error 5');
-                                            // console.log(err);
-                                            return res.status(400).json(err);
+                                            console.error(sizeErr);
+                                            return res.status(400).json(sizeErr);
                                         }
                                         else
                                         {
                                             // console.log('no error');
                                             // console.log(err, dimensions, length);
-                                            res.jsonp([dimensions]);  
+                                            return res.jsonp([dimensions]);  
                                         }
                                     });
                                 }

@@ -3,15 +3,15 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-  NewsletterEntity = mongoose.model('NewsletterEntity'),
-  emailModules = require('./emailModule')(),
-  async = require('async'),
-  config = require('meanio').loadConfig(),
-  crypto = require('crypto'),
-  _ = require('lodash'),
-  jwt = require('jsonwebtoken'); //https://npmjs.org/package/node-jsonwebtoken
+var mongoose        = require('mongoose');
+var emailModules    = require('./emailModule')();
+var async           = require('async');
+var config          = require('meanio').loadConfig();
+var crypto          = require('crypto');
+var _               = require('lodash');
+var jwt             = require('jsonwebtoken'); //https://npmjs.org/package/node-jsonwebtoken
 
+var NewsletterEntity = mongoose.model('NewsletterEntity');
 
 
 module.exports = function(circles) {
@@ -22,7 +22,6 @@ module.exports = function(circles) {
         create: function(req, res, next) 
         {
             var newsletterEntity = new NewsletterEntity(req.body);
-
 
             // because we set our user.provider to local our models/user.js validation will always be true
             req.assert('name', 'You must enter a name').notEmpty();
@@ -40,6 +39,7 @@ module.exports = function(circles) {
             console.log('newsletter entity create 1');
             newsletterEntity.save(function(err, savedNewsletterEntity) 
             {
+    
                 console.log('newsletter entity create 222');
                 if (err) 
                 {
@@ -72,11 +72,11 @@ module.exports = function(circles) {
                         }
                     }
 
-                    console.log('newsletter entity create 888');
-                    return res.status(400);
+                    // console.log('newsletter entity create 888');
+                    return res.status(400).end();
                 }
 
-                    console.log('newsletter entity create 999');
+                // console.log('newsletter entity create 999');
                 return res.status(200).json(savedNewsletterEntity);
             });
         },
@@ -102,7 +102,7 @@ module.exports = function(circles) {
                     return res.status(500).send('Failed to load newsletterEntity ' + req.params.entityId);
                 }    
 
-                res.jsonp([newsletterEntity]);
+                return res.jsonp([newsletterEntity]);
             });
         },       
         /**
@@ -146,6 +146,7 @@ module.exports = function(circles) {
                                 console.log('getemailModules');
                                 if(err != null)
                                 {
+                                    console.error(err);
                                     return callback(err);
                                 }
 
@@ -179,7 +180,7 @@ module.exports = function(circles) {
                             newsletterEntity.modules.push(cache[key]);
                         }
                     }
-                    console.log('done');
+                    // console.log('done');
                     
                     res.jsonp([newsletterEntity]);
                 });
@@ -202,14 +203,14 @@ module.exports = function(circles) {
                 {
                     if (saveErr) 
                     {
-                        res.render('error', 
+                        return res.render('error', 
                         {
                             status: 500
                         });
                     } 
                     else 
                     {
-                        res.jsonp(_newsletterEntity);
+                       return res.jsonp(_newsletterEntity);
                     }
                 });
             });
@@ -221,7 +222,8 @@ module.exports = function(circles) {
             req.assert('eloquaFooter', 'You must set a email Footer in Eloqua').notEmpty();
 
             var errors = req.validationErrors();
-            if (errors) {
+            if (errors) 
+            {
                 return res.status(400).send(errors);
             }
             
@@ -234,7 +236,12 @@ module.exports = function(circles) {
                 newsletterEntity.updatedBy = req.user.username;
                 newsletterEntity.save(function(saveErr)
                 {
-                    res.jsonp(newsletterEntity);
+                    if(saveErr)
+                    {
+                        console.error(saveErr);
+                    }
+
+                    return res.jsonp(newsletterEntity);
                 });
             });
         },
@@ -280,10 +287,14 @@ module.exports = function(circles) {
             .exec(function(err, newsletterEntities) 
             {
                 // res.jsonp(newsletterEntities);
+                if(err)
+                {
+                    console.error(err);
+                }
                 
                 if(circles.hasCompanyCircleBoolean(req, 'Company_Admin'))
                 {
-                    res.jsonp(newsletterEntities);
+                    return res.jsonp(newsletterEntities);
                 }
                 else
                 {
@@ -303,7 +314,7 @@ module.exports = function(circles) {
                         }
                     }
 
-                    res.jsonp(returnme);
+                    return res.jsonp(returnme);
                 }
             });
             

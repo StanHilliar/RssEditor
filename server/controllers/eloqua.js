@@ -28,24 +28,33 @@ module.exports = function(amazingEloqua) {
     amazingEloqua.campaign.acitivate(campaignId, activationOptions, function(activationErr, activationRes)
     {
       console.log('acitivateCampaign callback');
-      console.error(activationErr);
-      console.log(activationRes);
+      if(activationErr)
+      {
+        console.error(activationRes);
+        console.error(activationErr);
+      }
 
       email.getEmailById(req.body.emailId, function(err, email)
       {
         console.log('getEmailById callback');
-        console.log(err);
-        console.log(email);
+        if(err)
+        {
+          console.error(err);
+          console.error(email);
+        }
 
         email.eloquaCampaign = campaignId;
         email.status = 'active';
         email.save(function(saveErr, saveRes)
         {
           console.log('save callback');
-          console.log(saveErr);
-          console.log(saveRes);
+          if(saveErr)
+          {
+            console.error(saveErr);
+            console.error(saveRes);
+          }
 
-          res.jsonp(response);
+          return res.jsonp(response);
         });
       });
     });
@@ -61,21 +70,21 @@ module.exports = function(amazingEloqua) {
             amazingEloqua.getSegmentsByFolderId(req.params.id, '1', '300', 'minimal', function(err, response)
             {
               // console.log('getSegmentsByFolderId callback');
-              // console.log(err);
               // console.log(response);
               if(err != null)
               {
-                res.status(400).json(err);
+                console.error(err);
+                return res.status(400).json(err);
               }
               else
               {
                 if(response != null)
                 {
-                  res.jsonp(response.elements);
+                  return res.jsonp(response.elements);
                 }
                 else
                 {
-                   res.status(400).json('response is null');
+                  return res.status(400).json('response is null');
                 }
               }
             }); 
@@ -87,22 +96,22 @@ module.exports = function(amazingEloqua) {
             amazingEloqua.searchEmailGroups('*', '1', '300', 'complete', function(err, response)
             {
               // console.log('searchEmailGroups callback');
-              // console.log(err);
               // console.log(response);
 
               if(err != null)
               {
-                res.status(400).json(err);
+                console.error(err);
+                return res.status(400).json(err);
               }
               else
               {
                 if(response != null)
                 {
-                  res.jsonp(response.elements);
+                  return res.jsonp(response.elements);
                 }
                 else
                 {
-                   res.status(400).json('response is null');
+                  return res.status(400).json('response is null');
                 }
               }
             });   
@@ -114,22 +123,22 @@ module.exports = function(amazingEloqua) {
             amazingEloqua.getEmailEncoding('minimal', function(err, response)
             {
               console.log('getEmailEncoding callback');
-              console.log(err);
               console.log(response);
 
               if(err != null)
               {
-                res.status(400).json(err);
+                console.error(err);
+                return res.status(400).json(err);
               }
               else
               {
                 if(response != null)
                 {
-                  res.jsonp(response);
+                  return res.jsonp(response);
                 }
                 else
                 {
-                   res.status(400).json('response is null');
+                  return res.status(400).json('response is null');
                 }
               }
             });   
@@ -143,7 +152,7 @@ module.exports = function(amazingEloqua) {
             if(err)
             {
               console.error(err);
-              res.status(400).json(err.msg);
+              return res.status(400).json(err.msg);
             }
             else
             {
@@ -155,8 +164,8 @@ module.exports = function(amazingEloqua) {
                 //console.log(email);
                 if(getEmailByIdErr != null)
                 {
-                  console.log(getEmailByIdErr);
-                  res.status(400).json(getEmailByIdErr);
+                  console.loerrorg(getEmailByIdErr);
+                  return res.status(400).json(getEmailByIdErr);
                 }
                 else
                 {
@@ -164,15 +173,15 @@ module.exports = function(amazingEloqua) {
                   email.save(function(saveErr, saveRes)
                   {
                     console.log('save callback');
-                    //console.log(saveErr);
                     //console.log(saveRes);
                     if(saveErr != null)
                     {
-                      res.status(400).json(saveErr);
+                      console.error(saveErr);
+                      return res.status(400).json(saveErr);
                     }
                     else
                     {
-                      res.jsonp(response);
+                      return res.jsonp(response);
                     }
                   });
                 }
@@ -182,18 +191,19 @@ module.exports = function(amazingEloqua) {
         },
         updateEmail: function(req, res, next) 
         {
-          console.dir('update eloquaEmail');
+          console.log('update eloquaEmail');
           //console.log(req.body.replyToName);
           //console.log(req.body.replyToEmail);
           
           amazingEloqua.updateHTMLEmail(req.params.eloquaEmailId, req.body.name, req.body.eloquaFolder, req.body.eloquaFooter, req.body.eloquaHeader, req.body.eloquaEmailGroup, req.body.eloquaEmailEncoding, req.body.subject, req.body.html, req.body.fromAddress, req.body.senderName, req.body.bounceBackAddress, req.body.replyToName, req.body.replyToEmail, function(err, response)
           {
             console.log('updateHTMLEmail callback');
-            console.log(err);
+            
             //console.log(response);
             if(err != null)
             {
-              res.status(400).json(err);
+              console.error(err);
+              return res.status(400).json(err);
             }
             else
             {
@@ -203,8 +213,8 @@ module.exports = function(amazingEloqua) {
                 //console.log(email);
                 if(getEmailByIdErr != null)
                 {
-                  console.log(getEmailByIdErr);
-                  res.status(400).json(getEmailByIdErr);
+                  console.error(getEmailByIdErr);
+                  return res.status(400).json(getEmailByIdErr);
                 }
                 else
                 {
@@ -215,12 +225,12 @@ module.exports = function(amazingEloqua) {
                    
                     if(saveErr != null)
                     {
-                      console.log(saveErr);
-                      res.status(400).json(saveErr);
+                      console.error(saveErr);
+                      return res.status(400).json(saveErr);
                     }
                     else
                     {
-                      res.jsonp(response);
+                      return res.jsonp(response);
                     }
                   });
                 }
@@ -230,7 +240,7 @@ module.exports = function(amazingEloqua) {
         },
         sendTestEmail: function(req, res, next)
         {
-          console.dir('update sendtestemail');
+          console.log('update sendtestemail');
           console.log(req.body.eloquaEmailId);
           console.log(req.body.emailAddresses);
 
@@ -253,7 +263,10 @@ module.exports = function(amazingEloqua) {
               {
                 amazingEloqua.searchContacts(emailAddress.trim(), 1, 1, 'minimal', function(contactErr, contactRes)
                 {
-                  console.log(contactErr);
+                  if(contactErr)
+                  {
+                    console.error(contactErr);
+                  }
                   //console.log(contactRes);
                   if(contactErr == null && contactRes.total == 1)
                   {
@@ -261,7 +274,10 @@ module.exports = function(amazingEloqua) {
                     {
                       amazingEloqua.sendTestEmail(contactRes.elements[0].id, req.body.eloquaEmailId, 'TestEmail', function(emailErr, emailRes)
                       {
-                        console.log(emailErr);
+                        if(emailErr)
+                        {
+                          console.error(emailErr);
+                        }
                         //console.log(emailRes);
                         return cb(null, emailRes);
                       });
@@ -297,16 +313,17 @@ module.exports = function(amazingEloqua) {
             function(mapErr, mapRes)
             {
               console.log('map Callback');
-              console.log(mapErr);
+
               //console.log(mapRes);
 
               if(mapErr != null)
               {
-                res.status(400).json([mapErr]);
+                console.error(mapErr);
+                return res.status(400).json([mapErr]);
               }
               else
               {
-                res.jsonp({success: true});
+                return res.jsonp({success: true});
               }
            });
         },
@@ -316,8 +333,11 @@ module.exports = function(amazingEloqua) {
             amazingEloqua.campaign.createSimple({name: req.body.name, folderId: req.body.eloquaFolder, segmentId: req.body.eloquaSegment, emailId: req.body.eloquaEmail, startAt: req.body.startAt, endAt: req.body.endAt}, function(err, response)
             {
               console.log('createSimpleCampaign callback');
-              console.log(err);
-              console.log(response);
+              if(err)
+              {
+                console.error(err);
+              }
+              console.error(response);
 
               if(err !=  null)
               {
@@ -331,11 +351,11 @@ module.exports = function(amazingEloqua) {
                     value: ''
                 });
                             
-                res.status(400).json(errors);
+                return res.status(400).json(errors);
               } 
               else
               {
-                activateCampaignAndUpdateEmail(response, response.id,  req,res,next);
+                activateCampaignAndUpdateEmail(response, response.id, req, res, next);
               }
             });   
         },
@@ -359,7 +379,7 @@ module.exports = function(amazingEloqua) {
                     value: ''
                 });
                             
-                res.status(400).json(errors);
+                return res.status(400).json(errors);
               } 
               else
               {
@@ -375,7 +395,11 @@ module.exports = function(amazingEloqua) {
             amazingEloqua.campaign.deacitivate(req.params.eloquaCampaignId, function(activationErr, activationRes)
             {
               console.log('deacitivateCampaign callback');
-              console.log(activationErr);
+
+              if(activationErr)
+              {
+                console.error(activationErr);
+              }
               console.log(activationRes);
 
               email.getEmailById(req.body.emailId, function(err, email)
@@ -388,17 +412,20 @@ module.exports = function(amazingEloqua) {
                 email.save(function(saveErr, saveRes)
                 {
                   console.log('save callback');
-                  console.log(saveErr);
+                  if(saveErr)
+                  {
+                    console.error(saveErr);
+                  }
                   console.log(saveRes);
 
-                  res.jsonp(saveRes);
+                  return res.jsonp(saveRes);
                 });
               });
             });
         }, 
         saveEmail: function(req, res, next)
         {
-            console.dir('saveemail');
+            console.log('saveemail');
             //console.dir(req.body.source);
             
             var contacts = [  
@@ -439,19 +466,12 @@ module.exports = function(amazingEloqua) {
               //console.log(err);
               //console.log(response);
              
-              res.status(200).json(
+              return res.status(200).json(
               {
                 success: true,
                 error: null
               });
             });
-
-            /*
-            res.status(200).json(
-              {
-                success: true,
-                error: null
-              });*/
             
         },
 

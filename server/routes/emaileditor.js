@@ -1,23 +1,20 @@
 'use strict';
 
-
-
 /* jshint -W098 */
 // The Package is past automatically as first parameter
 module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circles) 
 {
-
   app.use(circles.controller.loadCircles);
   app.use(circles.controller.userAcl);
   app.use('/api/:company/emaileditor/*', circles.controller.companyAcl);
 
-  var emailTemplates = require('../controllers/emailTemplate')();
-  var newsletterEntities = require('../controllers/newsletterEntity')(circles.controller);
-  var emailModules = require('../controllers/emailModule')(circles.controller);
-  var eloqua = require('../controllers/eloqua')(amazingEloqua);
-  var email = require('../controllers/email')(circles.controller);
-  var helper = require('../controllers/helper')();
-  var feed = require('../controllers/feed')();
+  var emailTemplates      = require('../controllers/emailTemplate')();
+  var newsletterEntities  = require('../controllers/newsletterEntity')(circles.controller);
+  var emailModules        = require('../controllers/emailModule')(circles.controller);
+  var eloqua              = require('../controllers/eloqua')(amazingEloqua);
+  var email               = require('../controllers/email')(circles.controller);
+  var helper              = require('../controllers/helper')();
+  var feed                = require('../controllers/feed')();
 
   app.get('/api/emaileditor/example/anyone', function(req, res, next) {
     res.send('Anyone can access this');
@@ -82,7 +79,6 @@ module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circl
 
   app.route('/api/emaileditor/checkadvertisment/:url').get(helper.isAdvertismentBooked);  
 
-
   app.route('/api/:company/emaileditor/emailmodule').post(emailModules.create);
   app.route('/api/:company/emaileditor/emailmodule/:moduleId').post(emailModules.update);
   app.route('/api/:company/emaileditor/emailmodule/:moduleId').get(emailModules.get);
@@ -126,8 +122,6 @@ module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circl
   app.route('/api/:company/emaileditor/unscheduleemail/:eloquaCampaignId').post(eloqua.unscheduleEmail); 
   app.route('/api/emaileditor/saveemail').post(eloqua.saveEmail);
    
-
-
   /*
     server-0 (err): Error: Can't set headers after they are sent.
     server-0 (err):     at ServerResponse.OutgoingMessage.setHeader (http.js:724:11)

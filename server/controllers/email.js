@@ -3,17 +3,17 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-  Email = mongoose.model('Email'),
-  NewsletterEntity = mongoose.model('NewsletterEntity'),
-  async = require('async'),
-  config = require('meanio').loadConfig(),
-  crypto = require('crypto'),
-  _ = require('lodash'),
-  jwt = require('jsonwebtoken'); //https://npmjs.org/package/node-jsonwebtoken
-  var shortid = require('shortid');
-  var parse5 = require('parse5');
+var mongoose    = require('mongoose');
+var async       = require('async');
+var config      = require('meanio').loadConfig();
+var crypto      = require('crypto');
+var _           = require('lodash');
+var jwt         = require('jsonwebtoken'); //https://npmjs.org/package/node-jsonwebtoken
+var shortid     = require('shortid');
+var parse5      = require('parse5');
 
+var Email               = mongoose.model('Email');
+var NewsletterEntity    = mongoose.model('NewsletterEntity');
 
 function _getEmailById(id, cb)
 {
@@ -27,7 +27,7 @@ function _getEmailById(id, cb)
     {
         if (err) 
         {
-            // console.error('error1');
+            console.error(err);
             return cb(err, null);
         }
         if (!email)
@@ -162,7 +162,7 @@ module.exports = function(circles) {
                                 }
 
                                 //console.log('emailt entity create 888');
-                                return res.status(400);
+                                return res.status(400).end();
                             }
                             else
                             {
@@ -188,7 +188,7 @@ module.exports = function(circles) {
             {
                 if (err) 
                 {
-                    // console.error('error1');
+                    console.error(err);
                     return res.status(500).send(err);
                 }
                 if (!email)
@@ -204,6 +204,7 @@ module.exports = function(circles) {
                         console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
                         if(checkAccessErr != null) 
                         {
+                            console.error(checkAccessErr);
                             return res.status(400).send(checkAccessErr);
                         }
                         else
@@ -241,6 +242,7 @@ module.exports = function(circles) {
                     console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
                     if(checkAccessErr != null) 
                     {
+                        console.error(checkAccessErr);
                         return res.status(400).send(checkAccessErr);
                     }
                     else
@@ -259,14 +261,15 @@ module.exports = function(circles) {
                             {
                                 if (saveErr) 
                                 {
-                                    res.render('error', 
+                                    console.error(saveErr);
+                                    return res.render('error', 
                                     {
                                         status: 500
                                     });
                                 } 
                                 else 
                                 {
-                                    res.jsonp(_email);
+                                    return res.jsonp(_email);
                                 }
                             });
                         }
@@ -306,6 +309,7 @@ module.exports = function(circles) {
             {
                 if(err != null)
                 {
+                    console.error(err);
                     return res.status(400).send(err);
                 }
                 else
@@ -317,6 +321,7 @@ module.exports = function(circles) {
                             console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
                             if(checkAccessErr != null) 
                             {
+                                console.error(checkAccessErr);
                                 return res.status(400).send(checkAccessErr);
                             }
                             else
@@ -343,7 +348,7 @@ module.exports = function(circles) {
                                             console.error(saveErr);
                                         }
                                         
-                                        res.jsonp(email);
+                                        return res.jsonp(email);
                                     });
                                 }
                             }
@@ -374,13 +379,14 @@ module.exports = function(circles) {
             {
                 if(getEmailsErr)
                 {
+                    console.error(getEmailsErr);
                     return res.status(400).send(getEmailsErr);
                 }
                 else
                 {
                     if(circles.hasCompanyCircleBoolean(req, 'Company_Admin'))
                     {
-                        res.jsonp(email);
+                        return res.jsonp(email);
                         // res.jsonp(newsletterEntities);
                     }
                     else
@@ -423,7 +429,7 @@ module.exports = function(circles) {
                                 }
                                 // console.log(returnme);
 
-                                res.jsonp(returnme);
+                                return res.jsonp(returnme);
                             }
                         });
                     }

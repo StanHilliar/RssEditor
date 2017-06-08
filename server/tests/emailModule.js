@@ -191,10 +191,8 @@ describe('<Unit Test>', function()
       });
     });
 
-
     it('emailModules api - create - childTagName', function(done) 
     {
-
       request(url)
       .post('/api/emaileditor/emailmodule')
       .send(emailModule3)
@@ -236,7 +234,6 @@ describe('<Unit Test>', function()
       });
     });
    
-
     after(function(done) 
     {
       /** Clean up user objects

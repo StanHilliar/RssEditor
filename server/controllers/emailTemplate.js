@@ -3,8 +3,8 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-  EmailTemplate = mongoose.model('EmailTemplate');
+var mongoose = require('mongoose');
+var EmailTemplate = mongoose.model('EmailTemplate');
 
 
 
@@ -59,10 +59,10 @@ module.exports = function(MeanUser){
                             res.status(400).json(modelErrors);
                         }
                     }*/
-                    return res.status(400);
+                    return res.status(400).end();
                 }
 
-                return res.status(200);
+                return res.status(200).end();
             });
         },
         update: function(req, res, next) 
@@ -111,10 +111,10 @@ module.exports = function(MeanUser){
                             res.status(400).json(modelErrors);
                         }
                     }*/
-                    return res.status(400);
+                    return res.status(400).end();
                 }
 
-                res.status(200);
+                return res.status(200).end();
             });
         },
        
@@ -127,7 +127,7 @@ module.exports = function(MeanUser){
             }, function(err, emailTemplate) 
             {
 
-               res.json(emailTemplate);
+               return res.json(emailTemplate);
             });
         },
         getAllEmailTemplates: function(req, res, next) 
@@ -137,7 +137,7 @@ module.exports = function(MeanUser){
             }, function(err, emailTemplates) 
             {
 
-               res.json(emailTemplates);
+               return res.json(emailTemplates);
             });
         }
 

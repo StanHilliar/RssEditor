@@ -3,16 +3,16 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-  EmailModule = mongoose.model('EmailModule'),
-  async = require('async'),
-  config = require('meanio').loadConfig(),
-  crypto = require('crypto'),
-  _ = require('lodash'),
-  jwt = require('jsonwebtoken'); //https://npmjs.org/package/node-jsonwebtoken
-  var shortid = require('shortid');
-  var parse5 = require('parse5');
+var mongoose    = require('mongoose');
+var async       = require('async');
+var config      = require('meanio').loadConfig();
+var crypto      = require('crypto');
+var _           = require('lodash');
+var jwt         = require('jsonwebtoken'); //https://npmjs.org/package/node-jsonwebtoken
+var shortid     = require('shortid');
+var parse5      = require('parse5');
 
+var EmailModule = mongoose.model('EmailModule');
 
 function _getModuleById(moduleId, cb)
 {
@@ -36,7 +36,7 @@ function _getModuleById(moduleId, cb)
         }    
 
        
-        cb(null,emailModule);
+        return cb(null,emailModule);
     });
 }
 
@@ -55,7 +55,7 @@ function _parseAndUpdateModule(module)
             }
 
             var fragment = parse5.parseFragment(emailModule.views[i].source.replace(/[^\x20-\x7E]+/g, ''));
-            console.log(fragment);
+            // console.log(fragment);
             emailModule.views[i].childTagName = 'div';
             if(fragment != null)
             {
@@ -68,7 +68,7 @@ function _parseAndUpdateModule(module)
     }
 
     var _fullHTML = emailModule.preBody+emailModule.postBody;
-    console.log(_fullHTML);
+    // console.log(_fullHTML);
     emailModule.childTagName = 'div';
     if(_fullHTML != '')
     {
@@ -92,11 +92,11 @@ module.exports = function(MeanUser) {
          */
         create: function(req, res, next) 
         {
-            console.log('create');
+            // console.log('create');
             //console.log('newsletter entity create');
             var emailModule = new EmailModule(req.body);
 
-            console.log('1');
+            // console.log('1');
             /*
             if(emailModule.views != null)
             {
@@ -109,19 +109,19 @@ module.exports = function(MeanUser) {
                 }
             }*/
             emailModule = _parseAndUpdateModule(emailModule);
-            console.log('2');
+            // console.log('2');
 
             // because we set our user.provider to local our models/user.js validation will always be true
             req.assert('name', 'You must enter a name').notEmpty();
             req.assert('type', 'You must enter a type').notEmpty();
-            console.log('3');
+            // console.log('3');
 
             var errors = req.validationErrors();
             if (errors) 
             {
                 return res.status(400).send(errors);
             }
-            console.log('4');
+            // console.log('4');
 
             emailModule.createdBy = req.user.username;
             emailModule.updatedBy = req.user.username;
@@ -130,7 +130,7 @@ module.exports = function(MeanUser) {
             //console.log('newsletter entity create 1');
             emailModule.save(function(err, resEmailModule) 
             {
-                console.log('5');
+                // console.log('5');
                 //console.log('newsletter entity create 222');
                 if (err) 
                 {
@@ -164,7 +164,7 @@ module.exports = function(MeanUser) {
                     }
 
                     console.log('newsletter entity create 888');
-                    return res.status(400);
+                    return res.status(400).end();
                 }
                 else
                 {
@@ -208,7 +208,7 @@ module.exports = function(MeanUser) {
             {
                 if (err) 
                 {
-                    console.error('error1');
+                    console.error(err);
                     return res.status(500).send(err);
                 }
                 if (!emailModule)
@@ -218,7 +218,7 @@ module.exports = function(MeanUser) {
                 }    
 
                
-                res.jsonp([emailModule]);
+                return res.jsonp([emailModule]);
             });
 
         },
@@ -238,14 +238,14 @@ module.exports = function(MeanUser) {
                 {
                     if (saveErr) 
                     {
-                        res.render('error', 
+                        return res.render('error', 
                         {
                             status: 500
                         });
                     } 
                     else 
                     {
-                        res.jsonp(_emailModule);
+                        return res.jsonp(_emailModule);
                     }
                 });
             });
@@ -265,6 +265,10 @@ module.exports = function(MeanUser) {
             {
                 emailModule = _.extend(emailModule, req.body);
                 emailModule.updatedBy = req.user.username;
+                if(err)
+                {
+                    console.error(err);
+                }
                 console.log('update email module cb');
 
                 /*
@@ -313,7 +317,7 @@ module.exports = function(MeanUser) {
                         console.error(saveErr);
                     }
                     
-                    res.jsonp(emailModule);
+                    return res.jsonp(emailModule);
                 });
             });
         },
@@ -326,7 +330,7 @@ module.exports = function(MeanUser) {
             .lean()
             .exec(function(err, emailModules) 
             {
-               res.jsonp(emailModules);
+               return res.jsonp(emailModules);
             });
         },
 
