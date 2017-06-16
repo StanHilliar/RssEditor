@@ -60,6 +60,7 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
                 company: '@company'
             });
         }   
+
         function eloquaCampaignUnschedule()
         {
            return $resource('/api/:company/emaileditor/unscheduleemail/:eloquaCampaignId/', 
@@ -76,16 +77,31 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
                 company: '@company'
             });
         }
+        function eloquaEmailConfig()
+        {
+           return $resource('/api/:company/emaileditor/emailconfig', 
+            {
+                company: '@company'
+            },
+            {
+                'query': 
+                {
+                    method: 'GET', 
+                    isArray: false 
+                }
+            });
+        }
 
         return {
-            emailModule: getEmailModule,
-            segments: getSegments,
-            emailGroups: getEmailGroups,
-            eloquaEmail: eloquaEmail,
-            eloquaCampaign: eloquaCampaign,
-            eloquaTestEmail: eloquaTestEmail,
+            emailModule             : getEmailModule,
+            segments                : getSegments,
+            emailGroups             : getEmailGroups,
+            eloquaEmail             : eloquaEmail,
+            eloquaCampaign          : eloquaCampaign,
+            eloquaTestEmail         : eloquaTestEmail,
             eloquaCampaignUnschedule: eloquaCampaignUnschedule,
-            eloquaEmailEncoding: eloquaEmailEncoding
+            eloquaEmailEncoding     : eloquaEmailEncoding,
+            eloquaEmailConfig       : eloquaEmailConfig
         };
     }
 ]);

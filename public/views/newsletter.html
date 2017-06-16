@@ -5,7 +5,7 @@
 	</div>
 	<div class="row">
 		<div class="col-md-4">
-			<h3>Newsletter Entity <span ng-if="loading.entity||loading.modules||loading.segments||loading.groups||loading.encoding||loading.circles" class="glyphicon glyphicon-refresh spinning"></span></h3>
+			<h3>Newsletter Entity <span ng-if="loading.entity||loading.modules||loading.segments||loading.groups||loading.encoding||loading.circles||loading.emailConfig" class="glyphicon glyphicon-refresh spinning"></span></h3>
 		</div>
 	</div>
 	<div class="row rowSpaced">
@@ -84,8 +84,10 @@
 		</div>
 
 		<div class="col-xs-6 col-md-5">
-			<label for="">bounceback address</label>
-			<input type="text" class="form-control" placeholder="" ng-model="entity.bounceBackAddress" name="" readonly disabled>
+			<label for="">bounceback address <span ng-if="loading.emailConfig" class="glyphicon glyphicon-refresh spinning"></span></label>
+			<select class="form-control" ng-model="entity.bounceBackAddress" ng-options="bounceback as bounceback for bounceback in availableBouncebackAddresses">
+			</select>
+			<!--{{availableBouncebackAddresses}}-->
 		</div>
 	</div>
 	<div class="row rowSpaced">
@@ -98,12 +100,12 @@
 	<div class="row rowSpaced">
 		<div class="col-xs-6 col-md-5">
 			<label for="">reply to Name</label>
-			<input type="text" class="form-control" placeholder="" ng-model="entity.replyToName" name="" readonly disabled>
+			<input type="text" class="form-control" placeholder="" ng-model="entity.replyToName" name="">
 		</div>
 		
 		<div class="col-xs-6 col-md-5">
 			<label for="">reply to Email</label>
-			<input type="text" class="form-control" placeholder="" ng-model="entity.replyToEmail" name="" readonly disabled>
+			<input type="text" class="form-control" placeholder="" ng-model="entity.replyToEmail" name="">
 		</div>
 	</div>	
 

@@ -1,8 +1,14 @@
 'use strict';
 
-var expect = require('expect.js');
+var expect  = require('expect.js');
 var request = require('supertest'); 
-var feed = require('../controllers/feed.js')();
+var feed    = require('../controllers/feed.js')();
+var fs      = require('fs');
+var Mitm    = require("mitm");
+
+
+var mitm = Mitm();
+mitm.disable();
 
 var url = 'http://127.0.0.1:3001';
 
@@ -37,6 +43,23 @@ describe('<Unit Test>', function()
 {
     describe('loadRSS', function() 
     {
+      beforeEach(function () 
+      {
+
+        mitm = Mitm();
+
+        mitm.on("connect", function (socket, opts) 
+        {
+          //console.log('---->'+opts.host);
+          //console.log(opts.href);
+          if (opts.host == "127.0.0.1") socket.bypass();
+          if (opts.host == "secure.p06.eloqua.com") socket.bypass();
+        });
+
+      });
+
+      afterEach(function () { mitm.disable() });
+
         it('loadRSS - empty feed url', function(done) 
         {   
             var res = new mock(
@@ -115,6 +138,8 @@ describe('<Unit Test>', function()
         
         it('loadRSS - non existent url', function(done) 
         {   
+            // mitm.disable();
+
             var res = new mock(
             {
                 jsonCB: function(data)
@@ -127,6 +152,14 @@ describe('<Unit Test>', function()
                     expect().fail("jsonCB should not be called");
                     done();
                 }
+            });
+
+
+            mitm.on("request", function(req, res) 
+            {
+                // console.log(req.headers.host +' --------------------> '+req.url);
+                res.status = 500;
+                res.end(); 
             });
 
             feed.loadRSS({params:{url: 'http://s3.eu-central-1.amazonaws.com/leadteqtests/rss/feed_DOENST_EXIST.rss'}}, res);    
@@ -152,7 +185,18 @@ describe('<Unit Test>', function()
         		}
         	});
 
-        	feed.loadRSS({params:{url: 'http://s3.eu-central-1.amazonaws.com/leadteqtests/rss/feed.rss'}}, res);	
+            mitm.on("request", function(req, res) 
+            {
+                console.log(req.headers.host +' --------------------> '+req.url);
+                console.log('-----------------');
+                
+                var feedData = fs.readFileSync('packages/custom/emaileditor/server/tests/data/feed.rss', {encoding: 'utf-8'});
+                console.log(feedData);
+                console.log('-----------------');
+                res.end(JSON.stringify(feedData)); 
+            });
+
+        	feed.loadRSS({params:{url: 'http://s3.eu-central-1.amazonaws.com/leadteqtests/rss/feed.rssxxxxxxxxx'}}, res);	
       	});    
 
       	it('loadRSS - https', function(done) 
