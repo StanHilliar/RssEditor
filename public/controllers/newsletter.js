@@ -1,8 +1,8 @@
 'use strict';
 
 /* jshint -W098 */
-angular.module('mean.emaileditor').controller('NewsletterEditController', ['$scope','$stateParams','$compile', '$interpolate', '$sce', 'Global', 'NewsletterEntity', 'EmailModule', 'Eloqua', 'Circles', 'MeanUser', '$meanConfig',
-  function($scope, $stateParams, $compile, $interpolate, $sce, Global, NewsletterEntity, EmailModule, Eloqua, Circles, MeanUser, $meanConfig) 
+angular.module('mean.emaileditor').controller('NewsletterEditController', ['$scope', '$q', '$stateParams','$compile', '$interpolate', '$sce', 'Global', 'NewsletterEntity', 'EmailModule', 'Eloqua', 'Circles', 'MeanUser', '$meanConfig',
+  function($scope, $q, $stateParams, $compile, $interpolate, $sce, Global, NewsletterEntity, EmailModule, Eloqua, Circles, MeanUser, $meanConfig) 
   {
     $scope.global = Global;
     $scope.package = 
@@ -72,97 +72,149 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
 
     $scope.saveInProgress = false;
 
-    if($stateParams.newsletterid)
+
+    $scope.load = function(cb)
     {
-      $scope.newsletterExsists = true;
-        
-      console.log('loadNewsletterEntitiy');
-      $scope.loading.entity = true;
-      NewsletterEntity.query({company: MeanUser.company.id, entityId: $stateParams.newsletterid}, function(newsletterEntityArray)
+      console.log('--------------------load------------------------');
+      var promises = [];
+      var entityQueryDeferred         = $q.defer();
+      var segmentsDeferred            = $q.defer();
+      var emailGroupsDeferred         = $q.defer();
+      var eloquaEmailEncodingDeferred = $q.defer();
+      var eloquaEmailConfigDeferred   = $q.defer();
+      var mineCompanyDeferred         = $q.defer();
+
+      promises.push(entityQueryDeferred.promise);
+      // entityQueryDeferred.resolve();
+      promises.push(segmentsDeferred.promise);
+      promises.push(emailGroupsDeferred.promise);
+      promises.push(eloquaEmailEncodingDeferred.promise);
+      promises.push(eloquaEmailConfigDeferred.promise);
+      promises.push(mineCompanyDeferred.promise);
+     
+      if($stateParams.newsletterid)
       {
-        $scope.entity = newsletterEntityArray[0];
+        $scope.newsletterExsists = true;
+          
+        // console.log('loadNewsletterEntitiy');
+        $scope.loading.entity = true;
+        NewsletterEntity.query({company: MeanUser.company.id, entityId: $stateParams.newsletterid}, function(newsletterEntityArray)
+        {
+          console.log('NewsletterEntity.query cb');
+          console.log(newsletterEntityArray);
+          $scope.entity = newsletterEntityArray[0];
 
-        if($scope.entity.bounceBackAddress == undefined || $scope.entity.bounceBackAddress == null)
-        {
-          $scope.entity.bounceBackAddress = $meanConfig.eloqua.bounceBackAddress;
-        } 
-
-        if($scope.entity.replyToName == undefined || $scope.entity.replyToName == null)
-        {
-          $scope.entity.replyToName = $meanConfig.eloqua.replyToName;
-        } 
-        
-        if($scope.entity.replyToEmail == undefined || $scope.entity.replyToEmail == null)
-        {
-          $scope.entity.replyToEmail = $meanConfig.eloqua.replyToEmail;
-        }
-
-        var _template = $scope.entity.header;
-        for(var i = 0; i < $scope.entity.modules.length; i++)
-        {
-          _template += '{{MODULE_'+$scope.entity.modules[i].moduleIdentifier+'}}';
-          if( $scope.entity.modules[i].postModule)
+          if($scope.entity.bounceBackAddress == undefined || $scope.entity.bounceBackAddress == null)
           {
-            _template += $scope.entity.modules[i].postModule;
+            $scope.entity.bounceBackAddress = $meanConfig.eloqua.bounceBackAddress;
+          } 
+
+          if($scope.entity.replyToName == undefined || $scope.entity.replyToName == null)
+          {
+            $scope.entity.replyToName = $meanConfig.eloqua.replyToName;
+          } 
+          
+          if($scope.entity.replyToEmail == undefined || $scope.entity.replyToEmail == null)
+          {
+            $scope.entity.replyToEmail = $meanConfig.eloqua.replyToEmail;
+          }
+
+          var _template = $scope.entity.header;
+          for(var i = 0; i < $scope.entity.modules.length; i++)
+          {
+            _template += '{{MODULE_'+$scope.entity.modules[i].moduleIdentifier+'}}';
+            if( $scope.entity.modules[i].postModule)
+            {
+              _template += $scope.entity.modules[i].postModule;
+            }
+          }
+          _template += $scope.entity.footer;
+
+          $scope.template = _template;
+
+          removeSelectedSegmentsfromAvailabeleSegments();
+          removeSelectedCirclesfromAvailabeleCircles();
+          $scope.loading.entity = false;
+          entityQueryDeferred.resolve();
+        });     
+      }
+      else
+      {
+        entityQueryDeferred.resolve();
+      }
+     
+      $scope.loading.segments = true;
+      Eloqua.segments().query({company: MeanUser.company.id, id: $meanConfig.eloqua.segmentFolder}, function(segments)
+      {
+        //console.log(segments);
+        for(var i = 0; i < segments.length; i++)
+        {
+          $scope.availableSegments.push({id: segments[i].id, name: segments[i].name});
+        }
+        removeSelectedSegmentsfromAvailabeleSegments();
+        $scope.loading.segments = false;
+        segmentsDeferred.resolve();
+      });  
+
+      $scope.loading.groups = true;
+      Eloqua.emailGroups().query({company: MeanUser.company.id}, function(emailGroups)
+      {
+        // console.log(emailGroups);
+        $scope.availableSEmailGroups = emailGroups;
+        $scope.loading.groups = false;
+        emailGroupsDeferred.resolve();
+      });
+
+      $scope.loading.encoding = true;
+      Eloqua.eloquaEmailEncoding().query({company: MeanUser.company.id}, function(emailEncodings)
+      {
+        // console.log(emailEncodings);
+        $scope.availableEmailEncodings = emailEncodings;
+        $scope.loading.encoding = false;
+        eloquaEmailEncodingDeferred.resolve();
+      });
+
+      $scope.loading.emailConfig = true;
+      Eloqua.eloquaEmailConfig().query({company: MeanUser.company.id}, function(emailConfig)
+      {
+        // console.log(emailConfig);
+        if(emailConfig && emailConfig.bouncebackAddresses)
+        {
+          $scope.availableBouncebackAddresses = emailConfig.bouncebackAddresses;
+          if(!$scope.entity.fromAddress || $scope.entity.fromAddress.trim() == '')
+          {
+            $scope.entity.fromAddress = emailConfig.fromAddress;
+          }
+
+          if(!$scope.entity.senderName || $scope.entity.senderName.trim() == '')
+          {
+            $scope.entity.senderName = emailConfig.replyToName;
           }
         }
-        _template += $scope.entity.footer;
+        $scope.loading.emailConfig = false;
+        eloquaEmailConfigDeferred.resolve();
+      });
 
-        $scope.template = _template;
-
-        removeSelectedSegmentsfromAvailabeleSegments();
+      $scope.loading.circles = true;
+      Circles.mineCompany({company: MeanUser.company.id}, function(acl) 
+      { 
+        $scope.availableSecurityCircles = acl.allowed;
         removeSelectedCirclesfromAvailabeleCircles();
-        $scope.loading.entity = false;
-      });     
-    }
-
-    $scope.loading.segments = true;
-    Eloqua.segments().query({company: MeanUser.company.id, id: $meanConfig.eloqua.segmentFolder}, function(segments)
-    {
-      //console.log(segments);
-      for(var i = 0; i < segments.length; i++)
+        $scope.loading.circles = false;
+        mineCompanyDeferred.resolve();
+      });
+      
+      $q.all(promises).then(function() 
       {
-        $scope.availableSegments.push({id: segments[i].id, name: segments[i].name});
-      }
-      removeSelectedSegmentsfromAvailabeleSegments();
-      $scope.loading.segments = false;
-    });  
+        console.log('all DONE!!!')
+        if(cb)
+        {
+          return cb();
+        }
+      });
+    };
 
-    $scope.loading.groups = true;
-    Eloqua.emailGroups().query({company: MeanUser.company.id}, function(emailGroups)
-    {
-      console.log(emailGroups);
-      $scope.availableSEmailGroups = emailGroups;
-      $scope.loading.groups = false;
-    });
-
-    $scope.loading.encoding = true;
-    Eloqua.eloquaEmailEncoding().query({company: MeanUser.company.id}, function(emailEncodings)
-    {
-      console.log(emailEncodings);
-      $scope.availableEmailEncodings = emailEncodings;
-      $scope.loading.encoding = false;
-    });
-
-    $scope.loading.emailConfig = true;
-    Eloqua.eloquaEmailConfig().query({company: MeanUser.company.id}, function(emailConfig)
-    {
-      console.log(emailConfig);
-      if(emailConfig && emailConfig.bouncebackAddresses)
-      {
-        $scope.availableBouncebackAddresses = emailConfig.bouncebackAddresses;
-      }
-      $scope.loading.emailConfig = false;
-    });
-
-    $scope.loading.circles = true;
-    Circles.mineCompany({company: MeanUser.company.id}, function(acl) 
-    { 
-      $scope.availableSecurityCircles = acl.allowed;
-      removeSelectedCirclesfromAvailabeleCircles();
-      $scope.loading.circles = false;
-    });
-
+  
     function removeSelectedSegmentsfromAvailabeleSegments()
     {
       var _trash = [];
@@ -195,7 +247,6 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       }
     }
    
-
     $scope.moveItem = function(item, from, to) 
     {
         console.log('Move item   Item: '+item+' From:: '+from+' To:: '+to);
@@ -208,7 +259,6 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
             to.push(item);      
         }
     };  
-
 
     $scope.moveAll = function(from, to) 
     {
@@ -305,7 +355,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       }
  
       $scope.entity.modules = matches;
-    /*
+      /*
       while ((match = re.exec($scope.template)) != null) 
       {
           console.log("match found at " + match.index);
@@ -441,7 +491,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     {
       console.log('saveNewsletterEntitiy');
 
-//      _preSavePrepModules();
+      // _preSavePrepModules();
       $scope.saveInProgress = true;
 
       $scope.processTemplate();
@@ -449,9 +499,9 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       newsletterEntity.company = MeanUser.company.id;
       newsletterEntity.$save(function(data, headers) 
       {
-  //              $scope.user = {};
-//                $scope.users.push(user);
-              //  $scope.userError = null;
+        //  $scope.user = {};
+        //                $scope.users.push(user);
+        //  $scope.userError = null;
         $scope.errorMsgs = [];
         $scope.saveInProgress = false;
         $scope.newsletterExsists = true;
@@ -461,11 +511,6 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
           $scope.errorMsgs = data.data;
           $scope.saveInProgress = false;
       });
-      /*NewsletterEntity.create($scope.entity).then(function(response)
-      {
-        console.log('save callback');
-        console.log(response);
-      });*/
     };
 
     $scope.update = function()
@@ -473,14 +518,14 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       console.log('updateNewsletterEntitiy');
       $scope.saveInProgress = true;
 
-    //  _preSavePrepModules();
+        //  _preSavePrepModules();
         $scope.processTemplate();
         $scope.entity.company = MeanUser.company.id;
         $scope.entity.$save(function(data, headers) 
         {
-  //              $scope.user = {};
-//                $scope.users.push(user);
-              //  $scope.userError = null;
+            // $scope.user = {};
+            // $scope.users.push(user);
+            //  $scope.userError = null;
               $scope.errorMsgs = [];
               $scope.saveInProgress = false;         
             }, function(data, headers) 
