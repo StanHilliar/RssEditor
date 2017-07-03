@@ -5,7 +5,7 @@
 	</div>
 	<div class="row">
 		<div class="col-md-4">
-			<h3>Newsletter Entity <span ng-if="loading.entity||loading.modules||loading.segments||loading.groups||loading.encoding||loading.circles||loading.emailConfig" class="glyphicon glyphicon-refresh spinning"></span></h3>
+			<h3>Newsletter Entity <span ng-if="loading.entity||loading.modules||loading.segments||emailGroups.loading||emailEncoding.loading||loading.circles||emailConfig.loading" class="glyphicon glyphicon-refresh spinning"></span></h3>
 		</div>
 	</div>
 	<div class="row rowSpaced">
@@ -17,24 +17,24 @@
  	<div class="row rowSpaced">
 		<div class="col-xs-6 col-md-5">
 		  	<label>available segments <span ng-if="loading.segments" class="glyphicon glyphicon-refresh spinning"></span></label>
-		  	<select multiple class="form-control" ng-model="available" ng-options="segment as segment.name for segment in availableSegments">
+		  	<select multiple class="form-control" ng-model="available" ng-options="segment as segment.name for segment in segments.data">
 			</select>
 		</div>
 		<div class="col-xs-1 col-md-1">
 			<br/>
-		  	<A href="#"  ng-click="moveAll(availableSegments, entity.segments)">
+		  	<A href="#"  ng-click="moveAll(segments.data, entity.segments)">
 		  		&nbsp;<span class="glyphicon glyphicon-fast-forward" aria-hidden="true"></span>
 		  	</A><br/>
 
-		  	<A href="#"  ng-click="moveItem(available[0], availableSegments, entity.segments)">
+		  	<A href="#"  ng-click="moveItem(available[0], segments.data, entity.segments)">
 		  		<span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
 		  	</A><br/><br/>
 
-		  	<A href="#"  ng-click="moveItem(selected[0], entity.segments, availableSegments)">
+		  	<A href="#"  ng-click="moveItem(selected[0], entity.segments, segments.data)">
 		  		<span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
 		  	</A><br/>
 		  	
-			<A href="#"  ng-click="moveAll(entity.segments, availableSegments)">
+			<A href="#"  ng-click="moveAll(entity.segments, segments.data)">
 				&nbsp;<span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span>
 			</A><br/>
 		</div>
@@ -78,44 +78,56 @@
 	</div> 	
 	<div class="row rowSpaced">
 		<div class="col-xs-6 col-md-5">
-		  	<label>emailGroup  <!--{{entity.eloquaEmailGroup}}--> <span ng-if="loading.groups" class="glyphicon glyphicon-refresh spinning"></span></label>
-		  	<select class="form-control" ng-model="entity.eloquaEmailGroup" ng-options="group.id as group.name for group in availableSEmailGroups">
+		  	<label>emailGroup  <!--{{entity.eloquaEmailGroup}}--> <span ng-if="emailGroups.loading" class="glyphicon glyphicon-refresh spinning"></span></label>
+		  	<select class="form-control" ng-model="entity.eloquaEmailGroup" ng-options="group.id as group.name for group in emailGroups.data">
 			</select>
 		</div>
 
 		<div class="col-xs-6 col-md-5">
-			<label for="">bounceback address <span ng-if="loading.emailConfig" class="glyphicon glyphicon-refresh spinning"></span></label>
-			<select class="form-control" ng-model="entity.bounceBackAddress" ng-options="bounceback as bounceback for bounceback in availableBouncebackAddresses">
+			<label for="">bounceback address <span ng-if="bouncebackAddresses.loading" class="glyphicon glyphicon-refresh spinning"></span></label>
+			<select class="form-control" ng-model="entity.bounceBackAddress" ng-options="bounceback as bounceback for bounceback in bouncebackAddresses.data">
 			</select>
 			<!--{{availableBouncebackAddresses}}-->
 		</div>
 	</div>
 	<div class="row rowSpaced">
 		<div class="col-xs-6 col-md-5">
-		  	<label>Encoding   <!--{{entity.eloquaEmailEncoding}}--><span ng-if="loading.encoding" class="glyphicon glyphicon-refresh spinning"></span></label>
-		  	<select class="form-control" ng-model="entity.eloquaEmailEncoding" ng-options="encoding.id as encoding.name for encoding in availableEmailEncodings">
+		  	<label>Encoding   <!--{{entity.eloquaEmailEncoding}}--><span ng-if="emailEncoding.loading" class="glyphicon glyphicon-refresh spinning"></span></label>
+		  	<select class="form-control" ng-model="entity.eloquaEmailEncoding" ng-options="encoding.id as encoding.name for encoding in emailEncoding.data">
 			</select>
 		</div>
 	</div>
 	<div class="row rowSpaced">
 		<div class="col-xs-6 col-md-5">
-			<label for="">reply to Name</label>
+			<label for="">reply to Name
+				<a href="#" ng-show="entity.replyToName != defaultReplyToName" ng-click="entity.replyToName = defaultReplyToName" title="reset to {{defaultReplyToName}}">
+				&nbsp;<span class="glyphicon glyphicon glyphicon-repeat" aria-hidden="true"></span>
+				</a>
+			</label>
 			<input type="text" class="form-control" placeholder="" ng-model="entity.replyToName" name="">
 		</div>
 		
 		<div class="col-xs-6 col-md-5">
-			<label for="">reply to Email</label>
+			<label for="">reply to Email <a href="#" ng-show="entity.replyToEmail != defaultReplyToEmail" ng-click="entity.replyToEmail = defaultReplyToEmail" title="reset to {{defaultReplyToEmail}}">
+				&nbsp;<span class="glyphicon glyphicon glyphicon-repeat" aria-hidden="true"></span>
+				</a></label>
 			<input type="text" class="form-control" placeholder="" ng-model="entity.replyToEmail" name="">
 		</div>
 	</div>	
 
 	<div class="row rowSpaced">
 		<div class="col-xs-6 col-md-5">
-	 		<label for="">from Address</label>
+	 		<label for="">from Address   
+				<a href="#" ng-show="entity.fromAddress != fromAddress.default" ng-click="entity.fromAddress = fromAddress.default" title="reset to {{fromAddress.default}}">
+				&nbsp;<span class="glyphicon glyphicon glyphicon-repeat" aria-hidden="true"></span>
+				</a>
+			</label> 
 			<input type="text" class="form-control" placeholder="" ng-model="entity.fromAddress" name="">
 		</div>
 		<div class="col-xs-6 col-md-5">
-			<label for="">sender Name</label>
+			<label for="">sender Name<a href="#" ng-show="entity.senderName != senderName.default" ng-click="entity.senderName = senderName.default" title="reset to {{senderName.default}}">
+				&nbsp;<span class="glyphicon glyphicon glyphicon-repeat" aria-hidden="true"></span>
+				</a></label>
 			<input type="text" class="form-control" placeholder="" ng-model="entity.senderName" name="">
 		</div>	
 

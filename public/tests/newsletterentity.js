@@ -142,7 +142,6 @@ describe('Entity', function ()
 
             spyOn(Eloqua, 'eloquaEmailConfig').and.callFake(function(a, cb) 
             {
-                // console.log('eloquaEmailConfig -----------!!!!!!!!!!!-----------');
                 var  mySpy = {};
                 mySpy.query = function(a,cb) 
                 {
@@ -153,9 +152,10 @@ describe('Entity', function ()
 
             spyOn(Circles, 'mineCompany').and.callFake(function(a, cb) 
             {
-               return cb(mineCompany);
+                return cb(mineCompany);
             });
 
+            $httpBackend.when('GET', 'system/views/index.html').respond('<section data-ng-controller="IndexController"></section>');
             $httpBackend.when('GET', '/api/users/me').respond({});
             $httpBackend.when('GET', '/api/emaileditor/emailmodule').respond({});
 
@@ -278,7 +278,7 @@ describe('Entity', function ()
         });
         */
     });
-
+/*
     describe('init - without entity', function ()
     {
         beforeEach(function()
@@ -436,6 +436,7 @@ describe('Entity', function ()
                return cb(mineCompany);
             });
 
+            $httpBackend.when('GET', 'system/views/index.html').respond('<section data-ng-controller="IndexController"></section>');
             $httpBackend.when('GET', '/api/users/me').respond({});
             $httpBackend.when('GET', '/api/emaileditor/emailmodule').respond({});
 
@@ -465,5 +466,5 @@ describe('Entity', function ()
             });
             $timeout.flush();
         });
-    });
+    });*/
 });
