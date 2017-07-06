@@ -58,6 +58,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     $scope.selectedSegments   = [];
     $scope.selectedModules    = [];
     $scope.availableEmailEncodings = [];
+    $scope.availableBouncebackAddresses = [];
     
     $scope.loading = {};
     
@@ -66,6 +67,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     $scope.loading.segments = false;
     $scope.loading.groups = false;
     $scope.loading.encoding = false;
+    $scope.loading.emailConfig = false;
     $scope.loading.circles = false;
     
     $scope.saveInProgress     = false;
@@ -198,6 +200,17 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     {
       $scope.errorMsgs.push({param:'emailFooters', msg:'error while loading the emailFooters'})
       $scope.loading.footers = false;
+    });
+
+    $scope.loading.emailConfig = true;
+    Eloqua.eloquaEmailConfig().query({company: MeanUser.company.id}, function(emailConfig)
+    {
+       console.log(emailConfig);
+       if(emailConfig && emailConfig.bouncebackAddresses)
+       {
+         $scope.availableBouncebackAddresses = emailConfig.bouncebackAddresses;
+       }
+       $scope.loading.emailConfig = false;
     });
 
     $scope.loading.circles = true;

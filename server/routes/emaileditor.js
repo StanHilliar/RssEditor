@@ -98,6 +98,8 @@ module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circl
   app.route('/api/:company/emaileditor/email').get(email.list);
 
   app.route('/api/:company/emaileditor/emailencoding').get(eloqua.getEmailEncoding);
+  
+  app.route('/api/:company/emaileditor/emailconfig').get(eloqua.getEmailConfig);
 
   app.route('/api/emaileditor/rss/:url').get(feed.loadRSS);
   app.route('/api/emaileditor/xml/:url').get(feed.loadXML); 
