@@ -178,7 +178,8 @@ describe('<Unit Test>', function()
         		{
         			// console.log('jsonpCB');
         			// console.log(data);
-        			expect(data[0].feedUrl).to.be('http://www.leadteq.com/de/feed/');
+        			// expect(data[0].feedUrl).to.be('http://www.leadteq.com/de/feed/');
+        			expect(data[0].link).to.be('http://www.leadteq.com/de/');
         			expect(data[0].type).to.be('rss');
         			expect(data[0].entries.length).to.be(9);
         			done();
@@ -212,12 +213,24 @@ describe('<Unit Test>', function()
         		{
         			// console.log('jsonpCB');
         			// console.log(data);
-        			expect(data[0].feedUrl).to.be('http://www.leadteq.com/de/feed/');
+        			// expect(data[0].feedUrl).to.be('http://www.leadteq.com/de/feed/');
+                    expect(data[0].link).to.be('http://www.leadteq.com/de/');
         			expect(data[0].type).to.be('rss');
         			expect(data[0].entries.length).to.be(9);
         			done();
         		}
         	});
+
+            mitm.on("request", function(req, res) 
+            {
+                console.log(req.headers.host +' --------------------> '+req.url);
+                console.log('-----------------');
+                
+                var feedData = fs.readFileSync('packages/custom/emaileditor/server/tests/data/feed.rss', {encoding: 'utf-8'});
+                console.log(feedData);
+                console.log('-----------------');
+                res.end(JSON.stringify(feedData)); 
+            });
 
         	feed.loadRSS({params:{url: 'https://s3.eu-central-1.amazonaws.com/leadteqtests/rss/feed.rss'}}, res);	
         });
