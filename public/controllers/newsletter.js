@@ -173,53 +173,60 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
         NewsletterEntity.query({company: MeanUser.company.id, entityId: $stateParams.newsletterid}, function(newsletterEntityArray)
         {
           $scope.entity = newsletterEntityArray[0];
-
-          if($scope.entity.bounceBackAddress == undefined || $scope.entity.bounceBackAddress == null)
+          if($scope.entity)
           {
-            $scope.entity.bounceBackAddress = $meanConfig.eloqua.bounceBackAddress;
-          } 
-
-          if($scope.entity.replyToName == undefined || $scope.entity.replyToName == null)
-          {
-            $scope.entity.replyToName = $scope.defaultReplyToName;
-          } 
-          
-          if($scope.entity.replyToEmail == undefined || $scope.entity.replyToEmail == null)
-          {
-            $scope.entity.replyToEmail = $scope.defaultReplyToEmail;
-          }
-
-          if(!$scope.entity.dropzoneModules)
-          {
-            $scope.entity.dropzoneModules = [];
-          }
-
-          var _template = $scope.entity.header;
-          for(var i = 0; i < $scope.entity.modules.length; i++)
-          {
-            if($scope.entity.modules[i].placeholderType == 'DROPZONE')
+            if($scope.entity.bounceBackAddress == undefined || $scope.entity.bounceBackAddress == null)
             {
-              _template += '{{'+$scope.entity.modules[i].moduleIdentifier+'}}';
-              $scope.hasDropzone = true;
-            }
-            else
+              $scope.entity.bounceBackAddress = $meanConfig.eloqua.bounceBackAddress;
+            } 
+
+            if($scope.entity.replyToName == undefined || $scope.entity.replyToName == null)
             {
-              _template += '{{MODULE_'+$scope.entity.modules[i].moduleIdentifier+'}}';
-            }
-            if( $scope.entity.modules[i].postModule)
+              $scope.entity.replyToName = $scope.defaultReplyToName;
+            } 
+            
+            if($scope.entity.replyToEmail == undefined || $scope.entity.replyToEmail == null)
             {
-              _template += $scope.entity.modules[i].postModule;
+              $scope.entity.replyToEmail = $scope.defaultReplyToEmail;
             }
+
+            if(!$scope.entity.dropzoneModules)
+            {
+              $scope.entity.dropzoneModules = [];
+            }
+
+            var _template = $scope.entity.header;
+            for(var i = 0; i < $scope.entity.modules.length; i++)
+            {
+              if($scope.entity.modules[i].placeholderType == 'DROPZONE')
+              {
+                _template += '{{'+$scope.entity.modules[i].moduleIdentifier+'}}';
+                $scope.hasDropzone = true;
+              }
+              else
+              {
+                _template += '{{MODULE_'+$scope.entity.modules[i].moduleIdentifier+'}}';
+              }
+              if( $scope.entity.modules[i].postModule)
+              {
+                _template += $scope.entity.modules[i].postModule;
+              }
+            }
+            _template += $scope.entity.footer;
+
+            $scope.template = _template;
+
+            removeSelectedSegmentsfromAvailabeleSegments();
+            removeSelectedCirclesfromAvailabeleCircles();
+            removeSelectedDropzoneModulesfromAvailabeleDropzoneModules();
+            $scope.loading.entity = false;
+            entityQueryDeferred.resolve();
           }
-          _template += $scope.entity.footer;
-
-          $scope.template = _template;
-
-          removeSelectedSegmentsfromAvailabeleSegments();
-          removeSelectedCirclesfromAvailabeleCircles();
-          removeSelectedDropzoneModulesfromAvailabeleDropzoneModules();
-          $scope.loading.entity = false;
-          entityQueryDeferred.resolve();
+          else
+          {
+            $scope.loading.entity = false;
+            entityQueryDeferred.resolve();
+          }
         });     
       }
       else
@@ -290,7 +297,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
         defaultValueIdentifier: 'fromAddress',
         init: function()
         {
-          if(!$scope.entity.fromAddress || $scope.entity.fromAddress.trim() == '')
+          if($scope.entity && (!$scope.entity.fromAddress || $scope.entity.fromAddress.trim() == ''))
           {
             $scope.entity.fromAddress = $scope.fromAddress.default;    
           }
@@ -304,7 +311,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
         defaultValueIdentifier: 'replyToName',
         init: function()
         {
-          if(!$scope.entity.senderName  || $scope.entity.senderName .trim() == '')
+          if($scope.entity && (!$scope.entity.senderName  || $scope.entity.senderName .trim() == ''))
           {
             $scope.entity.senderName = $scope.senderName.default;
           }
@@ -334,9 +341,9 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     function removeSelectedSegmentsfromAvailabeleSegments()
     {
       var _trash = [];
-      for(var i = 0; i < $scope.entity.segments.length; i++)
+      if($scope.segments && $scope.segments.data)
       {
-        if($scope.segments && $scope.segments.data)
+        for(var i = 0; i < $scope.entity.segments.length; i++)
         {
           for(var j = 0; j < $scope.segments.data.length; j++)
           {
@@ -347,22 +354,23 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
             }
           }
         }
-        
-      
       }
     }  
 
     function removeSelectedCirclesfromAvailabeleCircles()
     {
       var _trash = [];
-      for(var i = 0; i < $scope.entity.circles.length; i++)
+      if($scope.entity && $scope.entity.circles)
       {
-        for(var j = 0; j < $scope.availableSecurityCircles.length; j++)
+        for(var i = 0; i < $scope.entity.circles.length; i++)
         {
-          if($scope.entity.circles[i] == $scope.availableSecurityCircles[j])
-          { 
-            $scope.moveItem($scope.availableSecurityCircles[j], $scope.availableSecurityCircles, _trash);
-            break;
+          for(var j = 0; j < $scope.availableSecurityCircles.length; j++)
+          {
+            if($scope.entity.circles[i] == $scope.availableSecurityCircles[j])
+            { 
+              $scope.moveItem($scope.availableSecurityCircles[j], $scope.availableSecurityCircles, _trash);
+              break;
+            }
           }
         }
       }
@@ -371,14 +379,17 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     function removeSelectedDropzoneModulesfromAvailabeleDropzoneModules()
     {
       var _trash = [];
-      for(var i = 0; i < $scope.entity.dropzoneModules.length; i++)
+      if($scope.entity && $scope.entity.dropzoneModules)
       {
-        for(var j = 0; j < $scope.availableDropzoneModules.length; j++)
+        for(var i = 0; i < $scope.entity.dropzoneModules.length; i++)
         {
-          if($scope.entity.dropzoneModules[i] == $scope.availableDropzoneModules[j]._id)
-          { 
-            $scope.moveItem($scope.availableDropzoneModules[j], $scope.availableDropzoneModules, $scope.selectedDropzoneModules);
-            break;
+          for(var j = 0; j < $scope.availableDropzoneModules.length; j++)
+          {
+            if($scope.entity.dropzoneModules[i] == $scope.availableDropzoneModules[j]._id)
+            { 
+              $scope.moveItem($scope.availableDropzoneModules[j], $scope.availableDropzoneModules, $scope.selectedDropzoneModules);
+              break;
+            }
           }
         }
       }

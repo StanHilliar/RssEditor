@@ -209,7 +209,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
               // $scope.modulePositions[dropzoneModuleIndex].splice(position, 0, {index:countModulesInDropzone, moduleId:newModule._id});
 
                 $scope.your_variable = $scope.generateEmail(true);
-                $scope.api.initSortable();
+                if($scope.api.initSortable) $scope.api.initSortable();
                 if(cb) return cb();
               });
 
@@ -228,6 +228,10 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
             $scope.init();
             if(cb) return cb();
           }
+        }
+        else
+        {
+          if(cb) return cb();
         }
       },
       function(loadError)
@@ -352,7 +356,9 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           status                : 'draft'
         });
       }
+      console.log('++++++++++++++++++++++++');
       console.log($scope.storedEmail);
+      console.log('++++++++++++++++++++++++');
 
       $scope.storedEmail.company = MeanUser.company.id;
 
@@ -375,7 +381,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     {
       $scope.checkAds(function () 
       {
-
         if (storedEloquaEmail == null) 
         {
           storedEloquaEmail = new EloquaEmail(
@@ -677,7 +682,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         {
           countModulesInDropzone++;
           $scope.your_variable = $scope.generateEmail(true);
-          $scope.api.initSortable();
+          if($scope.api.initSortable) $scope.api.initSortable();
           $scope.firstInit = false;
           $scope.loading = false;
         });
@@ -1319,7 +1324,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       {
         console.log('ALL PROMISES DONE');
         $scope.your_variable = $scope.generateEmail(true);
-        $scope.api.initSortable();
+        if($scope.api.initSortable) $scope.api.initSortable();
         $scope.checkIfTemplateContainsHiddenPreviewAndSetFlag();
         $scope.firstInit = false;
         $scope.loading = false;
@@ -1347,7 +1352,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         {
           console.log('ALL PROMISES DONE');
           $scope.your_variable = $scope.generateEmail(true);
-          $scope.api.initSortable();
+          if($scope.api.initSortable) $scope.api.initSortable();
           $scope.checkIfTemplateContainsHiddenPreviewAndSetFlag();
           $scope.firstInit = false;
           $scope.loading = false;

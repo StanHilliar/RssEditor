@@ -117,8 +117,15 @@
 		  	<select class="form-control" ng-model="entity.eloquaEmailEncoding" ng-options="encoding.id as encoding.name for encoding in emailEncoding.data">
 			</select>
 		</div>
- </div>
- <div class="row rowSpaced">
+ 	</div>
+	 <div class="row rowSpaced">
+		<div class="col-xs-6 col-md-5">
+			<div class="alert alert-danger" role="alert" ng-if="emailEncoding.errorMsg">
+				{{emailEncoding.errorMsg}} 
+			</div>
+		</div>
+	</div>
+ 	<div class="row rowSpaced">
 		<div class="col-xs-6 col-md-5">
 		  	<label for="eloquaHeader">emailHeader  <!--{{entity.eloquaHeader}}--><span ng-if="emailHeader.loading" class="glyphicon glyphicon-refresh spinning"></span></label>
 			<input type="checkbox" ng-model="entity.setEloquaHeaderManually" name="setEloquaHeaderManually"> <label for="setEloquaHeaderManually">&nbsp;|&nbsp;set manually&nbsp;</label>
@@ -131,7 +138,18 @@
 		  	<select class="form-control" name="eloquaFooter" ng-model="entity.eloquaFooter" ng-options="footer.id as footer.name for footer in emailFooter.data" ng-disabled="!entity.setEloquaFooterManually">
 			</select>
 		</div>	
-
+	</div>
+	<div class="row rowSpaced">
+		<div class="col-xs-6 col-md-5">
+			<div class="alert alert-danger" role="alert" ng-if="emailHeader.errorMsg">
+				{{emailHeader.errorMsg}} 
+			</div>
+		</div>
+		<div class="col-xs-6 col-md-5">
+			<div class="alert alert-danger" role="alert" ng-if="emailFooter.errorMsg">
+				{{emailFooter.errorMsg}} 
+			</div>
+		</div>
 	</div>
 	<div class="row rowSpaced">
 		<div class="col-xs-6 col-md-5">

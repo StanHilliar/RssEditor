@@ -185,12 +185,12 @@ describe('<Unit Test>', function()
         	});
        	    mitm.on("request", function(req, res) 
              {
-                 console.log(req.headers.host +' --------------------> '+req.url);
-                 console.log('-----------------');
+                //  console.log(req.headers.host +' --------------------> '+req.url);
+                //  console.log('-----------------');
                  
                  var feedData = fs.readFileSync('packages/custom/emaileditor/server/tests/data/feed.rss', {encoding: 'utf-8'});
-                 console.log(feedData);
-                 console.log('-----------------');
+                //  console.log(feedData);
+                //  console.log('-----------------');
                  res.end(JSON.stringify(feedData)); 
              });
  
@@ -220,12 +220,12 @@ describe('<Unit Test>', function()
 
             mitm.on("request", function(req, res) 
             {
-                 console.log(req.headers.host +' --------------------> '+req.url);
-                 console.log('-----------------');
+                //  console.log(req.headers.host +' --------------------> '+req.url);
+                //  console.log('-----------------');
                  
                  var feedData = fs.readFileSync('packages/custom/emaileditor/server/tests/data/feed.rss', {encoding: 'utf-8'});
-                 console.log(feedData);
-                 console.log('-----------------');
+                //  console.log(feedData);
+                //  console.log('-----------------');
                  res.end(JSON.stringify(feedData)); 
             });
 
@@ -374,14 +374,14 @@ describe('<Unit Test>', function()
         	{
         		jsonCB: function(data)
         		{
-        			console.log(data);
+        			// console.log(data);
         			expect().fail("jsonCB should not be called");
         			done();
         		},
         		jsonpCB: function(data)
         		{
-        			console.log('jsonpCB');
-        			console.log(data);
+        			// console.log('jsonpCB');
+        			// console.log(data);
         			
         			expect(data[0].Products.Product.length).to.be(8);
         			done();
