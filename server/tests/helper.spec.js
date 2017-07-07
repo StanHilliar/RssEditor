@@ -1,8 +1,9 @@
 'use strict';
 
-var expect = require('expect.js');
+var expect  = require('expect.js');
 var request = require('supertest'); 
-var helper = require('../controllers/helper.js')();
+var fs      = require('fs');
+var helper  = require('../controllers/helper.js')();
 
 var url = 'http://127.0.0.1:3001';
 
@@ -27,7 +28,7 @@ function getData(req, cb)
     });
 }
 
-describe('<Unit Test>', function() 
+describe('helper.spec.js', function() 
 {
 	beforeEach(function() 
 	{ 
@@ -75,7 +76,22 @@ describe('<Unit Test>', function()
 
   	it('isAdvertismentBooked - valid url should return 200', function(done) 
     {
-    	mitm.disable();
+    	// mitm.disable();
+      mitm.on("request", function(req, res) 
+      {
+          // console.log('mitm request');
+          // console.log(req.headers.host + ' -> '+req.url);
+           if(req.url ==  '/wp-content/uploads/2014/02/leadteq_logo.png')
+          {
+            fs.readFile('packages/custom/emaileditor/server/tests/data/leadteq_logo.png', function(err, data) 
+            {
+              if (err) throw err; // Fail if the file can't be read.
+              
+                res.writeHead(200, {'Content-Type': 'image/png'});
+                res.end(data); // Send the file data to the browser.
+            });
+          }
+      });
 
     	request(url)
      	.get('/api/emaileditor/checkadvertisment/http:%2F%2Fleadteq.com%2Fwp-content%2Fuploads%2F2014%2F02%2Fleadteq_logo.png')
@@ -86,15 +102,15 @@ describe('<Unit Test>', function()
   	it('isAdvertismentBooked - first expand returns empty strings - should return 400', function(done) 
     {
       mitm.on("request", function(req, res) 
-        {
-            // console.log('mitm request');
-            // console.log(req.headers.host + ' -> '+req.url);
+      {
+          // console.log('mitm request');
+          // console.log(req.headers.host + ' -> '+req.url);
 
-            if(req.url ==  '/wp-content/uploads/2014/02/leadteq_logo.png')
-            {
-              res.end( JSON.stringify({uri:{href: ''}}));
-            }
-        });
+          if(req.url ==  '/wp-content/uploads/2014/02/leadteq_logo.png')
+          {
+            res.end( JSON.stringify({uri:{href: ''}}));
+          }
+      });
 
       request(url)
       .get('/api/emaileditor/checkadvertisment/http:%2F%2Fleadteq.com%2Fwp-content%2Fuploads%2F2014%2F02%2Fleadteq_logo.png')
@@ -112,7 +128,22 @@ describe('<Unit Test>', function()
 
     it('isAdvertismentBooked - issue', function(done) 
     {
-      mitm.disable();
+      // mitm.disable();
+      mitm.on("request", function(req, res) 
+      {
+          console.log('mitm request');
+          console.log(req.headers.host + ' -> '+req.url);
+           if(req.url ==  '/static/view/bbm.dagens_medicin.nyhetsbrev.dagliga_dm/dm_mail_rekt21g')
+          {
+            fs.readFile('packages/custom/emaileditor/server/tests/data/leadteq_logo.png', function(err, data) 
+            {
+              if (err) throw err; // Fail if the file can't be read.
+              
+                res.writeHead(200, {'Content-Type': 'image/png'});
+                res.end(data); // Send the file data to the browser.
+            });
+          }
+      });
 
       request(url)
       .get('/api/emaileditor/checkadvertisment/http:%2F%2Fbn-01d.adtomafusion.com%2Fstatic%2Fview%2Fbbm.dagens_medicin.nyhetsbrev.dagliga_dm%2Fdm_mail_rekt21g')

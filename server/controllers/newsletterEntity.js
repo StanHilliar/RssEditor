@@ -84,9 +84,17 @@ module.exports = function(circles) {
 
 
             // because we set our user.provider to local our models/user.js validation will always be true
-            req.assert('name', 'You must enter a name').notEmpty();
-            req.assert('type', 'You must enter a type').notEmpty();
+            req.assert('name',         'You must enter a name').notEmpty();
+            req.assert('type',         'You must enter a type').notEmpty();
+            req.assert('name',         'You must enter a name').notEmpty();
+            req.assert('type',         'You must enter a type').notEmpty();
             req.assert('eloquaFooter', 'You must set a email Footer in Eloqua').notEmpty();
+            req.assert('replyToName',  'You must set a reply to Name').notEmpty();
+            req.assert('replyToEmail', 'You must set a reply to Email').notEmpty();
+            req.assert('replyToEmail', 'You must enter a valid reply to Email Address').isEmail();
+            req.assert('fromAddress',  'You must set a from-address').notEmpty();
+            req.assert('fromAddress',  'You must enter a valid from-address').isEmail();
+            req.assert('senderName',   'You must set a senderName').notEmpty();
 
             var errors = req.validationErrors();
             if (errors) {
@@ -319,9 +327,17 @@ module.exports = function(circles) {
         },
         update: function(req, res) 
         {
-            req.assert('name', 'You must enter a name').notEmpty();
-            req.assert('type', 'You must enter a type').notEmpty();
+            req.assert('name',         'You must enter a name').notEmpty();
+            req.assert('type',         'You must enter a type').notEmpty();
+            req.assert('name',         'You must enter a name').notEmpty();
+            req.assert('type',         'You must enter a type').notEmpty();
             req.assert('eloquaFooter', 'You must set a email Footer in Eloqua').notEmpty();
+            req.assert('replyToName',  'You must set a reply to Name').notEmpty();
+            req.assert('replyToEmail', 'You must set a reply to Email').notEmpty();
+            req.assert('replyToEmail', 'You must enter a valid reply to Email Address').isEmail();
+            req.assert('fromAddress',  'You must set a from-address').notEmpty();
+            req.assert('fromAddress',  'You must enter a valid from-address').isEmail();
+            req.assert('senderName',   'You must set a senderName').notEmpty();
 
             var errors = req.validationErrors();
             if (errors) {

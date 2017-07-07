@@ -178,6 +178,8 @@ module.exports = function(MeanUser) {
                 emailModule.save(function(err, resEmailModule) 
                 {
                     console.log('5');
+                    console.log(err);
+                    console.log(resEmailModule);
                     //console.log('newsletter entity create 222');
                     if (err) 
                     {
@@ -211,7 +213,7 @@ module.exports = function(MeanUser) {
                         }
 
                         console.log('newsletter entity create 888');
-                        return res.status(400);
+                        return res.status(400).end();
                     }
                     else
                     {

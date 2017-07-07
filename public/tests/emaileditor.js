@@ -12,7 +12,6 @@ describe("sorting the list of users", function ()
 
 describe('EmaileditorController', function ()
 {
-
     describe('init & load - entity', function ()
     {
         beforeEach(function()
@@ -191,6 +190,8 @@ describe('EmaileditorController', function ()
 
     describe('init & load - entity & email - save', function ()
     {
+        var originalTimeout;
+
         beforeEach(function()
         {   
             module('mean');
@@ -200,6 +201,13 @@ describe('EmaileditorController', function ()
             module('mean.swagger');
             module('mean.users');
             module('mean.emaileditor');
+            originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+            jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+        });
+
+        afterEach(function() 
+        {
+            jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
         });
 
         var $controller;
@@ -208,12 +216,14 @@ describe('EmaileditorController', function ()
         var Emaileditor;
         var q;
         var stateParams;
+        var $httpBackend;
         
-        beforeEach(inject(function(_$controller_, $rootScope, _$q_, _Emaileditor_, _Email_) 
+        beforeEach(inject(function(_$controller_, $rootScope,  _$httpBackend_, _$q_, _Emaileditor_, _Email_) 
         {
             $scope      = $rootScope.$new();
             Emaileditor = _Emaileditor_;
             Email       = _Email_;
+            $httpBackend= _$httpBackend_;
             q           = _$q_;
 
             stateParams = {};
@@ -230,12 +240,26 @@ describe('EmaileditorController', function ()
 
         it('test1', function (done)
         {
+            $scope.segment = '3';
+            $scope.EmailSubject = '123';
+            $scope.hiddenPreviewText = 'my preview text';
+
             var entity = 
             {
                 header: '<html><head></head><body>',
                 modules: [],
                 footer: '</body></html>',
-                eloquaEmailEncoding: 3
+                eloquaFolder: '3',
+                eloquaCampaignFolder: '3',
+                eloquaEmailEncoding: 3,
+                eloquaHeader: '1', 
+                eloquaFooter: '1', 
+                eloquaEmailGroup: '1', 
+                bunceBackAddress: 'test@test.de',
+                replyToName: 'test',
+                replyToEmail: 'test@test.de', 
+                fromAddress: 'test@test.de', 
+                senderName: 'test'
             };
             
             spyOn(Emaileditor, 'getEmailTemplate').and.callFake(function() 
@@ -261,13 +285,17 @@ describe('EmaileditorController', function ()
 
             spyOn($scope, 'saveEmail').and.callThrough();
 
+            $httpBackend.when('GET', 'system/views/index.html').respond('<section data-ng-controller="IndexController"></section>');
+            $httpBackend.when('GET', '/api/get-public-config').respond({});
+            $httpBackend.when('GET', '/api/users/me').respond({});
+
             $scope.load(function()
             {
                 // $scope.init();
                 expect(Emaileditor.getEmailTemplate).toHaveBeenCalled();
                 $scope.saveEmail();
                 expect($scope.saveEmail).toHaveBeenCalled();
-                expect($scope.storedEmail.subject).toBe(undefined);
+                expect($scope.storedEmail.subject).toBe('123');
                 expect($scope.storedEmail.eloquaEmailEncoding).toBe(3);
                 expect($scope.storedEmail.hiddenPreviewText).toBe('my preview text');
                 expect($scope.errorMsgs).toEqual([]);

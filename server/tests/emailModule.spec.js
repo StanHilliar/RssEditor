@@ -39,18 +39,57 @@ var emailModule4;
 
 var url = 'http://127.0.0.1:3001';
 
+function setupRequest(opts)
+{
+  var req = {
+    assert: function(a,b)
+    {
+      var assertThis = {};
+      assertThis.notEmpty =  function() {};
 
-var res = {
-    send: function(){ },
-    json: function(err){
-        console.log("\n : " + err);
+      return assertThis;
     },
-    status: function(responseStatus) {
-        assert.equal(responseStatus, 404);
-        // This next line makes it chainable
-        return this; 
-    }
-};
+    validationErrors: function()
+    {},
+  };
+  if(opts.body)
+  {
+    req.body = opts.body
+  }
+  if(opts.user)
+  {
+    req.user = opts.user
+  }
+  return req;
+}
+
+function setupResponse(opts, cb)
+{
+  return {
+      send: function(r)
+      {
+        // console.log(r);
+        cb(r);
+      },
+      end: function(){ cb();},
+      json: function(err){
+          console.log("\n : " + err);
+          cb();
+      },
+      jsonp: function(r){
+          console.log(r);
+          cb(r);
+      },
+      status: function(responseStatus) 
+      {
+          expect(responseStatus).to.be(opts.statusCode);
+          // This next line makes it chainable
+          return this; 
+      }
+  };
+
+}
+
 
 var next = function(){console.log('next');};
 
@@ -88,6 +127,7 @@ describe('<Unit Test>', function()
     {
         name: 'TestEmailModule',
         type: '0',
+        company: 'fake',
         user: 
         {
           username: 'simon'
@@ -135,54 +175,56 @@ describe('<Unit Test>', function()
 
     afterEach(function() 
     { 
-  
       EmailModule.prototype.save.restore();
     });
 
-    it('create', function(done)
+    it.skip('create - req body is undefined', function(done)
     {
-      var req;
-      var res;
+      var req = setupRequest();
+      var res = setupResponse({statusCode: 400}, done);
 
       EmailModule.prototype.save.yields(null, true);
 
       EmailModuleCtrl.create(req, res, next);
     });
 
-    //TODO move tests from 'REST API' to controller in order to test the functionality directly without auth and routing
-  });
-
-  describe.skip('REST API:', function()
-  {
-    it('emailModules api - create - missing name/type', function(done) 
+    it('create - missing name/type', function(done)
     {
-      var emptyModule = 
+      var req = setupRequest(
       {
-        
-      };
+        body: {},
+        user: {username: 'tester'}
+      });
 
-      request(url)
-      .post('/api/leadteq/emaileditor/emailmodule')
-      .send(emptyModule)
-      //.expect(200)
-      .end(function(err, res)
+      var res = setupResponse({statusCode: 400}, function(data)
       {
-        console.log("create cb");
-
-        expect(res.error.status).to.eql(400);
-        //TODO more tests
-        
         done();
       });
-    });  
 
-    it('emailModules api - create - simple', function(done) 
+      EmailModule.prototype.save.yields(null, true);
+
+      EmailModuleCtrl.create(req, res, next);
+    });
+
+    it('create - simple', function(done) 
     {
-      request(url)
-      .post('/api/leadteq/emaileditor/emailmodule')
-      .send(emailModule1)
-      //.expect(200)
-      .end(function(err, res)
+      var req = setupRequest(
+      {
+        body: emailModule1,
+        user: {username: 'tester'}
+      });
+
+      var res = setupResponse({statusCode: 200}, function(data)
+      {       
+        expect(data).to.be(true);
+        done();
+      });
+      
+      EmailModule.prototype.save.yields(null, true);
+
+      EmailModuleCtrl.create(req, res, next);
+      /*
+      (function(err, res)
       {
         // console.log(err);
         // console.log(res);
@@ -209,79 +251,53 @@ describe('<Unit Test>', function()
         expect(res.status).to.eql(200);
 
         done();
-      });  
+      });  */
     });  
 
-    it('emailModules api - create - pre/postbody', function(done) 
+    it('__parseAndUpdateModule - pre/postbody', function(done) 
     {
-      request(url)
-      .post('/api/leadteq/emaileditor/emailmodule')
-      .send(emailModule2)
-      //.expect(200)
-      .end(function(err, res)
-      {
-        expect(res.status).to.eql(200);
+      var parsedModule = EmailModuleCtrl.__parseAndUpdateModule(emailModule2);
+     
+      expect(parsedModule.preBody).to.be.an('string');
+      expect(parsedModule.preBody).to.be.eql(emailModule2.preBody);       
 
-        expect(res.body.preBody).to.be.an('string');
-        expect(res.body.preBody).to.be.eql(emailModule2.preBody);       
+      expect(parsedModule.preBody).to.be.an('string');
+      expect(parsedModule.postBody).to.be.eql(emailModule2.postBody);     
 
-        expect(res.body.preBody).to.be.an('string');
-        expect(res.body.postBody).to.be.eql(emailModule2.postBody);     
+      expect(parsedModule.childTagName).to.be.an('string');
+      expect(parsedModule.childTagName).to.be.eql('table');
 
-        expect(res.body.childTagName).to.be.an('string');
-        expect(res.body.childTagName).to.be.eql('table');
-        done();
-      });
+      done();
     });
 
-    it('emailModules api - create - childTagName', function(done) 
+    it('__parseAndUpdateModule - childTagName', function(done) 
     {
+      var parsedModule = EmailModuleCtrl.__parseAndUpdateModule(emailModule3);
 
-      request(url)
-      .post('/api/leadteq/emaileditor/emailmodule')
-      .send(emailModule3)
-      //.expect(200)
-      .end(function(err, res)
-      {
-        expect(res.status).to.eql(200);
+      expect(parsedModule.preBody).to.be.an('string');
+      expect(parsedModule.preBody).to.be.eql(emailModule3.preBody);       
 
-        expect(res.body.preBody).to.be.an('string');
-        expect(res.body.preBody).to.be.eql(emailModule3.preBody);       
+      expect(parsedModule.preBody).to.be.an('string');
+      expect(parsedModule.postBody).to.be.eql(emailModule3.postBody);     
 
-        expect(res.body.preBody).to.be.an('string');
-        expect(res.body.postBody).to.be.eql(emailModule3.postBody);     
+      expect(parsedModule.childTagName).to.be.an('string');
+      expect(parsedModule.childTagName).to.be.eql('tr');
 
-        expect(res.body.childTagName).to.be.an('string');
-        expect(res.body.childTagName).to.be.eql('tr');
-        done();
-      });
+      done();
     });
 
-    it('emailModules api - create - childTagName 2', function(done) 
+    it.skip('__parseAndUpdateModule - childTagName 2', function(done) 
     {
+      var parsedModule = EmailModuleCtrl.__parseAndUpdateModule(emailModule4);
+      
+      expect(parsedModule.childTagName).to.be.an('string');
+      expect(parsedModule.childTagName).to.be.eql('');
 
-      request(url)
-      .post('/api/leadteq/emaileditor/emailmodule')
-      .send(emailModule4)
-      //.expect(200)
-      .end(function(err, res)
-      {
-        console.log("create cb");
-        console.log("RES::::::::");
-        console.log(res.body);
-
-        expect(res.status).to.eql(200);   
-
-        expect(res.body.childTagName).to.be.an('string');
-        expect(res.body.childTagName).to.be.eql('');
-        done();
-      });
-
+      done();
     });
 
-    it('emailModules api - create - view - childTagName is div', function(done) 
+    it.skip('__parseAndUpdateModule - view - childTagName is div', function(done) 
     {
-
       var  myEmailModule = 
       {
         name: 'MyTestEmailModuleX',
@@ -296,59 +312,19 @@ describe('<Unit Test>', function()
         ]
       };
       
-      testEmailModules.push(myEmailModule)
+      testEmailModules.push(myEmailModule);
 
-      request(url)
-      .post('/api/leadteq/emaileditor/emailmodule')
-      .send(myEmailModule)
-      //.expect(200)
-      .end(function(err, res)
-      {
-        console.log("create cb");
-        console.log("RES::::::::");
-        console.log(res.body);
+      var parsedModule = EmailModuleCtrl.__parseAndUpdateModule(myEmailModule);
 
-        expect(res.status).to.eql(200);   
+      console.log(parsedModule);
 
-        expect(res.body.childTagName).to.be.an('string');
-        expect(res.body.childTagName).to.be.eql('');
-        expect(res.body.views[0].childTagName).to.be.eql('div');
-        expect(res.body.views[0].childTagName).to.be.eql('AD"§');
-        done();
-      });
+      expect(parsedModule.childTagName).to.be.an('string');
+      expect(parsedModule.childTagName).to.be.eql('');
+      expect(parsedModule.views[0].childTagName).to.be.eql('div');
+      expect(parsedModule.views[0].childTagName).to.be.eql('AD"§');
+
+      done();
     });
-   
-    after(function(done) 
-    {
-      /** Clean up user objects
-       * un-necessary as they are cleaned up in each test but kept here
-       * for educational purposes
-       *
-       *  var _user1 = new User(user1);
-       *  var _user2 = new User(user2);
-       *
-       *  _user1.remove();
-       *  _user2.remove();
-       */
-      async.map(testEmailModules, deleteModule, function(err, res)
-      {
-        done();
-      });
-      // deleteModule(emailModule1, function()
-      // {
-      //   deleteModule(emailModule2, function()
-      //   {
-      //     deleteModule(emailModule3, function()
-      //     {
-      //       deleteModule(emailModule4, function()
-      //       {
-      //         done();
-      //       });
-      //     });
-      //   });
-      // });
-    });
-  });
 
- 
+  }); 
 });
