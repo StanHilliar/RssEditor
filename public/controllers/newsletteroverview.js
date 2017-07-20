@@ -1,13 +1,15 @@
 'use strict';
 
 /* jshint -W098 */
-angular.module('mean.emaileditor').controller('NewsletterOverviewController', ['$scope','$compile', '$interpolate', '$sce', 'Global', 'NewsletterEntity', 'MeanUser', '$uibModal',
-  function($scope, $compile, $interpolate, $sce, Global, NewsletterEntity, MeanUser, $uibModal) {
+angular.module('mean.emaileditor').controller('NewsletterOverviewController', ['$scope', '$stateParams','$mdDialog','$compile', '$interpolate', '$sce', 'Global', 'NewsletterEntity', 'MeanUser',
+  function($scope, $stateParams, $mdDialog, $compile, $interpolate, $sce, Global, NewsletterEntity, MeanUser) {
     $scope.global = Global;
     $scope.package = 
     {
       name: 'emaileditor'
     };
+
+    $scope.company = $stateParams.company;
 
     $scope.your_variable = '';
     $scope.rssContent = 'omg';
@@ -22,7 +24,7 @@ angular.module('mean.emaileditor').controller('NewsletterOverviewController', ['
 
       //EmailModule.find({ moduleId: moduleId }).remove().exec();
       
-      NewsletterEntity.remove({company: MeanUser.company.id, entityId: entityId}, function(_newsletterEntity)
+      NewsletterEntity.remove({company: $stateParams.company, entityId: entityId}, function(_newsletterEntity)
       {
         //console.log('destroyModule callback');
         //console.log(_newsletterEntity);
@@ -47,13 +49,13 @@ angular.module('mean.emaileditor').controller('NewsletterOverviewController', ['
 
       //EmailModule.find({ moduleId: moduleId }).remove().exec();
         
-      NewsletterEntity.query({company: MeanUser.company.id, entityId: entityId}, function(newsletterEntityArray)
+      NewsletterEntity.query({company: $stateParams.company, entityId: entityId}, function(newsletterEntityArray)
       {
         //console.log(newsletterEntityArray[0]);
         
         delete newsletterEntityArray[0]._id;
         newsletterEntityArray[0].name = newsletterEntityArray[0].name+'_Clone_'+Math.floor(new Date() / 1000);
-        newsletterEntityArray[0].company =  MeanUser.company.id;
+        newsletterEntityArray[0].company =  $stateParams.company;
 
         //console.log(newsletterEntityArray[0]);
         newsletterEntityArray[0].$save(function(data, headers) 
@@ -75,8 +77,7 @@ angular.module('mean.emaileditor').controller('NewsletterOverviewController', ['
     {
       //console.log('listNewsletterEntitiy');
 
-
-      NewsletterEntity.query({company: MeanUser.company.id},function(response)
+      NewsletterEntity.query({company: $stateParams.company},function(response)
       {
         //console.log('list callback');
         //console.log(response);
@@ -90,45 +91,24 @@ angular.module('mean.emaileditor').controller('NewsletterOverviewController', ['
 
     $scope.animationsEnabled = true;
 
-    $scope.open = function (newslettterEntity) 
+    $scope.open = function (ev, newslettterEntity) 
     {
-      var modalInstance = $uibModal.open(
-      {
-        animation: true,
-        templateUrl: 'myModalContent.html',
-        controller: 'ModalInstanceCtrl',
-        size: 'sm',
-        resolve: 
-        {
-          newsletterEntity: function () 
-          {
-            return newslettterEntity;
-          }
-        }
-      });
+      var confirm = $mdDialog.confirm()
+          .title('Delete this entity?')
+          .textContent('name: '+newslettterEntity.name)
+          .ariaLabel('Lucky day')
+          .targetEvent(ev)
+          .ok('Delete')
+          .cancel('Cancel');
 
-      modalInstance.result.then(function (newsLetterEntityId) 
+      $mdDialog.show(confirm).then(function() 
       {
         $scope.destroyEntity(newsLetterEntityId);
       }, 
-      function () 
+      function() 
       {
-        //console.info('Modal dismissed at: ' + new Date());
+        console.info('Modal dismissed at: ' + new Date());
       });
     };
   }
-]).controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, newsletterEntity) {
-
-  $scope.newsletter = newsletterEntity;
-
-
-  $scope.ok = function () 
-  {
-    $uibModalInstance.close($scope.newsletter._id);
-  };
-
-  $scope.cancel = function () 
-  {
-    $uibModalInstance.dismiss('cancel');
-  };
-});;
+]);

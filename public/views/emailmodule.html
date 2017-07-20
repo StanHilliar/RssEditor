@@ -1,377 +1,268 @@
-<div class="" data-ng-controller="EmailModuleEditController">
-	<div class="alert alert-danger alert-dismissible" role="alert" data-ng-repeat="error in errorMsgs">
-	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	  <strong>{{error.param}}</strong> {{error.msg}} 
-	</div>
-	<div class="alert alert-danger alert-dismissible" role="alert" data-ng-repeat="error in xmlErrorMsgs">
-	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	  <strong>{{error.param}}</strong> {{error.msg}} 
-	</div>
-	<div class="row rowSpaced">
-		<div class="col-md-4">
-			<h3>EmailModule</h3>
-		</div>
-	</div>
-	<div class="row rowSpaced">
-		<div class="col-xs-6 col-md-9">
-		 	<label for="">Name</label>
-			<input type="text" class="form-control" placeholder="" ng-model="module.name" name="">
-		</div>
-		<div class="col-xs-6 col-md-3">
-			<label for="">Type</label>
-			<select class="form-control" ng-model="module.type" ng-options="type._id as type.name for type in availableTypes">
-			</select>
-		</div>
-	</div>
-	
-	<div class="row rowSpaced">
-		<div class="col-xs-6 col-md-9"  ng-if="module.type == '1' || module.type == '2'">
-			<label for="">default URL</label>
-			<input type="text" class="form-control" placeholder="" ng-model="module.defaultURL" name="">
-		</div>
-
-		<div class="col-xs-4 col-md-3">
-			<label for="">defaultNumberOfEntries <!--=  {{module.defaultNumberOfEntries}}--></label>
-			<select class="form-control" ng-model="selecteddefaultNumberOfEntries" ng-options="noentries._id as noentries.name for noentries in numberOfEntries">
-			</select>
-		</div>
-	</div>
-	<div class="row rowSpaced">
-		<div class="col-xs-6 col-md-6">
-			<div><label>created: </label>&nbsp;{{module.createdBy}} / {{module.createdAt | date:'dd.MM.yyyy HH:mm'}}</div>
-		</div>
-		<div class="col-xs-6 col-md-6">
-			<div><label>updated:</label>&nbsp; {{module.updatedBy}} / {{module.updatedAt | date:'dd.MM.yyyy HH:mm'}}</div>
-		</div>
-	</div>
-
-
-		<!--
-	 	<div class="row">
-		  <div class="col-xs-6 col-md-4">
-		  	available ads
-		  	<select multiple class="form-control" ng-model="available" ng-options="segment as segment.name for segment in availableSegments">
-			</select>
-		  </div>
-		  <div class="col-xs-6 col-md-4">
-		  	<A href="#"  ng-click="moveAll(availableSegments, entity.segments)">- - ></A>	<br/>
-		  	<A href="#"  ng-click="moveItem(available[0], availableSegments, entity.segments)">-></A>	<br/><br/>
-		  	<A href="#"  ng-click="moveItem(selected[0], entity.segments, availableSegments)"><-</A>	<br/>
-			<A href="#"  ng-click="moveAll(entity.segments, availableSegments)"><--</A>	<br/>
+<div class="" data-ng-controller="EmailModuleEditController" layout-padding  layout="column" flex="100">
+	<form name="userForm">
+		<md-toolbar class="md-table-toolbar md-default">
+			<div class="md-toolbar-tools">
+			<span>EmailModule</span>
 			</div>
-		  <div class="col-xs-6 col-md-4">
-		    selected segments
-		  	<select multiple class="form-control" ng-model="selected" ng-options="segment as segment.name for segment in entity.segments">
-			</select>
-		  </div>
-		</div>-->
-
-		<!--header
-		<textarea ng-model="module.header"></textarea> <br/>-->
-	<div class="row rowSpaced">
-		<div class="col-xs-6 col-md-12">
-		<span class="">before body</span>
-		<!--<textarea ng-model="module.preBody"></textarea>-->
-		<div ui-ace="{
-		  useWrapMode : true,
-		  showGutter: true,
-		  theme:'idle_fingers',
-		  mode: 'html',
-		  firstLineNumber: 1,
-		  vscroll: true
-		      }" ng-model="module.preBody"></div>
-		</div>
-	</div>
-		<!--
-		<div class="row">
-		  <div class="col-xs-6 col-md-4">
-		  	available views
-		  <select multiple class="form-control" ng-model="availableModule" ng-options="element as element.name for element in availableModules">
-			</select>
-		  </div>
-		  <div class="col-xs-6 col-md-4">
-		  	<A href="#"  ng-click="moveAll(availableModules, entity.modules)">- - ></A>	<br/>
-		  	<A href="#"  ng-click="moveItem(availableModule[0], availableModules, entity.modules)">-></A>	<br/><br/>
-		  	<A href="#"  ng-click="moveItem(selectedModule[0], entity.modules, availableModules)"><-</A>	<br/>
-			<A href="#"  ng-click="moveAll(entity.modules, availableModules)"><--</A>	<br/>
+		</md-toolbar>  
+		<md-list data-ng-show="errorMsgs || xmlErrorMsgs">
+			<md-list-item class="md-2-line md-warn" ng-repeat="error in errorMsgs">
+			<md-icon>error</md-icon>
+			<div class="md-list-item-text md-warn">
+				<h3> {{ error.param }} </h3>
+				<p> {{ error.msg.code }} {{ error.msg.msg }} </p>
 			</div>
-		  <div class="col-xs-6 col-md-4">
-		    selected modules
-		  	<select multiple class="form-control" ng-model="selectedModule" ng-options="element as element.name for element in entity.modules">
-			</select>
-		</div>-->
-		<div class="row rowSpaced">
-			<div class="col-md-4">
-				<h2>Views</h2>
+			</md-list-item>
+			<md-list-item class="md-2-line md-warn" ng-repeat="error in xmlErrorMsgs">
+			<md-icon>error</md-icon>
+			<div class="md-list-item-text md-warn">
+				<h3> {{ error.param }} </h3>
+				<p> {{ error.msg.code }} {{ error.msg.msg }} </p>
 			</div>
+			</md-list-item>
+		</md-list>
 
+		<div layout-gt-xs="row">
+			<md-input-container class="md-block" flex-gt-xs>
+				<label>Name</label>
+				<input ng-model="module.name">
+			</md-input-container>
+
+			<md-input-container class="md-block" flex-gt-xs>
+				<label for="type">Type</label>
+				<md-select ng-model="module.type">
+					<md-option ng-repeat="type in availableTypes" value="{{type._id}}">
+						{{type.name}}
+					</md-option>
+				</md-select>
+			
+			</md-input-container>
 		</div>
-		<div data-ng-repeat="view in module.views">
-			<div class="row rowSpaced">
-				<div class="col-md-1">
-					<h3>{{$index + 1}} <!--// {{view._id}}--></h3>
+
+		<div layout-gt-xs="row">
+			<md-input-container class="md-block" flex-gt-xs ng-if="module.type == '1' || module.type == '2'">
+				<label for="defaultURL">default URL</label>
+				<input type="text" class="form-control" placeholder="" ng-model="module.defaultURL" name="defaultURL">
+			</md-input-container>
+
+			<md-input-container class="md-block" flex-gt-xs>
+				<label for="">defaultNumberOfEntries <!--=  {{module.defaultNumberOfEntries}}--></label>
+				<md-select ng-model="selecteddefaultNumberOfEntries">
+					<md-option ng-repeat="noentries in numberOfEntries" value="{{noentries._id}}">
+						{{noentries.name}}
+					</md-option>
+				</md-select>
+			</md-input-container>
+		</div>
+
+		<div layout-gt-xs="row">
+			<md-input-container class="md-block" flex-gt-xs>
+				<label>created: </label>
+				<textarea disabled>{{module.createdBy}} / {{module.createdAt | date:'dd.MM.yyyy HH:mm'}}</textarea>
+			</md-input-container>
+
+			<md-input-container class="md-block" flex-gt-xs>
+				<label>updated:</label>
+				<textarea disabled> {{module.updatedBy}} / {{module.updatedAt | date:'dd.MM.yyyy HH:mm'}}</textarea>
+			</md-input-container>
+		</div>
+		<div layout-gt-xs="row">
+			<div flex>
+			<span class="">before body</span>
+			<!--<textarea ng-model="module.preBody"></textarea><br/>-->
+			<div ui-ace="{
+			useWrapMode : true,
+			showGutter: true,
+			theme:'github',
+			mode: 'html',
+			firstLineNumber: 1,
+			vscroll: true
+				}" ng-model="module.preBody"></div>
+			</div>
+		</div>
+		<div layout-gt-xs="row">
+
+			<h2>Views</h2>
+		</div>
+		<div layout-gt-xs="row" data-ng-repeat="view in module.views" flex-offset="5">
+		<div layout-gt-xs="column" flex>
+			<md-card>
+			<md-card-title>
+				<div flex="5">
+					{{$index + 1}} <!--// {{view._id}}-->
 				</div>
-		  		<div class="col-md-6">
-		  			<label for="view_name_{{$index}}" >name</label>
-		  			<input type="text" id="view_name_{{$index}}" name="view_name_{{$index}}" ng-model="view.name" class="form-control" >
-		  		</div>
-		  		
-		  		<div class="col-md-1">
-		  			<br/>
-		  			 <div class="radio">
-				    <label>
-	
-				       <input type="checkbox" name="defaultView" ng-model="view.isDefault" value="true" ng-click="clickCheckbox($index)"> default
-  
-				    </label>
-				  </div>
-		  		</div>
-		  		<div class="col-md-1">
-		  			<br/>
-		  			<button type="button" class="btn btn-primary btn-sm" ng-click="removeView($index)">
-					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> remove
-					</button>
-		  		</div>
-		  		<div class="col-md-1">
-		  			<br/>
-		  			<button type="button" class="btn btn-primary btn-sm" ng-click="parse($index)">
-					  <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span> parse
-					</button>
-		  		</div>
-		 	</div>
-			<div class="row rowSpaced">
-				<div class="col-md-1">
-				
+				<div flex>			
+					<label for="view_name_{{$index}}" >name</label>
+					<input type="text" id="view_name_{{$index}}" name="view_name_{{$index}}" ng-model="view.name" class="form-control" >			
 				</div>
-			  	<div class="col-md-11">
-			  		<label for="view_source_{{$index}}">source</label>
-			  		<!--<textarea  id="view_name_{{$index}}" name="view_name_{{$index}}"  ng-model="view.source"></textarea>-->
-			  		<div ui-ace="{
-					  useWrapMode : true,
-					  showGutter: true,
-					  theme:'idle_fingers',
-					  mode: 'html',
-					  firstLineNumber: 1,
-					  vscroll: true
-					      }" ng-model="view.source" class="form-control"></div>
-					<div>
-						<div class="alert alert-warning alert-dismissible" role="alert" data-ng-repeat="error in viewWarningMessages[$index]">
-						  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						  <strong>{{error.param}}</strong> {{error.msg}} 
-						</div>
-						<span ng-show="module.type==2">
-						available xml variables: <span data-ng-repeat="var in module.xmlVariables">{{var.label}} </span> 
-						<br/>
-						</span>
-						custom variables: <span data-ng-repeat="var in view.variables">{{var.label}} </span> <br/>
-						childTagName: {{view.childTagName}}
-							
-					</div>
-			  	</div>
-			</div>
-		</div>
-		<div class="row rowSpaced">
-		    <div class="col-md-1">
-				
-			</div>
-			<div class="col-md-11">
-			  	<button type="button" class="btn btn-primary btn-sm" ng-click="addView()">
-				  <span class="glyphicon glyphicon-plus" aria-hidden="true" ></span> add View
-				</button>
-		  	</div>
-		</div>
-		<div class="row rowSpaced">
-		  	<div class="col-md-12">
-				after body
-				<!--<textarea ng-model="module.postBody"></textarea><br/>-->
+				<div flex>		
+					
+					<md-checkbox name="defaultView" ng-model="view.isDefault" value="true" ng-click="clickCheckbox($index)">
+						default
+					</md-checkbox>
+				</div>
+			</md-card-title>
+			<md-card-content>
+				<div flex>
+				<label for="view_source_{{$index}}">source</label>
+				<!--<textarea  id="view_name_{{$index}}" name="view_name_{{$index}}"  ng-model="view.source"></textarea>-->
 				<div ui-ace="{
-				  useWrapMode : true,
-				  showGutter: true,
-				  theme:'idle_fingers',
-				  mode: 'html',
-				  firstLineNumber: 1,
-				  vscroll: true
-				      }" ng-model="module.postBody"></div>
+					useWrapMode : true,
+					showGutter: true,
+					theme:'github',
+					mode: 'html',
+					firstLineNumber: 1,
+					vscroll: true
+						}" ng-model="view.source" class="form-control"></div>
+		
+					<div class="alert alert-warning alert-dismissible" role="alert" data-ng-repeat="error in viewWarningMessages[$index]">
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<strong>{{error.param}}</strong> {{error.msg}} 
+					</div>
+					<span ng-show="module.type==2">
+					available xml variables: <span data-ng-repeat="var in module.xmlVariables">{{var.label}} </span> 
+					<br/>
+					</span>
+					custom variables: <span data-ng-repeat="var in view.variables">{{var.label}} </span> <br/>
+					childTagName: {{view.childTagName}}
+				</div>
+			</md-card-content>
+			<md-card-actions layout="row" layout-align="end center">
+				<md-button ng-click="removeView($index)" class="md-raised"><md-icon class="material-icons md-light md-48">delete_forever</md-icon> remove</md-button>		
+				<md-button ng-click="parse($index)" class="md-raised"><md-icon class="material-icons md-light md-48">gesture</md-icon> parse</md-button>
+			</md-card-actions>
+		</div>
+		</div>
+		<div layout-gt-xs="row">
+			<md-button ng-click="addView()" class="md-raised"><md-icon class="material-icons md-light md-48">add</md-icon>add View</md-button>
+		</div>
+		<div layout-gt-xs="row">
+			<div flex>
+			after body
+			<!--<textarea ng-model="module.postBody"></textarea><br/>-->
+			<div ui-ace="{
+				useWrapMode : true,
+				showGutter: true,
+				theme:'github',
+				mode: 'html',
+				firstLineNumber: 1,
+				vscroll: true
+					}" ng-model="module.postBody"></div>
 
 			custom body variables: <span data-ng-repeat="var in module.bodyVariables">{{var.label}} </span> <br/>
 			</div>
 		</div>
-		<!--
-		footer
-		<textarea ng-model="module.footer"></textarea>-->
-
-		<div class="row rowSpaced">
-			<div class="col-md-4">
-				<h2>Ads</h2>
-			</div>
+		<div layout-gt-xs="row">
+			<h2>Ads</h2>
 		</div>
-
-	
-		<div data-ng-repeat="ad in module.ads">
-			<div class="row rowSpaced">
-				<div class="col-md-1">
-				<h3>{{$index + 1}}</h3>
-				</div>
-		  		<div class="col-md-1">
-		  			<label for="ad_pos_{{$index}}" >pos</label>
-		  			<input type="text" id="ad_pos_{{$index}}" name="ad_pos_{{$index}}" ng-model="ad.pos" class="form-control" >
-		  		</div>
-		  		<div class="col-md-5">
-		  			<label for="ad_img_{{$index}}" >Image</label>
-		  			<input type="text" id="ad_img_{{$index}}" name="ad_img_{{$index}}" ng-model="ad.img" class="form-control" >
-		  		</div>
-		  		<div class="col-md-4">
-		  			<label for="ad_link_{{$index}}" >Link</label>
-		  			<input type="text" id="ad_link_{{$index}}" name="ad_link_{{$index}}" ng-model="ad.link" class="form-control" >
-		  		</div>
-		  		<div class="col-md-1">
-
-		  			<button type="button" class="btn btn-primary btn-sm" ng-click="removeAd($index)">
-					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> remove
-					</button>
-		  		</div>
-		 	</div>
-
-			
-		</div>
-		<div class="row rowSpaced">
-		   
-			<div class="col-md-12">
-			  	<button type="button" class="btn btn-primary btn-sm" ng-click="addAd()">
-				  <span class="glyphicon glyphicon-plus" aria-hidden="true" ></span> add Ad
-				</button>
-		  	</div>
-		</div>
-		<!--
-		<div class="row rowSpaced" data-ng-repeat="view in adViews">
-		  	<div class="col-md-11">
-		  		<label for="ad_source">source</label>-->
-		  		<!--<textarea  id="view_name_{{$index}}" name="view_name_{{$index}}"  ng-model="view.source"></textarea>-->
-		  		<!--<div ui-ace="{
-				  useWrapMode : true,
-				  showGutter: true,
-				  theme:'idle_fingers',
-				  mode: 'html',
-				  firstLineNumber: 1,
-				  vscroll: true
-				      }" ng-model="view.source" class="form-control"></div>
-		  	</div>
-		</div>-->
-
-		<div data-ng-repeat="view in module.adViews" class="row rowSpaced">
-			<!--<div class="row rowSpaced">
-				<div class="col-md-1">
-					<h3>{{$index + 1}}</h3>
-				</div>
-		  		<div class="col-md-4">
-		  			<label for="view_name_{{$index}}" >name</label>
-		  			<input type="text" id="view_name_{{$index}}" name="view_name_{{$index}}" ng-model="view.name" class="form-control" >
-		  		</div>
-		  		<div class="col-md-2">
-		  			<button type="button" class="btn btn-primary btn-sm" ng-click="removeView($index)">
-					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> remove
-					</button>
-		  		</div>
-		 	</div> -->
+		<div layout-gt-xs="row" data-ng-repeat="ad in module.ads">
+			<md-input-container class="md-block" flex-gt-xs>
+			<h3>{{$index + 1}}</h3>
+			</md-input-container>
+			<md-input-container class="md-block" flex-gt-xs>
+				<label for="ad_pos_{{$index}}" >pos</label>
+				<input type="text" id="ad_pos_{{$index}}" name="ad_pos_{{$index}}" ng-model="ad.pos" class="form-control" >
+			</md-input-container>
+			<md-input-container class="md-block" flex-gt-xs>
+				<label for="ad_img_{{$index}}" >Image</label>
+				<input type="text" id="ad_img_{{$index}}" name="ad_img_{{$index}}" ng-model="ad.img" class="form-control" >
+			</md-input-container>
+			<md-input-container class="md-block" flex-gt-xs>
+				<label for="ad_link_{{$index}}" >Link</label>
+				<input type="text" id="ad_link_{{$index}}" name="ad_link_{{$index}}" ng-model="ad.link" class="form-control" >
+			</md-input-container>
+			<md-input-container class="md-block" flex-gt-xs>
+				<md-button ng-click="removeAd($index)" class="md-raised"><md-icon class="material-icons md-light md-48">delete_forever</md-icon> remove</md-button>
+			</md-input-container>
 		
-			  	<div class="col-md-12">
-			  		<label for="view_source_{{$index}}">ad template</label>
-			  		<!--<textarea  id="view_name_{{$index}}" name="view_name_{{$index}}"  ng-model="view.source"></textarea>-->
-			  		<div ui-ace="{
-					  useWrapMode : true,
-					  showGutter: true,
-					  theme:'idle_fingers',
-					  mode: 'html',
-					  firstLineNumber: 1,
-					  vscroll: true
-					      }" ng-model="view.source" class="form-control"></div>
-				  	<div>
-					  	<div class="alert alert-warning alert-dismissible" role="alert" data-ng-repeat="error in adWarningMessages[$index]">
-								  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-								  <strong>{{error.param}}</strong> {{error.msg}} 
-						</div>
+		</div>
+		<div layout-gt-xs="row">	
+			<md-input-container class="md-block" flex-gt-xs>
+				<md-button ng-click="addAd()" class="md-raised"><md-icon class="material-icons md-light md-48">add</md-icon>add Ad</md-button>
+			</md-input-container>
+		</div>
+		<div layout-gt-xs="row" data-ng-repeat="view in module.adViews">
+			<div flex>
+				ad template
+				<!--<textarea  id="view_name_{{$index}}" name="view_name_{{$index}}"  ng-model="view.source"></textarea>-->
+				<div ui-ace="{
+					useWrapMode : true,
+					showGutter: true,
+					theme:'github',
+					mode: 'html',
+					firstLineNumber: 1,
+					vscroll: true
+						}" ng-model="view.source" class="form-control"></div>
+				<div>
+					<div class="alert alert-warning alert-dismissible" role="alert" data-ng-repeat="error in adWarningMessages[$index]">
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+								<strong>{{error.param}}</strong> {{error.msg}} 
 					</div>
-			  	</div>
-			
-		</div>
-
-		<div class="row rowSpaced">
-			<div class="col-md-12">
-					<label>all custom body variables:</label>
+				</div>
 			</div>
 		</div>
-		<div class="row rowSpaced" data-ng-repeat="var in module.bodyVariables">
-			<div class="col-md-12">
-				<div class="col-xs-4 col-md-2">
-					<label>{{var.name}} </label>
-				</div>
-				<div class="col-xs-4 col-md-3">
-					<label for="defaultValue_$index">default Value</label>
-					<input type="text" ng-model="var.defaultValue" name="defaultValue_$index">
-				</div>
-				<div class="col-xs-4 col-md-3">
-					<label>fieldType</label>
-					<select class="form-control" ng-model="var.fieldType" ng-options="type._id as type.name for type in availableFieldTypes"></select>
-				</div>
-				<div class="col-xs-4 col-md-2" data-ng-if="!var.inUse">
-					<br>
-		  			<button type="button" class="btn btn-primary btn-sm" ng-click="removeBodyVariable(var.name)">
-					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> remove
-					</button>
-		  		</div>
-			</div>
-		</div>		
-		<div class="row rowSpaced">
-			<div class="col-md-12">
-					<label>all custom view variables:</label>
-			</div>
+		<div layout-gt-xs="row">
+			<label>all custom body variables:</label>
 		</div>
-		<div class="row rowSpaced" data-ng-repeat="var in module.variables">
-			<div class="col-md-12">
-				<div class="col-xs-4 col-md-2">
-					<label>{{var.name}} </label>
-				</div>
-				<div class="col-xs-4 col-md-3">
-					<label for="defaultValue_$index">default Value</label>
-					<input type="text" ng-model="var.defaultValue" name="defaultValue_$index">
-				</div>
-				<div class="col-xs-4 col-md-3">
-					<label>fieldType</label>
-					<select class="form-control" ng-model="var.fieldType" ng-options="type._id as type.name for type in availableFieldTypes"></select>
-				</div>
-				<div class="col-xs-4 col-md-2" data-ng-if="!var.inUse">
-					<br>
-		  			<button type="button" class="btn btn-primary btn-sm" ng-click="removeVariable(var.name)">
-					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> remove
-					</button>
-		  		</div>
-			</div>
-		</div>		
-
-		<div class="row rowSpaced">
-			<div class="col-md-8">
-				<label>childTagName: {{module.childTagName}}</label>
-			</div>
+		<div layout-gt-xs="row" data-ng-repeat="var in module.bodyVariables">
+			<md-input-container class="md-block" flex-gt-xs>
+				<label>{{var.name}} </label>
+			</md-input-container>
+			<md-input-container class="md-block" flex-gt-xs>
+				<label for="defaultValue_$index">default Value</label>
+				<input type="text" ng-model="var.defaultValue" name="defaultValue_$index">
+			</md-input-container>
+			<md-input-container class="md-block" flex-gt-xs>
+				<label>fieldType</label>
+				<md-select ng-model="var.fieldType">
+					<md-option ng-repeat="type in availableFieldTypes" value="{{type._id}}">
+						{{type.name}}
+					</md-option>
+				</md-select>
+			</md-input-container>
+			<md-input-container class="md-block" flex-gt-xs data-ng-if="!var.inUse">	
+				<md-button ng-click="removeBodyVariable(var.name)" class="md-raised"><md-icon class="material-icons md-light md-48">delete_forever</md-icon> remove</md-button>		
+			</md-input-container>
 		</div>
-
-		<div class="row rowSpaced">
-		<div class="col-md-8">
-			<button ng-click="parseAll()"  class="btn btn-lg btn-link">
-    			<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span> parse   
-			</button>
-			<button data-ng-if="!moduleExsists && !saveInProgress"  ng-click="save()"  class="btn btn-lg btn-warning">
-    			<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> save   
-			</button>
-			<button data-ng-if="moduleExsists && !saveInProgress"  ng-click="update()"  class="btn btn-lg btn-warning">
-    			<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> update   
-			</button>
-			<button data-ng-if="saveInProgress" class="btn btn-lg btn-warning">
-    			<span class="glyphicon glyphicon-refresh spinning"></span> Loading...    
-			</button>
+		<div layout-gt-xs="row">
+			<label>all custom view variables:</label>
+		</div>
+		<div layout-gt-xs="row" data-ng-repeat="var in module.variables">
+			<md-input-container class="md-block" flex-gt-xs>
+				<label>{{var.name}} </label>
+			</md-input-container>
+			<md-input-container class="md-block" flex-gt-xs>
+				<label for="defaultValue_$index">default Value</label>
+				<input type="text" ng-model="var.defaultValue" name="defaultValue_$index">
+			</md-input-container>
+			<md-input-container class="md-block" flex-gt-xs>
+				<label>fieldType</label>
+				<md-select ng-model="var.fieldType">
+					<md-option ng-repeat="type in availableFieldTypes" value="{{type._id}}">
+						{{type.name}}
+					</md-option>
+				</md-select>
+			</md-input-container>
+			<md-input-container class="md-block" flex-gt-xs data-ng-if="!var.inUse">
+				<button type="button" class="btn btn-primary btn-sm" ng-click="removeVariable(var.name)">
+					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> remove
+				</button>
+			</md-input-container>
+		</div>
+		<div layout-gt-xs="row">
+			<label>childTagName: {{module.childTagName}}</label>
+		</div>
+	
+		<div layout-gt-xs="row">
+			<md-button ng-click="parseAll()" class="md-raised"><md-icon class="material-icons md-light md-48">gesture</md-icon> parse</md-button>
+			<md-button data-ng-if="!moduleExsists && !saveInProgress"  ng-click="save()" class="md-raised md-accent"><md-icon class="material-icons md-light md-48">save</md-icon> save</md-button>
+			<md-button data-ng-if="moduleExsists && !saveInProgress"  ng-click="save()" class="md-raised md-accent"><md-icon class="material-icons md-light md-48">save</md-icon> update</md-button>
+			<md-button data-ng-if="saveInProgress" class="md-raised md-accent">Loading... </md-button>
+		</div>
+		<div layout-gt-xs="row">
+			<md-progress-linear data-ng-if="saveInProgress"  md-mode="indeterminate"></md-progress-linear>
 		</div>
 
-	</div>
+	</form>
 
-	</div>
 </div>
-

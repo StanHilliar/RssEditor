@@ -6,7 +6,7 @@ function($resource, $http)
     function getEmailTemplate()
     {
         //return $resource('/api/emaileditor/templates');
-        return $resource('/api/:company/emaileditor/newsletterentityfull/:entityId', 
+        return $resource('/api/emaileditor/newsletterentityfull/:entityId', 
         {
             entityId: '@_id',
             company: '@company'

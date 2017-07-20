@@ -11,12 +11,11 @@ var mongoose = require('mongoose'),
 /**
  * User Schema
  */
-var NewsletterEntitySchema = new Schema(
+var EntitySchema = new Schema(
 {
   name:
   {
     type: String,
-    unique: true,
     required: true
   },
   company:
@@ -145,8 +144,9 @@ var NewsletterEntitySchema = new Schema(
   }
 });
 
+EntitySchema.index({ name: 1, company: 1}, { unique: true });
 
-NewsletterEntitySchema.pre('save', function(next)
+EntitySchema.pre('save', function(next)
 {
   var now = new Date();
 
@@ -161,4 +161,4 @@ NewsletterEntitySchema.pre('save', function(next)
 
 
 
-mongoose.model('NewsletterEntity', NewsletterEntitySchema);
+mongoose.model('NewsletterEntity', EntitySchema);

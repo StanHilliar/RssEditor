@@ -1,11 +1,11 @@
 'use strict';
 
-angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
+angular.module('mean.emaileditor').factory("EloquaService", ['$resource',
     function($resource) 
     {   
         function getEmailModule()
         {
-            return $resource('/api/:company/emaileditor/emailmodule/:moduleId/', 
+            return $resource('/api/emaileditor/emailmodule/:moduleId/', 
             {
                 moduleId: '@_id',
                 company: '@company'
@@ -20,7 +20,7 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
 
         function getSegments()
         {
-           return $resource('/api/:company/emaileditor/segments/:id',
+           return $resource('/api/emaileditor/segments/:id',
             {
                 id: '@_id',
                 company: '@company'
@@ -29,7 +29,7 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
 
         function getEmailGroups()
         {
-            return $resource('/api/:company/emaileditor/emailgroups/',
+            return $resource('/api/emaileditor/emailgroups/',
             {
                 company: '@company'
             });
@@ -37,7 +37,7 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
 
         function getEmailHeaders()
         {
-            return $resource('/api/:company/emaileditor/emailheaders/',
+            return $resource('/api/emaileditor/emailheaders/',
             {
                 company: '@company'
             });
@@ -45,7 +45,7 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
 
         function getEmailFooters()
         {
-            return $resource('/api/:company/emaileditor/emailfooters/',
+            return $resource('/api/emaileditor/emailfooters/',
             {
                 company: '@company'
             });
@@ -53,7 +53,7 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
 
         function eloquaEmail()
         {
-           return $resource('/api/:company/emaileditor/eloquaemail/:eloquaEmailId/', 
+           return $resource('/api/emaileditor/eloquaemail/:eloquaEmailId/', 
             {
                 eloquaEmailId: '@id',
                 company: '@company'
@@ -62,7 +62,7 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
 
         function eloquaTestEmail()
         {
-           return $resource('/api/:company/emaileditor/sendtestemail/',
+           return $resource('/api/emaileditor/sendtestemail/',
             {
                 company: '@company'
             });
@@ -70,7 +70,7 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
 
         function eloquaCampaign()
         {
-           return $resource('/api/:company/emaileditor/scheduleemail/:eloquaCampaignId/', 
+           return $resource('/api/emaileditor/scheduleemail/:eloquaCampaignId/', 
             {
                 eloquaCampaignId: '@id',
                 company: '@company'
@@ -78,7 +78,7 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
         }   
         function eloquaCampaignUnschedule()
         {
-           return $resource('/api/:company/emaileditor/unscheduleemail/:eloquaCampaignId/', 
+           return $resource('/api/emaileditor/unscheduleemail/:eloquaCampaignId/', 
             {
                 eloquaCampaignId: '@id',
                 company: '@company'
@@ -87,7 +87,7 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
 
         function eloquaEmailConfig()
         {
-            return $resource('/api/:company/emaileditor/emailconfig', 
+            return $resource('/api/emaileditor/emailconfig', 
              {
                  company: '@company'
              },
@@ -102,7 +102,7 @@ angular.module('mean.emaileditor').factory("Eloqua", ['$resource',
 
         function eloquaEmailEncoding()
         {
-           return $resource('/api/:company/emaileditor/emailencoding', 
+           return $resource('/api/emaileditor/emailencoding', 
             {
                 company: '@company'
             });

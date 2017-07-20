@@ -14,6 +14,8 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
     $scope.rssContent = 'omg';
     $scope.test1234 = 'omg';
 
+    $scope.company = $stateParams.company;
+
     $scope.availableTypes = [
       {_id: '1', name: 'rss'},
       {_id: '2', name: 'xml'},
@@ -97,7 +99,7 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
         
       //console.log('loadNewsletterEntitiy');
 
-      EmailModule.query({company: MeanUser.company.id, moduleId: $stateParams.newsletterid}, function(newsletterEntityArray)
+      EmailModule.query({company: $stateParams.company, moduleId: $stateParams.newsletterid}, function(newsletterEntityArray)
       {
         $scope.module = newsletterEntityArray[0];
 
@@ -636,17 +638,17 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
 
       var emailmodule = new EmailModule($scope.module);
 
-      emailmodule.company = MeanUser.company.id;
+      emailmodule.company = $stateParams.company;
       emailmodule.$save(function(data, headers) 
       {
         $scope.module = data;
         $scope.errorMsgs = null;
         $scope.moduleExsists = true;
         $scope.saveInProgress = false;
-
       }, 
       function(data, headers) 
       {
+        console.log('error');
         $scope.errorMsgs = data.data;
         $scope.saveInProgress = false;
       });
@@ -667,7 +669,7 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
      
       //$scope.module.ads = [];
 
-      $scope.module.company = MeanUser.company.id;
+      $scope.module.company = $stateParams.company;
       $scope.module.$save(function(data, headers) 
       {
         $scope.module = data;
@@ -680,14 +682,16 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
 
     };   
   }
-]).controller('EmailModuleOverviewController', ['$scope','$compile', '$interpolate', '$sce', 'Global', 'EmailModule', 'MeanUser', '$uibModal',
-  function($scope, $compile, $interpolate, $sce, Global, EmailModule, MeanUser, $uibModal) 
+]).controller('EmailModuleOverviewController', ['$scope', '$stateParams', '$state', '$mdDialog', '$compile', '$interpolate', '$sce', 'Global', 'EmailModule', 'MeanUser',
+  function($scope, $stateParams, $state, $mdDialog, $compile, $interpolate, $sce, Global, EmailModule, MeanUser) 
   {
     $scope.global = Global;
     $scope.package = 
     {
       name: 'emaileditor'
     };
+
+    $scope.company = $stateParams.company;
 
     $scope.destroyModule = function(moduleId)
     {
@@ -697,7 +701,7 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
 
       //EmailModule.find({ moduleId: moduleId }).remove().exec();
       
-      EmailModule.remove({company: MeanUser.company.id, moduleId: moduleId}, function(_emailModule)
+      EmailModule.remove({company: $stateParams.company, moduleId: moduleId}, function(_emailModule)
       {
         //console.log('destroyModule callback');
         //console.log(_emailModule);
@@ -714,6 +718,12 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
      });
     };
 
+    $scope.createModule = function()
+    {
+        console.log('createModule');
+        $state.go('emailmodule_create', {company: $stateParams.company});
+    }; 
+
     $scope.cloneEntity = function(moduleId)
     {
       //console.log('cloneEntity');
@@ -722,7 +732,7 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
 
       //EmailModule.find({ moduleId: moduleId }).remove().exec();
         
-      EmailModule.query({company: MeanUser.company.id, moduleId: moduleId}, function(emailModuleArray)
+      EmailModule.query({company: $stateParams.company, moduleId: moduleId}, function(emailModuleArray)
       {
         //console.log(emailModuleArray[0]);
           
@@ -749,10 +759,12 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
 
     $scope.list = function()
     {
-      //console.log('list Email Modules');
+      console.log('list Email Modules');
+      console.log(MeanUser);
+      console.log(MeanUser.company);
 
 
-      EmailModule.query({company: MeanUser.company.id}, function(response)
+      EmailModule.query({company: $stateParams.company}, function(response)
       {
         //console.log('list callback');
         //console.log(response);
@@ -762,48 +774,53 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
 
     $scope.list();
 
-    $scope.open = function (emailModule) 
+    $scope.open = function (ev, emailModule) 
     {
-      var modalInstance = $uibModal.open(
-      {
-        animation: true,
-        templateUrl: 'myModalContent.html',
-        controller: 'DestroyEmailModuleModalInstanceCtrl',
-        size: 'sm',
-        resolve: 
-        {
-          emailModule: function () 
-          {
-            return emailModule;
-          }
-        }
-      });
 
-      modalInstance.result.then(function (emailModuleId) 
+       var confirm = $mdDialog.confirm()
+          .title('Delete this module?')
+          .textContent('name: '+emailModule.name)
+          .ariaLabel('Lucky day')
+          .targetEvent(ev)
+          .ok('Delete')
+          .cancel('Cancel');
+
+      $mdDialog.show(confirm).then(function() 
       {
-        $scope.destroyModule(emailModuleId);
+        $scope.status = 'You decided to get rid of your debt.';
       }, 
-      function () 
+      function() 
       {
+        $scope.status = 'You decided to keep your debt.';
         console.info('Modal dismissed at: ' + new Date());
       });
+
+      // var modalInstance = $uibModal.open(
+      // {
+      //   animation: true,
+      //   templateUrl: 'myModalContent.html',
+      //   controller: 'DestroyEmailModuleModalInstanceCtrl',
+      //   size: 'sm',
+      //   resolve: 
+      //   {
+      //     emailModule: function () 
+      //     {
+      //       return emailModule;
+      //     }
+      //   }
+      // });
+
+      // modalInstance.result.then(function (emailModuleId) 
+      // {
+      //   $scope.destroyModule(emailModuleId);
+      // }, 
+      // function () 
+      // {
+      //   console.info('Modal dismissed at: ' + new Date());
+      // });
     };
 
 
 
   }
-]).controller('DestroyEmailModuleModalInstanceCtrl', function ($scope, $uibModalInstance, emailModule) {
-
-  $scope.module = emailModule;
-
-
-  $scope.ok = function () 
-  {
-    $uibModalInstance.close($scope.module._id);
-  };
-
-  $scope.cancel = function () 
-  {
-    $uibModalInstance.dismiss('cancel');
-  };
-});
+]);

@@ -362,35 +362,7 @@ module.exports = function(circles) {
             console.log('list');
             console.log(req.user.roles);
             console.log(req.params.company);
-            /*
-            var roles = getCompnayRoles(req);
-
-            if(_.contains("Company_Admin", roles))
-            {      
-                NewsletterEntity.find(
-                {
-                }, function(err, newsletterEntities) 
-                {
-                   res.jsonp(newsletterEntities);
-                });
-            }
-            else
-            {
-                var circles = [];
-                for(var i = 0; i < roles.length; i++)
-                {
-                    circles.push({'circles': roles[i]});
-                }
-
-                NewsletterEntity.find(
-                {
-                    $or: circles
-                },function(err, newsletterEntities) 
-                {
-                   res.jsonp(newsletterEntities);
-                });
-            }*/
-
+          
             NewsletterEntity.find(
                 {},
                 'name createdBy createdAt updatedBy updatedAt circles'
@@ -399,52 +371,10 @@ module.exports = function(circles) {
             .exec(function(err, newsletterEntities) 
             {
                 // res.jsonp(newsletterEntities);
-                
-                if(circles.hasCompanyCircleBoolean(req, 'Company_Admin'))
-                {
-                    res.jsonp(newsletterEntities);
-                }
-                else
-                {
-                    var returnme = [];
-                    for(var i = 0; i < newsletterEntities.length; i++)
-                    {
-                        if(newsletterEntities[i].circles != null)
-                        {
-                            for(var x = 0; x < newsletterEntities[i].circles.length; x++)
-                            {
-                                if(circles.hasCompanyCircleBoolean(req, newsletterEntities[i].circles[x]))
-                                {
-                                    returnme.push(newsletterEntities[i]);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    res.jsonp(returnme);
-                }
+                res.jsonp(newsletterEntities);      
             });
             
         }
     };
-
-    function getCompnayRoles(req)
-    {
-        var roles = [];
-        if(req.params.company && req.user && req.user.companies)
-        {
-            for(var i = 0; i < req.user.companies.length; i++)
-            {
-                if(req.params.company == req.user.companies[i].id)
-                {
-                    roles = req.user.companies[i].roles;
-                }
-            }
-        }
-
-        return roles;
-    }
-
 
 }

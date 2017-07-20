@@ -1,8 +1,8 @@
 'use strict';
 
 /* jshint -W098 */
-angular.module('mean.emaileditor').controller('NewsletterEditController', ['$scope', '$q', '$stateParams','$compile', '$interpolate', '$sce', 'Global', 'NewsletterEntity', 'EmailModule', 'Eloqua', 'Circles', 'MeanUser', '$meanConfig',
-  function($scope, $q, $stateParams, $compile, $interpolate, $sce, Global, NewsletterEntity, EmailModule, Eloqua, Circles, MeanUser, $meanConfig) 
+angular.module('mean.emaileditor').controller('NewsletterEditController', ['$scope', '$q', '$stateParams','$compile', '$interpolate', '$sce', 'Global', 'NewsletterEntity', 'EmailModule', 'EloquaService', 'Circles', 'MeanUser', '$meanConfig',
+  function($scope, $q, $stateParams, $compile, $interpolate, $sce, Global, NewsletterEntity, EmailModule, EloquaService, Circles, MeanUser, $meanConfig) 
   {
     $scope.global = Global;
     $scope.package = 
@@ -27,9 +27,10 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     $scope.availableDropzoneModules = [];
     $scope.selectedDropzoneModules  = [];
 
-    $scope.selected = []; 
-    $scope.availableModule = []; 
-    $scope.selectedModule = []; 
+    $scope.available          = []; 
+    $scope.selected           = []; 
+    $scope.availableModule    = []; 
+    $scope.selectedModule     = []; 
     $scope.selectedEmailGroup = ''; 
    // $scope.selectedSegments = []; 
 
@@ -170,7 +171,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
         console.log('loadNewsletterEntitiy');
         $scope.loading.entity = true;
 
-        NewsletterEntity.query({company: MeanUser.company.id, entityId: $stateParams.newsletterid}, function(newsletterEntityArray)
+        NewsletterEntity.query({company: $stateParams.company, entityId: $stateParams.newsletterid}, function(newsletterEntityArray)
         {
           $scope.entity = newsletterEntityArray[0];
           if($scope.entity)
@@ -216,8 +217,8 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
 
             $scope.template = _template;
 
-            removeSelectedSegmentsfromAvailabeleSegments();
-            removeSelectedCirclesfromAvailabeleCircles();
+            // removeSelectedSegmentsfromAvailabeleSegments();
+            // removeSelectedCirclesfromAvailabeleCircles();
             removeSelectedDropzoneModulesfromAvailabeleDropzoneModules();
             $scope.loading.entity = false;
             entityQueryDeferred.resolve();
@@ -234,14 +235,17 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
          entityQueryDeferred.resolve();
       }
 
+      console.log(EloquaService);
+
       $scope.segments = setup(
       {
-        query:  Eloqua.segments().query,
-        queryOptions: {company: MeanUser.company.id, id: $meanConfig.eloqua.segmentFolder},
+        query:  EloquaService.segments().query,
+        queryOptions: {company: $stateParams.company, id: $meanConfig.eloqua.segmentFolder},
+        queryOptions: {company: $stateParams.company, id: $meanConfig.eloqua.segmentFolder},
         // errorMsg:'error while loading the segments',
         then: function()
         {
-          removeSelectedSegmentsfromAvailabeleSegments();
+          // removeSelectedSegmentsfromAvailabeleSegments();
           removeSelectedDropzoneModulesfromAvailabeleDropzoneModules();
         }
       });
@@ -250,37 +254,37 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
  
       $scope.emailGroups = setup(
       {
-         query:  Eloqua.emailGroups().query,
-         queryOptions: {company: MeanUser.company.id},
+         query:  EloquaService.emailGroups().query,
+         queryOptions: {company: $stateParams.company},
       });
       promises.push($scope.emailGroups.promise);
 
       $scope.emailEncoding = setup(
       {
-         query:  Eloqua.eloquaEmailEncoding().query,
-         queryOptions: {company: MeanUser.company.id},
+         query:  EloquaService.eloquaEmailEncoding().query,
+         queryOptions: {company: $stateParams.company},
       });
       promises.push($scope.emailEncoding.promise);
 
       $scope.emailHeader = setup(
       {
-        query:  Eloqua.emailHeaders().query,
-        queryOptions: {company: MeanUser.company.id},
+        query:  EloquaService.emailHeaders().query,
+        queryOptions: {company: $stateParams.company},
       });
       promises.push($scope.emailHeader.promise);
 
      
       $scope.emailFooter = setup(
       {
-        query:  Eloqua.emailFooters().query,
-        queryOptions: {company: MeanUser.company.id},
+        query:  EloquaService.emailFooters().query,
+        queryOptions: {company: $stateParams.company},
       });
       promises.push($scope.emailFooter.promise);
 
       $scope.emailConfig = setup(
       {
-        query:  Eloqua.eloquaEmailConfig().query,
-        queryOptions: {company: MeanUser.company.id},
+        query:  EloquaService.eloquaEmailConfig().query,
+        queryOptions: {company: $stateParams.company},
       });
       promises.push($scope.emailConfig.promise);
 
@@ -319,14 +323,15 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       });
       // promises.push($scope.fromAddress.promise);
 
+      /*
       $scope.loading.circles = true;
-      Circles.mineCompany({company: MeanUser.company.id}, function(acl) 
+      Circles.mineCompany({company: $stateParams.company}, function(acl) 
       { 
         $scope.availableSecurityCircles = acl.allowed;
         removeSelectedCirclesfromAvailabeleCircles();
         $scope.loading.circles = false;
         mineCompanyDeferred.resolve();
-      });
+      });*/
 
       $q.all(promises).then(function() 
       {
@@ -388,6 +393,8 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
             if($scope.entity.dropzoneModules[i] == $scope.availableDropzoneModules[j]._id)
             { 
               $scope.moveItem($scope.availableDropzoneModules[j], $scope.availableDropzoneModules, $scope.selectedDropzoneModules);
+              // $scope.selectedDropzoneModules.push($scope.availableDropzoneModules[j]);
+
               break;
             }
           }
@@ -627,7 +634,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     
 
       var newsletterEntity = new NewsletterEntity($scope.entity);
-      newsletterEntity.company = MeanUser.company.id;
+      newsletterEntity.company = $stateParams.company;
       newsletterEntity.$save(function(data, headers) 
       {
   //              $scope.user = {};
@@ -656,7 +663,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
 
     //  _preSavePrepModules();
         $scope.processTemplate();
-        $scope.entity.company = MeanUser.company.id;
+        $scope.entity.company = $stateParams.company;
         $scope.entity.$save(function(data, headers) 
         {
   //              $scope.user = {};
@@ -681,7 +688,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     {
       //console.log('list Email Modules');
       $scope.loading.modules = true;
-      EmailModule.query({company: MeanUser.company.id},function(response)
+      EmailModule.query({company: $stateParams.company},function(response)
       {
         $scope.availableModules         = response;
         $scope.availableDropzoneModules = response;

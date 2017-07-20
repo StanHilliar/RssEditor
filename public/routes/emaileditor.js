@@ -5,75 +5,73 @@ angular.module('mean.emaileditor').config(['$stateProvider',
   {
     $stateProvider.state('emaileditor example page', 
     {
-      url: '/emaileditor/example',
+      url: '/:company/emaileditor/example',
       templateUrl: 'emaileditor/views/index.html'
     });    
 
     $stateProvider.state('email_create', 
     {
-      url: '/emaileditor/email/create/:newsletterid',
+      url: '/:company/emaileditor/email/create/:newsletterid',
       templateUrl: 'emaileditor/views/index.html'
     });
 
     $stateProvider.state('email_edit', 
     {
-      url: '/emaileditor/email/edit/:newsletterid/:emailid',
+      url: '/:company/emaileditor/email/edit/:newsletterid/:emailid',
       templateUrl: 'emaileditor/views/index.html'
     });
 
     $stateProvider.state('newsletter overview', 
     {
-      url: '/emaileditor/newsletter',
+      url: '/:company/emaileditor/newsletter',
       templateUrl: 'emaileditor/views/newsletterOverview.html'
     });   
 
     $stateProvider.state('email_overview', 
     {
-      url: '/emaileditor/emails',
+      url: '/:company/emaileditor/emails',
       templateUrl: 'emaileditor/views/emailOverview.html'
     });
 
     $stateProvider.state('template_overview', 
     {
-      url: '/emaileditor/templates',
+      url: '/:company/emaileditor/templates',
       templateUrl: 'emaileditor/views/templateOverview.html'
     });
     
     $stateProvider.state('template_edit', 
     {
-      url: '/emaileditor/templates/edit',
+      url: '/:company/emaileditor/templates/edit',
       templateUrl: 'emaileditor/views/editTemplate.html'
     });
 
     $stateProvider.state('newsletter create', 
     {
-      url: '/emaileditor/newsletter/edit',
+      url: '/:company/emaileditor/newsletter/edit',
       templateUrl: 'emaileditor/views/newsletter.html'
     });  
 
     $stateProvider.state('newsletter edit', 
     {
-      url: '/emaileditor/newsletter/edit/:newsletterid',
+      url: '/:company/emaileditor/newsletter/edit/:newsletterid',
       templateUrl: 'emaileditor/views/newsletter.html'
     });
 
-
-     $stateProvider.state('emailmodule_overview', 
+    $stateProvider.state('emailmodule_overview', 
     {
-      url: '/emaileditor/module',
+      url: '/:company/emaileditor/module',
       templateUrl: 'emaileditor/views/emailmoduleOverview.html'
     });
 
-
     $stateProvider.state('emailmodule_create', 
     {
-      url: '/emaileditor/module/edit',
+      url: '/:company/emaileditor/module/edit',
       templateUrl: 'emaileditor/views/emailmodule.html'
     });  
 
     $stateProvider.state('emailmodule_edit', 
     {
-      url: '/emaileditor/module/edit/:newsletterid',
+      url: '/:company/emaileditor/module/edit/:newsletterid',
       templateUrl: 'emaileditor/views/emailmodule.html'
     });
   }

@@ -1,8 +1,8 @@
 'use strict';
 
 /* jshint -W098 */
-angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scope','$compile', '$interpolate', '$sce', '$location', 'Global', 'NewsletterEntity', 'Email', 'MeanUser',
-  function($scope, $compile, $interpolate, $sce, $location, Global, NewsletterEntity, Email, MeanUser) {
+angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scope', '$stateParams','$compile', '$interpolate', '$sce', '$location', 'Global', 'NewsletterEntity', 'Email', 'MeanUser',
+  function($scope,$stateParams, $compile, $interpolate, $sce, $location, Global, NewsletterEntity, Email, MeanUser) {
     $scope.global = Global;
     $scope.package = 
     {
@@ -29,7 +29,7 @@ angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scop
 
       //EmailModule.find({ moduleId: moduleId }).remove().exec();
       
-      Email.remove({company: MeanUser.company.id, emailId: entityId}, function(_newsletterEntity)
+      Email.remove({company: $stateParams.company, emailId: entityId}, function(_newsletterEntity)
       {
         //console.log('destroyModule callback');
         //console.log(_newsletterEntity);
@@ -59,7 +59,7 @@ angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scop
       $scope.loadingEntites = true;
       //console.log('listNewsletterEntitiy');
 
-      NewsletterEntity.query({company: MeanUser.company.id}, function(response)
+      NewsletterEntity.query({company: $stateParams.company}, function(response)
       {
         //console.log('list callback');
         //console.log(response);
@@ -77,7 +77,7 @@ angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scop
       $scope.loadingEmails = true;
       //console.log('listNewsletterEntitiy');
 
-      Email.query({company: MeanUser.company.id},function(response)
+      Email.query({company: $stateParams.company},function(response)
       {
         //console.log('list callback');
         //console.log(response);

@@ -17,8 +17,8 @@ function getRandomString(len) {
 }
 
 /**
- * Module dependencies.
- */
+* Module dependencies.
+*/
 
 var expect    = require('expect.js')
 var request   = require('supertest'); 

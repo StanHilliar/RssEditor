@@ -376,9 +376,11 @@ module.exports = function(MeanUser) {
         },
         list: function(req, res, next) 
         {
+            console.log('list');
+            console.log(req.query.company);
             EmailModule.find(
-                {},
-                'name createdBy createdAt updatedBy updatedAt'
+                { company: req.query.company },
+                'name company createdBy createdAt updatedBy updatedAt'
             )
             .lean()
             .exec(function(err, emailModules) 

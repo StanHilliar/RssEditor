@@ -16,7 +16,6 @@ var EmailModuleSchema = new Schema(
   name:
   {
     type: String,
-    unique: true,
     required: true
   },
   company:
@@ -108,6 +107,7 @@ var EmailModuleSchema = new Schema(
   }
 });
 
+EmailModuleSchema.index({ name: 1, company: 1}, { unique: true });
 
 EmailModuleSchema.pre('save', function(next)
 {

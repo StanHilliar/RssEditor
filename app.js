@@ -70,12 +70,12 @@ Emaileditor.register(function(app, auth, database, circles)
   //<script src="bower_components/ngWYSIWYG/js/wysiwyg.js"></script>
 
 
-  Emaileditor.aggregateAsset('css', '../lib/ngWYSIWYG/css/editor.css', { weight: 1 });
-  Emaileditor.aggregateAsset('js', '../lib/ngWYSIWYG/js/wysiwyg.js', { weight: 2 });
+  // Emaileditor.aggregateAsset('css', '../lib/ngWYSIWYG/css/editor.css', { weight: 1 });
+  // Emaileditor.aggregateAsset('js', '../lib/ngWYSIWYG/js/wysiwyg.js', { weight: 2 });
 
-  Emaileditor.aggregateAsset('js', '../lib/angular-ui-ace/ui-ace.js', { weight: 2 });
+  // Emaileditor.aggregateAsset('js', '../lib/angular-ui-ace/ui-ace.js', { weight: 2 });
 
-  Emaileditor.aggregateAsset('css', 'emaileditor.css');
+  // Emaileditor.aggregateAsset('css', 'emaileditor.css');
   
   Emaileditor.angularDependencies(['ngWYSIWYG','ui.ace']);
 
