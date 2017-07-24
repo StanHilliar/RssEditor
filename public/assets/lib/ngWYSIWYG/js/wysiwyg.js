@@ -66,7 +66,6 @@
 	angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 		function ($compile, $timeout)
 		{
-
 			//kudos http://stackoverflow.com/questions/13881834/bind-angular-cross-iframes-possible
 			var linker = function (scope, $element, attrs, controllers)
 			{
@@ -77,7 +76,7 @@
 				dndEditorCtrl.iFrameLoaded('test');
 				$document.open(); //damn Firefox. kudos: http://stackoverflow.com/questions/15036514/why-can-i-not-set-innerhtml-of-an-iframe-body-in-firefox
 				//$document.write('<!DOCTYPE html><html><head></head><body contenteditable="true"></body></html>');
-				$document.write('<!DOCTYPE html><html><head><link rel="stylesheet" href="/emaileditor/assets/css/iframeEditor.css"><link rel="stylesheet" href="/theme/assets/fonts/font-awesome/css/font-awesome.css?v=296d368ac8e07ef0e76f4d2df5836ba5"></head><body></body></html>');
+				$document.write('<!DOCTYPE html><html><head><link rel="stylesheet" href="/emaileditor/assets/css/iframeEditor.css"><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></head><body></body></html>');
 				$document.close();
 				//$document.designMode = 'On';
 				var $body = angular.element($element[0].contentDocument.body);

@@ -1,278 +1,296 @@
-<div class="" data-ng-controller="EmaileditorController"  ng-init="load()">
+<div class="" data-ng-controller="EmaileditorController"  ng-init="load()" layout-padding  layout="row" flex>
+	<div layout="column" flex="40">
+		<div layout-gt-xs="row">
+			<div flex="40">
+				{{EmailName| limitTo: 40 }}{{EmailName.length > 40 ? '...' : ''}}
+				{{storedEmail.status}}
+			</div>
+			<div flex="60" layout="row">
+				<div flex>
+					<md-switch aria-label="switch Mode" ng-model="isEditMode" ng-change="setMode()">
+						<span ng-show="isEditMode">Edit</span><span ng-hide="isEditMode">Preview</span> Mode
+					</md-switch>
+				</div>
+				<div flex>
+					<md-button data-ng-hide="saveInProgress" ng-click="saveEmail()" class="md-raised md-accent"><md-icon class="material-icons md-light md-48">save</md-icon> save</md-button>
+					<md-button data-ng-show="saveInProgress"  class="md-raised md-accent"><md-icon class="material-icons md-light md-48">save</md-icon> save</md-button>
 	
-		<div class="row">
-			<div class="col-sm-5 col-md-5 sidebar">
-				<div class="row">
-					<div class="col-sm-4 col-md-4 col-lg-6" style="padding-top:5px">
-						{{EmailName| limitTo: 40 }}{{EmailName.length > 40 ? '...' : ''}}
-						{{storedEmail.status}}
-					</div>
-					<div class="col-sm-8 col-md-8 col-lg-6">
-						<div class="pull-right">
-							<div class="btn-group">
-								<label class="btn btn-default btn-sm" ng-model="isEditMode" uib-btn-radio="true" ng-click="setMode()">Edit</label>
-								<label class="btn btn-default btn-sm" ng-model="isEditMode" uib-btn-radio="false" ng-click="setMode()">Preview</label>
-							</div>
-
-							<button type="button" data-ng-hide="saveInProgress" class="btn btn-default btn-sm" aria-label="Left Align" ng-click="saveEmail()">
-								<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> save
-							</button>
-							<button type="button" data-ng-show="saveInProgress" class="btn btn-default btn-sm">
-								<span class="glyphicon glyphicon-refresh spinning"></span> save    
-							</button>
-							<!--
-							<button type="button" class="btn btn-default btn-sm" aria-label="Left Align" ng-click="showSendingOptions = !showSendingOptions">
-								<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> schedule
-							</button>-->
-							
-							<!-- 
-							<button type="button" class="btn btn-default">Default</button>		
-							<button type="button" class="btn btn-primary">Primary</button>			
-							<button type="button" class="btn btn-success">Success</button>
-							<button type="button" class="btn btn-info">Info</button>			
-							<button type="button" class="btn btn-warning">Warning</button>			
-							<button type="button" class="btn btn-danger">Danger</button>	
-							<button type="button" class="btn btn-link">Link</button> -->
-						</div>
-					</div>
 				</div>
-				<div class="row" ng-show="errorMsgs.length > 0">
-					<div class="col-sm-8 col-md-8 col-lg-6">
-						<div class="alert alert-danger alert-dismissible" role="alert" data-ng-repeat="error in errorMsgs">
-						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<strong>{{error.param}}</strong> {{error.msg}} 
-						</div>
-					</div>
+			</div>
+		</div>
+		<div layout-gt-xs="row" ng-show="errorMsgs.length > 0">
+			<div class="col-sm-8 col-md-8 col-lg-6">
+				<div class="alert alert-danger alert-dismissible" role="alert" data-ng-repeat="error in errorMsgs">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<strong>{{error.param}}</strong> {{error.msg}} 
 				</div>
-				<ul class="nav nav-tabs">
-					<li role="presentation" ng-class="tabs[0].class" ng-show="enableDropZone"><a href="#" ng-click="changeTab(0)">Add</a></li>
-					<li role="presentation" ng-class="tabs[1].class"><a href="#" ng-click="changeTab(1)">Edit</a></li>
-					<li role="presentation" ng-class="tabs[2].class" ><a href="#" ng-click="changeTab(2)">Send</a></li>
-				</ul>
-				
-				<div data-ng-show="showDragAndDrop && enableDropZone">
-					<fieldset>
-						<br>
-					<div class="row">
-						<div class="">
-							<div class="pickUpArea">
-								<div id="sortable">
-									<div class="emailModule col-sm-6 col-md-3" ng-repeat="module in entity.dropzoneModules" data-module-id="{{module._id}}">
-										<div class="thumbnail emailModuleHandle">
-											<img alt="100%x200" data-src="holder.js/100%x50" style="height: 50px; width: 100%; display: block;" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMjQyIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDI0MiAyMDAiIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiPjwhLS0KU291cmNlIFVSTDogaG9sZGVyLmpzLzEwMCV4MjAwCkNyZWF0ZWQgd2l0aCBIb2xkZXIuanMgMi42LjAuCkxlYXJuIG1vcmUgYXQgaHR0cDovL2hvbGRlcmpzLmNvbQooYykgMjAxMi0yMDE1IEl2YW4gTWFsb3BpbnNreSAtIGh0dHA6Ly9pbXNreS5jbwotLT48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPjwhW0NEQVRBWyNob2xkZXJfMTVhMTM1NzRiZDIgdGV4dCB7IGZpbGw6I0FBQUFBQTtmb250LXdlaWdodDpib2xkO2ZvbnQtZmFtaWx5OkFyaWFsLCBIZWx2ZXRpY2EsIE9wZW4gU2Fucywgc2Fucy1zZXJpZiwgbW9ub3NwYWNlO2ZvbnQtc2l6ZToxMnB0IH0gXV0+PC9zdHlsZT48L2RlZnM+PGcgaWQ9ImhvbGRlcl8xNWExMzU3NGJkMiI+PHJlY3Qgd2lkdGg9IjI0MiIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNFRUVFRUUiLz48Zz48dGV4dCB4PSI4OS44NTAwMDAzODE0Njk3MyIgeT0iMTA1LjciPjI0MngyMDA8L3RleHQ+PC9nPjwvZz48L3N2Zz4=" data-holder-rendered="true">
-											<div class="caption">
-												{{module.name}}
+			</div>
+		</div>
+		<!-- <ul class="nav nav-tabs">
+			<li role="presentation" ng-class="tabs[0].class" ng-show="enableDropZone"><a href="#" ng-click="changeTab(0)">Add</a></li>
+			<li role="presentation" ng-class="tabs[1].class"><a href="#" ng-click="changeTab(1)">Edit</a></li>
+			<li role="presentation" ng-class="tabs[2].class" ><a href="#" ng-click="changeTab(2)">Send</a></li>
+		</ul> -->
+		<md-tabs md-selected="leftNavTabIndex" md-dynamic-height="true">
+			<md-tab>
+				<md-tab-label>
+					Add
+				</md-tab-label>
+				<md-tab-body>
+					<div data-ng-show="enableDropZone">
+						<fieldset>
+							<br>
+						<div class="row">
+							<div class="">
+								<div class="pickUpArea">
+									<div id="sortable">
+										<div layout="row" class="emailModule col-sm-6 col-md-3" ng-repeat="module in entity.dropzoneModules" data-module-id="{{module._id}}">
+											<div class="thumbnail emailModuleHandle" flex="25">
+												<img alt="100%x200" data-src="holder.js/100%x50" style="height: 50px; width: 100%; display: block;" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMjQyIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDI0MiAyMDAiIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiPjwhLS0KU291cmNlIFVSTDogaG9sZGVyLmpzLzEwMCV4MjAwCkNyZWF0ZWQgd2l0aCBIb2xkZXIuanMgMi42LjAuCkxlYXJuIG1vcmUgYXQgaHR0cDovL2hvbGRlcmpzLmNvbQooYykgMjAxMi0yMDE1IEl2YW4gTWFsb3BpbnNreSAtIGh0dHA6Ly9pbXNreS5jbwotLT48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPjwhW0NEQVRBWyNob2xkZXJfMTVhMTM1NzRiZDIgdGV4dCB7IGZpbGw6I0FBQUFBQTtmb250LXdlaWdodDpib2xkO2ZvbnQtZmFtaWx5OkFyaWFsLCBIZWx2ZXRpY2EsIE9wZW4gU2Fucywgc2Fucy1zZXJpZiwgbW9ub3NwYWNlO2ZvbnQtc2l6ZToxMnB0IH0gXV0+PC9zdHlsZT48L2RlZnM+PGcgaWQ9ImhvbGRlcl8xNWExMzU3NGJkMiI+PHJlY3Qgd2lkdGg9IjI0MiIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNFRUVFRUUiLz48Zz48dGV4dCB4PSI4OS44NTAwMDAzODE0Njk3MyIgeT0iMTA1LjciPjI0MngyMDA8L3RleHQ+PC9nPjwvZz48L3N2Zz4=" data-holder-rendered="true">
+												<div class="caption">
+													{{module.name}}
+												</div>
 											</div>
 										</div>
 									</div>
+									
 								</div>
-								
 							</div>
 						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-12">
-						<h3>recycle bin</h3>
-							<div id="trash" class="trashBin">
-							</div>
-						</div>
-					</div>
-					</fieldset>
-				</div>
-				<div data-ng-show="showSendingOptions">
-					<br>
-					<fieldset ng-disabled="storedEmail.status=='active'">
-					<div class="row">
-						<div class="col-md-12">
-							<label for="EmailNamefield" class="dark">internal name</label>		     
-							<input type="text" class="form-control" placeholder="" ng-model="EmailName" name="EmailNamefield">   		
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-12">
-							<label for="EmailSegment" class="dark">segment <!--{{segment}}--></label>
-							<select class="form-control" ng-options="segment.id as segment.name for segment in entity.segments" ng-model="segment" name="EmailSegment">
-							</select>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-12">
-							<label for="EmailSubjectfield" class="dark">email subject</label>
-							<input type="text" class="form-control" placeholder="Subject" ng-model="EmailSubject" name="EmailSubjectfield">   						
-						</div>
-					</div>
-          <div class="row" ng-show="containsHiddenPreview">
-			    	<div class="col-md-12">
-						    <label for="hiddenPreviewText" class="dark">hidden preview text</label>
-		      			<textarea type="text" class="form-control" placeholder="enter your hidden preview text here" ng-model="hiddenPreviewText" id="hiddenPreviewText" name="EmailSubject"></textarea>
-		      	</div>
-		      </div>
-					<div class="row ">
-						<div class="col-lg-6">
-							<label class="control-label dark" for="scheduleDate">set date and time for sending</label>
-						</div>
-					</div>
-					<div class="row">
-					<div class="col-lg-6">
-					<div class="input-group">
-					
-						<input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="dt" is-open="popup1.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" name="scheduleDate" placeholder="dd.mm.yyyy"/>
-						<span class="input-group-btn">
-							<button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
-						</span>
-					</div>
-					<span style="padding-top: 5px;">
-								<button type="button" class="btn btn-sm btn-default" style="margin-top: 5px;" ng-click="setinXDays(0)">today</button>
-								<button type="button" class="btn btn-sm btn-default" style="margin-top: 5px;" ng-click="setinXDays(1)">tomorrow</button>
-						</span>
-					</div><!-- /.col-lg-6 -->
-					<div class="col-lg-6">
-						<div class="input-group">
-						<input type="time" class="form-control" required="true" ng-model="dt" data-format="hh:mm" name="scheduleTime" placeholder="hh:mm" />
-						<span class="input-group-btn">
-							<button type="button" class="btn btn-default" ng-click=""><i class="glyphicon glyphicon-time"></i></button>
-						</span>
-					</div>
-					<span>
-							<button type="button" class="btn btn-sm btn-default" style="margin-top: 5px;" ng-click="setTimeinXMinutes(10)">in 10 min</button> <button type="button" class="btn btn-sm btn-default" style="margin-top: 5px;" ng-click="setTimeinXMinutes(30)">in 30 min</button>
-						</span>
-					</div><!-- /.col-lg-6 -->
-					</div><!-- /.row -->
-					</fieldset>
-					<div class="row" data-ng-show="storedEmail.eloquaEmail">
-						<div class="col-md-8">
-							<label for="testEmailAddresses" class="dark">email addresses</label>
-							<input type="text" class="form-control" placeholder="emails" ng-model="testEmailAddresses" id="testEmailAddresses" name="testEmailAddresses">
-						</div>
-						<div class="col-md-4">	
-							<br/>
-							<button type="button" data-ng-hide="testSendingInProgress" class="btn btn-primary" ng-click="sendTestEmail()">send Test</button>
-
-							<button type="button" data-ng-show="testSendingInProgress" class="btn btn-primary">
-								<span class="glyphicon glyphicon-refresh spinning"></span> sending    
-							</button>
-
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-12">	
-							<br/>
-							<!--elqEmail: {{storedEmail.eloquaEmail}}<br>
-							eloquaCampaign: {{storedEmail.eloquaCampaign}}-->
-							<button type="button" data-ng-show="storedEmail.status =='draft' && storedEmail.eloquaEmail && !scheduleInProgress" class="btn btn-primary" ng-click="scheduleEmail()">schedule</button>
-
-							<button type="button" data-ng-show="storedEmail.status=='draft' && storedEmail.eloquaEmail && !scheduleInProgress" class="btn btn-primary" ng-click="sendEmailRightNow()">send right now</button>
-
-							<button type="button" data-ng-show="storedEmail.status=='active' && storedEmail.eloquaEmail && !scheduleInProgress"  class="btn btn-primary" ng-click="unscheduleEmail()">unschedule</button>
-
-							<button type="button" data-ng-show="scheduleInProgress" class="btn btn-primary">
-								<span class="glyphicon glyphicon-refresh spinning"></span> schedule    
-							</button>
-
-						</div>
-					</div>
-				</div>
-				
-				<div data-ng-show="showModuleEdit">
-					<br>
-					<div data-ng-show="!isEmailModuleSelected && !showSendingOptions && isEditMode">
-						<label for="currentEntryView" class="dark">View</label>
-						<select class="form-control" ng-model="currentEntry.data._view" ng-options="item as item.name for item in currentEntry.views track by item._id" name="currentEntryView" ng-change="updateViewforEntry()">
-						</select> 
-	
-						<div data-ng-show="currentEntry.module.type == '1'">
-							<label for="currentEntryTitle" class="dark">Title</label>
-							<input type="text" class="form-control" placeholder="" ng-model="currentEntry.data.title" name="currentEntryTitle">	 
-
-							<label for="currentEntryLink" class="dark">Link</label>
-							<input type="text" class="form-control" placeholder="" ng-model="currentEntry.data.link" name="currentEntryLink">
-
-							<label for="currentEntryImage" class="dark">Image</label>
-							<input type="text" class="form-control" placeholder="" ng-model="currentEntry.data.image" name="currentEntryImage">
-
-							<label for="currentEntryContent" class="dark">Content</label>
-							<textarea  placeholder="Content" rows="4" class="form-control" id="" name="currentEntryContent"  ng-model="currentEntry.data.content" ></textarea>
-								<!--
-							<label for="currentEntryTitleContentSnippet">ContentSnippet</label>
-							<textarea  placeholder="ContentSnippet" rows="4" class="form-control" id="" name="currentEntryTitleContentSnippet"  ng-model="currentEntry.data.contentSnippet" ></textarea>
-							<br/>
-						
-							<div data-ng-repeat="var in entity.modules[currentEntry.moduleId].variables">
-								{{var}} 
-							</div>-->
-						</div>	
-					
-						<div data-ng-repeat="xmlVar in currentEntry.module.xmlVariables">
-							<label for="" class="dark">{{xmlVar.label}}</label>
-							<input type="text" class="form-control" placeholder="" ng-model="currentEntry.data[xmlVar.name]" name="">					
-						</div>
-
-						<div data-ng-repeat="(key, value) in currentEntry.data.data">
-							<label for="" class="dark">{{currentEntry.data.variables[key].label}}</label>
-							<input type="text" class="form-control" placeholder="" ng-model="currentEntry.data.data[key]" name="">					
-						</div>
-
-						<!--<button type="button" class="btn btn-primary" ng-click="deleteEntry()">Delete</button>-->
-
 						<div class="row">
-							<div class="col-xs-12 col-md-12">
+							<div class="col-md-12">
+							<h3>recycle bin</h3>
+								<div id="trash" class="trashBin">
+								</div>
+							</div>
+						</div>
+						</fieldset>
+					</div>
+				</md-tab-body>
+			</md-tab>
+			<md-tab>
+				<md-tab-label>
+					Edit
+				</md-tab-label>
+				<md-tab-body>
+					<div>
+						<br>
+						<div data-ng-show="!isEmailModuleSelected && isEditMode">
+							<md-input-container class="md-block" flex-gt-xs>
+								<label for="currentEntryView" class="dark">View</label>
+								<select class="form-control" ng-model="currentEntry.data._view" ng-options="item as item.name for item in currentEntry.views track by item._id" >
+								</select> 
+								<md-select ng-model="currentEntry.data._view" ng-model-options="{trackBy: '$value._id'}" name="currentEntryView" ng-change="updateViewforEntry()">
+									<md-option ng-repeat="item in currentEntry.views" value="{{item}}">
+										{{item.name}}
+									</md-option>
+								</md-select>
+							</md-input-container>
+
+							<div data-ng-show="currentEntry.module.type == '1'">
+								<md-input-container class="md-block" flex-gt-xs>
+									<label for="currentEntryTitle" class="dark">Title</label>
+									<input type="text" class="form-control" placeholder="" ng-model="currentEntry.data.title" name="currentEntryTitle">	 
+								</md-input-container>
+
+								<md-input-container class="md-block" flex-gt-xs>
+									<label for="currentEntryLink" class="dark">Link</label>
+									<input type="text" class="form-control" placeholder="" ng-model="currentEntry.data.link" name="currentEntryLink">
+								</md-input-container>
+
+								<md-input-container class="md-block" flex-gt-xs>
+									<label for="currentEntryImage" class="dark">Image</label>
+									<input type="text" class="form-control" placeholder="" ng-model="currentEntry.data.image" name="currentEntryImage">
+								</md-input-container>
+
+								<md-input-container class="md-block" flex-gt-xs>
+									<label for="currentEntryContent" class="dark">Content</label>
+									<textarea  placeholder="Content" rows="4" class="form-control" id="" name="currentEntryContent"  ng-model="currentEntry.data.content" ></textarea>
+								</md-input-container>
+									<!--
+								<label for="currentEntryTitleContentSnippet">ContentSnippet</label>
+								<textarea  placeholder="ContentSnippet" rows="4" class="form-control" id="" name="currentEntryTitleContentSnippet"  ng-model="currentEntry.data.contentSnippet" ></textarea>
 								<br/>
-								<div class="btn-group">
-									<label class="btn btn-primary" ng-model="currentEntry.data.state" uib-btn-radio="1" ng-click="updateEntryState()">active</label>
-									<label class="btn btn-primary" ng-model="currentEntry.data.state" uib-btn-radio="2" ng-click="updateEntryState()">inActive</label>
-									<label class="btn btn-primary" ng-model="currentEntry.data.state" uib-btn-radio="0" ng-click="updateEntryState()">deleted</label>
+							
+								<div data-ng-repeat="var in entity.modules[currentEntry.moduleId].variables">
+									{{var}} 
+								</div>-->
+							</div>	
+						
+							<div data-ng-repeat="xmlVar in currentEntry.module.xmlVariables">
+								<md-input-container class="md-block" flex-gt-xs>
+									<label for="" class="dark">{{xmlVar.label}}</label>
+									<input type="text" class="form-control" placeholder="" ng-model="currentEntry.data[xmlVar.name]" name="">	
+								</md-input-container>				
+							</div>
+
+							<div data-ng-repeat="(key, value) in currentEntry.data.data">
+								<md-input-container class="md-block" flex-gt-xs>
+									<label for="" class="dark">{{currentEntry.data.variables[key].label}}</label>
+									<input type="text" class="form-control" placeholder="" ng-model="currentEntry.data.data[key]" name="">	
+								</md-input-container>				
+							</div>
+
+							<!--<button type="button" class="btn btn-primary" ng-click="deleteEntry()">Delete</button>-->
+
+							<div class="row">
+								<div class="col-xs-12 col-md-12">
+									<br/>
+									<div class="btn-group">
+										<md-button ng-click="currentEntry.data.state = 1; updateEntryState()" class="md-raised">active</md-button>
+										<md-button ng-click="currentEntry.data.state = 2; updateEntryState()" class="md-raised">inActive</md-button>
+										<md-button ng-click="currentEntry.data.state = 0; updateEntryState()" class="md-raised">deleted</md-button>
+										<!--{{currentEntry.data.state}}-->
+									</div>
+								</div>
+							</div>
+							<br/>
+						</div>
+						<div data-ng-show="isEmailModuleSelected  && isEditMode">
+							<div class="row">
+								<div class="col-xs-12 col-md-12">
+									<h3>email module options</h3>
+									number of elements: {{currentEmailModuleData.numberOfEntries}}
+									<button type="button" class="btn btn-default btn-sm" ng-click="addEntry(currentEmailModuleData.id)">
+									<span class=" glyphicon glyphicon-plus" aria-hidden="true" ></span> add
+									</button>
+								</div>
+							</div>
+							
+							<div data-ng-repeat="(key, value) in currentEmailModule.bodyVariables">		
+								<label for="" class="dark">{{value.label}}</label>
+								<input type="text" class="form-control" placeholder="" ng-model="currentEmailModuleData.bodyData[value.name]" name="">	
+							</div>
+
+							<div class="row">
+								<div class="col-xs-12 col-md-12">
+									<div class="btn-group" ng-show="currentEmailModule.removeable">
+										<label class="btn btn-primary" ng-model="currentEmailModuleData.state" uib-btn-radio="1" >active</label>
+										<label class="btn btn-primary" ng-model="currentEmailModuleData.state" uib-btn-radio="2" >inActive</label>
+										<label class="btn btn-primary" ng-model="currentEmailModuleData.state" uib-btn-radio="0" >deleted</label>
+									</div>
+									<div class="btn-group" ng-hide="currentEmailModule.removeable">
+										<label class="btn btn-primary disabled" popover-animation="true" popover-title="Why is this not working?" uib-popover="This option has been disabled by the admin for this module.">active</label>
+										<label class="btn btn-primary disabled">inActive</label>
+										<label class="btn btn-primary disabled">deleted</label>
+									</div>
 								</div>
 							</div>
 						</div>
-						<br/>
 					</div>
-					<div data-ng-show="isEmailModuleSelected && !showSendingOptions && isEditMode">
+				</md-tab-body>
+			</md-tab>
+			<md-tab>
+				<md-tab-label>
+					Send
+				</md-tab-label>
+				<md-tab-body>
+					<div >
+						<br>
+						<fieldset ng-disabled="storedEmail.status=='active'">
+							<div layout-gt-xs="row">
+								<md-input-container class="md-block" flex-gt-xs data-ng-if="!var.inUse">
+									<label for="EmailNamefield" class="dark">internal name</label>		     
+									<input type="text" class="form-control" placeholder="" ng-model="EmailName" name="EmailNamefield">   		
+								</md-input-container>
+							</div>
+							<div layout-gt-xs="row">
+								<md-input-container class="md-block" flex-gt-xs data-ng-if="!var.inUse">
+									<label for="EmailSegment" class="dark">segment <!--{{segment}}--></label>
+									<md-select ng-model="segment" name="EmailSegment">
+										<md-option ng-repeat="segment in entity.segments" value="{{segment.id}}">
+											{{segment.name}}
+										</md-option>
+									</md-select>
+								</md-input-container>
+							</div>
+							<div layout-gt-xs="row">
+								<md-input-container class="md-block" flex-gt-xs data-ng-if="!var.inUse">
+									<label for="EmailSubjectfield" class="dark">email subject</label>
+									<input type="text" class="form-control" placeholder="Subject" ng-model="EmailSubject" name="EmailSubjectfield">   						
+								</md-input-container>
+							</div>
+							<div layout-gt-xs="row">
+								<md-input-container class="md-block" flex-gt-xs data-ng-if="!var.inUse">
+									<label for="hiddenPreviewText" class="dark">hidden preview text</label>
+									<textarea type="text" class="form-control" placeholder="enter your hidden preview text here" ng-model="hiddenPreviewText" id="hiddenPreviewText" name="EmailSubject"></textarea>
+								</md-input-container>
+							</div>
+							<div layout-gt-xs="row">
+								<div class="col-lg-6">
+									<label class="control-label dark" for="scheduleDate">set date and time for sending</label>
+								</div>
+							</div>
+							<div layout-gt-xs="row">
+								<div class="col-lg-6">
+									<div class="input-group">
+										<input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="dt" is-open="popup1.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" name="scheduleDate" placeholder="dd.mm.yyyy"/>
+										<span class="input-group-btn">
+											<button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
+										</span>
+									</div>
+									<span style="padding-top: 5px;">
+												<button type="button" class="btn btn-sm btn-default" style="margin-top: 5px;" ng-click="setinXDays(0)">today</button>
+												<button type="button" class="btn btn-sm btn-default" style="margin-top: 5px;" ng-click="setinXDays(1)">tomorrow</button>
+									</span>
+								</div><!-- /.col-lg-6 -->
+								<div class="col-lg-6">
+									<div class="input-group">
+										<input type="time" class="form-control" required="true" ng-model="dt" data-format="hh:mm" name="scheduleTime" placeholder="hh:mm" />
+										<span class="input-group-btn">
+											<button type="button" class="btn btn-default" ng-click=""><i class="glyphicon glyphicon-time"></i></button>
+										</span>
+									</div>
+									<span>
+										<button type="button" class="btn btn-sm btn-default" style="margin-top: 5px;" ng-click="setTimeinXMinutes(10)">in 10 min</button> <button type="button" class="btn btn-sm btn-default" style="margin-top: 5px;" ng-click="setTimeinXMinutes(30)">in 30 min</button>
+									</span>
+								</div><!-- /.col-lg-6 -->
+							</div><!-- /.row -->
+						</fieldset>
+						<div class="row" data-ng-show="storedEmail.eloquaEmail">
+							<div class="col-md-8">
+								<label for="testEmailAddresses" class="dark">email addresses</label>
+								<input type="text" class="form-control" placeholder="emails" ng-model="testEmailAddresses" id="testEmailAddresses" name="testEmailAddresses">
+							</div>
+							<div class="col-md-4">	
+								<br/>
+								<button type="button" data-ng-hide="testSendingInProgress" class="btn btn-primary" ng-click="sendTestEmail()">send Test</button>
+
+								<button type="button" data-ng-show="testSendingInProgress" class="btn btn-primary">
+									<span class="glyphicon glyphicon-refresh spinning"></span> sending    
+								</button>
+
+							</div>
+						</div>
 						<div class="row">
-							<div class="col-xs-12 col-md-12">
-								<h3>email module options</h3>
-								number of elements: {{currentEmailModuleData.numberOfEntries}}
-								<button type="button" class="btn btn-default btn-sm" ng-click="addEntry(currentEmailModuleData.id)">
-								<span class=" glyphicon glyphicon-plus" aria-hidden="true" ></span> add
+							<div class="col-md-12">	
+								<br/>
+								<!--elqEmail: {{storedEmail.eloquaEmail}}<br>
+								eloquaCampaign: {{storedEmail.eloquaCampaign}}-->
+								<button type="button" data-ng-show="storedEmail.status =='draft' && storedEmail.eloquaEmail && !scheduleInProgress" class="btn btn-primary" ng-click="scheduleEmail()">schedule</button>
+
+								<button type="button" data-ng-show="storedEmail.status=='draft' && storedEmail.eloquaEmail && !scheduleInProgress" class="btn btn-primary" ng-click="sendEmailRightNow()">send right now</button>
+
+								<button type="button" data-ng-show="storedEmail.status=='active' && storedEmail.eloquaEmail && !scheduleInProgress"  class="btn btn-primary" ng-click="unscheduleEmail()">unschedule</button>
+
+								<button type="button" data-ng-show="scheduleInProgress" class="btn btn-primary">
+									<span class="glyphicon glyphicon-refresh spinning"></span> schedule    
 								</button>
 							</div>
 						</div>
-						
-						<div data-ng-repeat="(key, value) in currentEmailModule.bodyVariables">		
-							<label for="" class="dark">{{value.label}}</label>
-							<input type="text" class="form-control" placeholder="" ng-model="currentEmailModuleData.bodyData[value.name]" name="">	
-						</div>
-
-						<div class="row">
-							<div class="col-xs-12 col-md-12">
-								<div class="btn-group" ng-show="currentEmailModule.removeable">
-									<label class="btn btn-primary" ng-model="currentEmailModuleData.state" uib-btn-radio="1" >active</label>
-									<label class="btn btn-primary" ng-model="currentEmailModuleData.state" uib-btn-radio="2" >inActive</label>
-									<label class="btn btn-primary" ng-model="currentEmailModuleData.state" uib-btn-radio="0" >deleted</label>
-								</div>
-								<div class="btn-group" ng-hide="currentEmailModule.removeable">
-									<label class="btn btn-primary disabled" popover-animation="true" popover-title="Why is this not working?" uib-popover="This option has been disabled by the admin for this module.">active</label>
-									<label class="btn btn-primary disabled">inActive</label>
-									<label class="btn btn-primary disabled">deleted</label>
-								</div>
-							</div>
-						</div>
 					</div>
-				</div>
-				<div class=".hr-sm">
-					<hr>
-				</div>
-			
-			<div class="col-sm-4 col-sm-offset-5 col-md-7 col-md-offset-5 main">
-				<div class="row">
-					<div class="col-lg-12">
-						<wysiwyg-editor>
-							<wysiwyg-edit content="your_variable" api="api"></wysiwyg-edit>
-						</wysiwyg-editor>
-					</div>
-				</div>
-				<div class="loader" ng-show="loading">Loading...</div>
-			</div>
-		</div>
+				</md-tab-body>
+			</md-tab>
+		</md-tabs>
+	</div>	
 	
+	<div layout="row" class="" flex>
+		<div flex>	
+			<wysiwyg-editor>
+				<wysiwyg-edit content="your_variable" api="api"></wysiwyg-edit>
+			</wysiwyg-editor>	
+		</div>
+		<div class="loader" ng-show="loading">Loading...</div>
+	</div>
 </div>
 

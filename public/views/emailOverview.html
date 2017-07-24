@@ -1,7 +1,72 @@
-<div class="" data-ng-controller="EmailOverviewController">
+<div class="" data-ng-controller="EmailOverviewController" flex="100">
+	<md-toolbar class="md-table-toolbar md-default">
+    	<div class="md-toolbar-tools">
+      	<span>Emails <span ng-if="loadingEntites||loadingEmails" class="glyphicon glyphicon-refresh spinning"></span</span>
+    	</div>
+  	</md-toolbar>  
+	<md-list data-ng-show="errors">
+    <md-list-item class="md-2-line md-warn" ng-repeat="error in errorMsgs">
+      <md-icon>error</md-icon>
+      <div class="md-list-item-text md-warn">
+        <h3> {{ error.param }} </h3>
+        <p> {{ error.msg.code }} {{ error.msg.msg }} </p>
+      </div>
+    </md-list-item>
+	</md-list>
+
+	<md-content>
+      	<md-list flex>
+        	<md-subheader class="md-no-sticky">3 line item (with hover)</md-subheader>
+        	<md-list-item class="md-3-line" ng-click="null" ng-repeat="newsletter in newsletters track by newsletter._id">
+				<div class="md-list-item-text"> {{newsletter.name}} <span class="badge">{{noOfEmailsPerEntity[newsletter._id]}}</span>
+				</div>
+				<md-button ng-href="/{{company}}/emaileditor/email/create/{{newsletter._id}}" class="md-raised"><md-icon class="material-icons md-light md-48">add</md-icon> new</md-button>
+
+				<md-table-container>
+					<table md-table md-row-select="false" multiple ng-model="selected" md-progress="promise">
+						<thead md-head md-order="query.order" md-on-reorder="getDesserts">
+						<tr md-row>
+							<th md-column ><span> name</span></th>
+							<th md-column>status</th>
+							<th md-column>created by</th>
+							<th md-column>created at</th>
+							<th md-column>updated by</th>
+							<th md-column>updated at</th>
+							<th md-column>edit</th>
+							<th md-column>delete</th>
+						</tr>
+						</thead>
+						<tbody md-body>
+							<tr md-row md-select="dessert" md-select-id="name" md-auto-select ng-repeat="email in emails[newsletter._id]">
+								<td md-cell>{{email.name}}</td>
+								<td md-cell>{{email.status}}</td>
+								<td md-cell>{{email.createdBy}}</td>
+								<td md-cell>{{email.createdAt | date:'dd.MM.yyyy HH:mm'}}</td>
+								<td md-cell>{{email.updatedBy}}</td>
+								<td md-cell>{{email.updatedAt | date:'dd.MM.yyyy HH:mm'}}</td>
+								<td md-cell>
+								<md-button class="md-icon-button" aria-label="Edit" ng-href="/{{company}}/emaileditor/newsletter/edit/{{newsletter._id}}">
+									<md-icon class="material-icons md-light md-48">edit</md-icon>
+								</md-button>
+								</td>
+								<td md-cell>
+								<md-button class="md-icon-button" aria-label="Delete" ng-click="open($event, newsletter)">
+									<md-icon class="material-icons md-light md-48">delete_forever</md-icon>
+								</md-button>
+								</td> 
+							</tr>
+						</tbody>
+					</table>
+				
+					<md-progress-linear data-ng-if="loading" md-mode="indeterminate"></md-progress-linear>
+				</md-table-container>
+			</md-list-item>
+		</md-list>
+	</md-content>
+
 	<div class="row">
 		<div class="col-sm-12 col-md-12">
-			<h3>Emails <span ng-if="loadingEntites||loadingEmails" class="glyphicon glyphicon-refresh spinning"></span></h3>
+			
 		 	<div class="panel panel-default" ng-repeat="newsletter in newsletters track by newsletter._id">
 			  	<div class="panel-heading">
 			        <a class="dark" href="#" ng-click="clickEntity(newsletter._id); newsletter.open = !newsletter.open">{{newsletter.name}}</a> <span class="badge">{{noOfEmailsPerEntity[newsletter._id]}}</span>

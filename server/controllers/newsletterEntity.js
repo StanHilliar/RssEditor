@@ -8,7 +8,8 @@ var NewsletterEntity    = mongoose.model('NewsletterEntity');
 var emailModules        = require('./emailModule')();
 var async               = require('async');
 var config              = require('meanio').loadConfig();
-var _                   = require('lodash');
+// var _                   = require('lodash');
+var _                   = require('underscore');
 
 module.exports = function(circles) {
 

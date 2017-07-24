@@ -3,17 +3,16 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-  Email = mongoose.model('Email'),
-  NewsletterEntity = mongoose.model('NewsletterEntity'),
-  async = require('async'),
-  config = require('meanio').loadConfig(),
-  crypto = require('crypto'),
-  _ = require('lodash'),
-  jwt = require('jsonwebtoken'); //https://npmjs.org/package/node-jsonwebtoken
-  var shortid = require('shortid');
-  var parse5 = require('parse5');
-
+var mongoose            = require('mongoose');
+var Email               = mongoose.model('Email');
+var NewsletterEntity    = mongoose.model('NewsletterEntity');
+var async               = require('async');
+var config              = require('meanio').loadConfig();
+var crypto              = require('crypto');
+var _                   = require('lodash');
+var jwt                 = require('jsonwebtoken'); //https://npmjs.org/package/node-jsonwebtoken
+var shortid             = require('shortid');
+var parse5              = require('parse5');
 
 function _getEmailById(id, cb)
 {
@@ -364,6 +363,26 @@ module.exports = function(circles) {
         {
             Email.find
             (
+                {company: req.query.company},
+                'name company createdAt createdBy updatedAt updatedBy segment scheduledDate newsletterEntity status' 
+            ).lean()
+            // .sort({'updatedAt': -1})
+            // .limit(100)
+            .exec(
+            function(getEmailsErr, email) 
+            {
+                if(getEmailsErr)
+                {
+                    return res.status(400).send(getEmailsErr);
+                }
+                else
+                {
+                    res.jsonp(email);  
+                }
+            });
+            /*
+            Email.find
+            (
                 {},
                 'name company createdAt createdBy updatedAt updatedBy segment scheduledDate newsletterEntity status' 
             ).lean()
@@ -381,7 +400,6 @@ module.exports = function(circles) {
                     if(circles.hasCompanyCircleBoolean(req, 'Company_Admin'))
                     {
                         res.jsonp(email);
-                        // res.jsonp(newsletterEntities);
                     }
                     else
                     {
@@ -429,6 +447,7 @@ module.exports = function(circles) {
                     }
                 }
             });
+            */
         }     
     };
 }

@@ -2,12 +2,14 @@
 
 /* jshint -W098 */
 angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scope', '$stateParams','$compile', '$interpolate', '$sce', '$location', 'Global', 'NewsletterEntity', 'Email', 'MeanUser',
-  function($scope,$stateParams, $compile, $interpolate, $sce, $location, Global, NewsletterEntity, Email, MeanUser) {
+  function($scope, $stateParams, $compile, $interpolate, $sce, $location, Global, NewsletterEntity, Email, MeanUser) {
     $scope.global = Global;
     $scope.package = 
     {
       name: 'emaileditor'
     };
+
+    $scope.company = $stateParams.company;
 
     // $scope.your_variable = '';
     // $scope.rssContent = 'omg';
@@ -108,7 +110,7 @@ angular.module('mean.emaileditor').controller('EmailOverviewController', ['$scop
     $scope.go = function ( path ) 
     {
       //console.log(path);
-      $location.path('/emaileditor/email/create/'+path );
+      $location.path('/'+$stateParams.company+'/emaileditor/email/create/'+path );
     };
 
     $scope.listEntities();
