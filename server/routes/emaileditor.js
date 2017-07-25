@@ -43,15 +43,15 @@ module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circl
   app.route('/api/emaileditor/checkadvertisment/:url').get(helper.isAdvertismentBooked);  
 
 
-  app.route('/api/emaileditor/emailmodule').post(emailModules.create);
-  app.route('/api/emaileditor/emailmodule/:moduleId').post(emailModules.update);
-  app.route('/api/emaileditor/emailmodule/:moduleId').get(emailModules.get);
-  app.route('/api/emaileditor/emailmodule/:moduleId').delete(emailModules.destroy);
+  app.post('/api/emaileditor/emailmodule',              circles.controller.hasCompany(), emailModules.create);
+  app.post('/api/emaileditor/emailmodule/:moduleId',    circles.controller.hasCompany(), emailModules.update);
+  app.get('/api/emaileditor/emailmodule/:moduleId',     circles.controller.hasCompany(), emailModules.get);
+  app.delete('/api/emaileditor/emailmodule/:moduleId',  circles.controller.hasCompany(), emailModules.destroy);
             //api/emaileditor/emailmodule/567ebc412f8676f948c8fb65
-  app.route('/api/emaileditor/emailmodule').get(emailModules.list);  
+  app.get('/api/emaileditor/emailmodule', circles.controller.hasCompany(), emailModules.list);  
 
-  app.route('/api/emaileditor/email').post(email.create);
-  app.route('/api/emaileditor/email/:emailId').post(email.update);
+  app.post('/api/emaileditor/email',          circles.controller.hasCompany(),email.create);
+  app.post('/api/emaileditor/email/:emailId', circles.controller.hasCompany(), email.update);
   app.route('/api/emaileditor/email/:emailId').get(email.get);
   app.route('/api/emaileditor/email/:emailId').delete(email.destroy);
             //api/emaileditor/email/567ebc412f8676f948c8fb65

@@ -189,13 +189,13 @@
 						<br>
 						<fieldset ng-disabled="storedEmail.status=='active'">
 							<div layout-gt-xs="row">
-								<md-input-container class="md-block" flex-gt-xs data-ng-if="!var.inUse">
+								<md-input-container class="md-block" flex-gt-xs>
 									<label for="EmailNamefield" class="dark">internal name</label>		     
 									<input type="text" class="form-control" placeholder="" ng-model="EmailName" name="EmailNamefield">   		
 								</md-input-container>
 							</div>
 							<div layout-gt-xs="row">
-								<md-input-container class="md-block" flex-gt-xs data-ng-if="!var.inUse">
+								<md-input-container class="md-block" flex-gt-xs>
 									<label for="EmailSegment" class="dark">segment <!--{{segment}}--></label>
 									<md-select ng-model="segment" name="EmailSegment">
 										<md-option ng-repeat="segment in entity.segments" value="{{segment.id}}">
@@ -205,13 +205,13 @@
 								</md-input-container>
 							</div>
 							<div layout-gt-xs="row">
-								<md-input-container class="md-block" flex-gt-xs data-ng-if="!var.inUse">
+								<md-input-container class="md-block" flex-gt-xs>
 									<label for="EmailSubjectfield" class="dark">email subject</label>
 									<input type="text" class="form-control" placeholder="Subject" ng-model="EmailSubject" name="EmailSubjectfield">   						
 								</md-input-container>
 							</div>
 							<div layout-gt-xs="row">
-								<md-input-container class="md-block" flex-gt-xs data-ng-if="!var.inUse">
+								<md-input-container class="md-block" flex-gt-xs>
 									<label for="hiddenPreviewText" class="dark">hidden preview text</label>
 									<textarea type="text" class="form-control" placeholder="enter your hidden preview text here" ng-model="hiddenPreviewText" id="hiddenPreviewText" name="EmailSubject"></textarea>
 								</md-input-container>
@@ -228,10 +228,11 @@
 										<span class="input-group-btn">
 											<button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
 										</span>
+										<md-datepicker ng-model="dt" md-placeholder="Enter date" md-open-on-focus md-min-date="minDate" md-max-date="maxDate"></md-datepicker>
 									</div>
 									<span style="padding-top: 5px;">
-												<button type="button" class="btn btn-sm btn-default" style="margin-top: 5px;" ng-click="setinXDays(0)">today</button>
-												<button type="button" class="btn btn-sm btn-default" style="margin-top: 5px;" ng-click="setinXDays(1)">tomorrow</button>
+										<md-button class="md-accent" ng-click="setinXDays(0)">today</md-button>
+										<md-button class="md-accent" ng-click="setinXDays(1)">tomorrow</md-button>
 									</span>
 								</div><!-- /.col-lg-6 -->
 								<div class="col-lg-6">
@@ -241,38 +242,41 @@
 											<button type="button" class="btn btn-default" ng-click=""><i class="glyphicon glyphicon-time"></i></button>
 										</span>
 									</div>
-									<span>
-										<button type="button" class="btn btn-sm btn-default" style="margin-top: 5px;" ng-click="setTimeinXMinutes(10)">in 10 min</button> <button type="button" class="btn btn-sm btn-default" style="margin-top: 5px;" ng-click="setTimeinXMinutes(30)">in 30 min</button>
+									<span style="padding-top: 5px;">
+										<md-button class="md-accent" ng-click="setTimeinXMinutes(10)">in 10 min</md-button>
+										<md-button class="md-accent" ng-click="setTimeinXMinutes(30)">in 30 min</md-button>
 									</span>
 								</div><!-- /.col-lg-6 -->
 							</div><!-- /.row -->
 						</fieldset>
-						<div class="row" data-ng-show="storedEmail.eloquaEmail">
-							<div class="col-md-8">
+						<div layout-gt-xs="row" data-ng-show="storedEmail.eloquaEmail">
+							<md-input-container class="md-block" flex-gt-xs>
 								<label for="testEmailAddresses" class="dark">email addresses</label>
 								<input type="text" class="form-control" placeholder="emails" ng-model="testEmailAddresses" id="testEmailAddresses" name="testEmailAddresses">
-							</div>
-							<div class="col-md-4">	
+							</md-input-container>
+							<div flex>	
 								<br/>
-								<button type="button" data-ng-hide="testSendingInProgress" class="btn btn-primary" ng-click="sendTestEmail()">send Test</button>
-
-								<button type="button" data-ng-show="testSendingInProgress" class="btn btn-primary">
-									<span class="glyphicon glyphicon-refresh spinning"></span> sending    
-								</button>
-
+								<md-button data-ng-hide="testSendingInProgress" class="md-raised" ng-click="sendTestEmail()"><md-icon class="material-icons md-light md-48">send</md-icon> send Test</md-button>
+						
+								<md-button data-ng-show="testSendingInProgress" class="md-raised">sending</md-button>
 							</div>
+						</div>
+						<div class="row" data-ng-show="testSendingInProgress">
+							<md-progress-linear md-mode="query"></md-progress-linear>
 						</div>
 						<div class="row">
 							<div class="col-md-12">	
 								<br/>
 								<!--elqEmail: {{storedEmail.eloquaEmail}}<br>
 								eloquaCampaign: {{storedEmail.eloquaCampaign}}-->
-								<button type="button" data-ng-show="storedEmail.status =='draft' && storedEmail.eloquaEmail && !scheduleInProgress" class="btn btn-primary" ng-click="scheduleEmail()">schedule</button>
+								<button type="button" data-ng-show="" class="btn btn-primary" ng-click="scheduleEmail()">schedule</button>
+								<md-button data-ng-show="storedEmail.status =='draft' && storedEmail.eloquaEmail && !scheduleInProgress" class="md-raised md-primary" ng-click="scheduleEmail()"><md-icon class="material-icons md-light md-48">watch_later</md-icon> schedule</md-button>
 
-								<button type="button" data-ng-show="storedEmail.status=='draft' && storedEmail.eloquaEmail && !scheduleInProgress" class="btn btn-primary" ng-click="sendEmailRightNow()">send right now</button>
+								<md-button data-ng-show="storedEmail.status=='draft' && storedEmail.eloquaEmail && !scheduleInProgress" class="md-primary" ng-click="sendEmailRightNow()"><md-icon class="material-icons md-light md-48">send</md-icon> send right now</md-button>
+						
 
-								<button type="button" data-ng-show="storedEmail.status=='active' && storedEmail.eloquaEmail && !scheduleInProgress"  class="btn btn-primary" ng-click="unscheduleEmail()">unschedule</button>
-
+								<md-button data-ng-show="storedEmail.status=='active' && storedEmail.eloquaEmail && !scheduleInProgres" class="md-warn" ng-click="unscheduleEmail()"><md-icon class="material-icons md-light md-48">alarm_off</md-icon> unschedule</md-button>
+					
 								<button type="button" data-ng-show="scheduleInProgress" class="btn btn-primary">
 									<span class="glyphicon glyphicon-refresh spinning"></span> schedule    
 								</button>

@@ -80,11 +80,11 @@
 			<md-input-container class="md-block" flex-gt-xs>
 				<label for="bounceBackAddress">bounceback address <span ng-if="bouncebackAddresses.loading" class="glyphicon glyphicon-refresh spinning"></span></label>
 				<md-select ng-model="entity.bounceBackAddress" name="bounceBackAddress">
-					<md-option ng-repeat="bounceback in bouncebackAddresses.data" value="{{bounceback.id}}">
-						{{bounceback.name}}
+					<md-option ng-repeat="bounceback in bouncebackAddresses.data" value="{{bounceback}}">
+						{{bounceback}}
 					</md-option>
 				</md-select>
-				<!--{{availableBouncebackAddresses}}-->
+				{{bouncebackAddresses.data}}
 			</md-input-container>
 		</div>
 

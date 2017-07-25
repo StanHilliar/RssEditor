@@ -103,25 +103,25 @@ module.exports = function(circles) {
                 return res.status(400).send(errors);
             }
 
-            _checkNewsletterEntityForCircles(circles, req, req.body.newsletterEntity, function(checkAccessErr, hasAccess)
-            {
-                console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
-                if(checkAccessErr != null) 
-                {
-                    return res.status(400).send(checkAccessErr);
-                }
-                else
-                {
-                    if(!hasAccess)
-                    {
-                        return res.status(400).send([
-                        {
-                            msg: 'user doesnt has access to this resource',
-                            param: 'create email'
-                        }]);
-                    }
-                    else
-                    {
+            // _checkNewsletterEntityForCircles(circles, req, req.body.newsletterEntity, function(checkAccessErr, hasAccess)
+            // {
+                // console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
+                // if(checkAccessErr != null) 
+                // {
+                //     return res.status(400).send(checkAccessErr);
+                // }
+                // else
+                // {
+                //     if(!hasAccess)
+                //     {
+                //         return res.status(400).send([
+                //         {
+                //             msg: 'user doesnt has access to this resource',
+                //             param: 'create email'
+                //         }]);
+                //     }
+                //     else
+                //     {
                         email.createdBy = req.user.username;
                         email.updatedBy = req.user.username;
 
@@ -169,9 +169,9 @@ module.exports = function(circles) {
                                 return res.jsonp(resEmailModule);
                             }
                         });
-                    }
-                }
-            });
+                //     }
+                // }
+            // });
         },
       
 
@@ -198,29 +198,29 @@ module.exports = function(circles) {
                 }    
                 else
                 {
-                    _checkNewsletterEntityForCircles(circles, req, email.newsletterEntity, function(checkAccessErr, hasAccess)
-                    {
-                        console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
-                        if(checkAccessErr != null) 
-                        {
-                            return res.status(400).send(checkAccessErr);
-                        }
-                        else
-                        {
-                            if(!hasAccess)
-                            {
-                                return res.status(400).send([
-                                {
-                                    msg: 'user doesnt has access to this resource',
-                                    param: 'get email'
-                                }]);
-                            }
-                            else
-                            {
+                    // _checkNewsletterEntityForCircles(circles, req, email.newsletterEntity, function(checkAccessErr, hasAccess)
+                    // {
+                    //     console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
+                    //     if(checkAccessErr != null) 
+                    //     {
+                    //         return res.status(400).send(checkAccessErr);
+                    //     }
+                    //     else
+                    //     {
+                    //         if(!hasAccess)
+                    //         {
+                    //             return res.status(400).send([
+                    //             {
+                    //                 msg: 'user doesnt has access to this resource',
+                    //                 param: 'get email'
+                    //             }]);
+                    //         }
+                    //         else
+                    //         {
                                 res.jsonp([email]);
-                            }
-                        }
-                    });
+                    //         }
+                    //     }
+                    // });
                 }
             });
         },
