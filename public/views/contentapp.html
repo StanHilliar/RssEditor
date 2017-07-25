@@ -1,0 +1,64 @@
+<div class="" data-ng-controller="ContentAppController" flex="100">
+	<md-content class="md-padding" layout-xs="column" layout="row">
+        <div flex layout="column">
+            <md-card md-theme-watch>
+                <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">Configuration</span>
+                </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                <div  layout="row">
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <label>Module</label>
+                        <md-select ng-model="xxxx">
+                            <md-option ng-repeat="module in modules" value="{{module._id}}">
+                                {{module.name}}
+                            </md-option>
+                        </md-select>
+                    </md-input-container>
+                    <div>
+                    <md-button ng-click="" class="md-raised">Edit</md-button>
+                    <md-button ng-click="createModule()" class="md-raised">Create new</md-button>
+                    </div>
+                </div>
+                <div>
+                    <h4>Filter</h4>
+                    <div layout="row">
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Field</label>
+                            <md-select ng-model="fieldsXXXX">
+                                <md-option ng-repeat="field in fields" value="{{field._id}}">
+                                    {{field.name}}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Comparison Type</label>
+                            <md-select ng-model="comperatorXXXX">
+                                <md-option ng-repeat="compare in comperator" value="{{compare._id}}">
+                                    {{compare.name}}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Value</label>
+                            <input type="text" ng-model="comparisonValue">
+                        </md-input-container>
+                    </div>
+                    <div>
+                        <md-switch ng-model="filterEnabled" class="md-primary" aria-label="Switch 1">
+                            filter is enabled
+                        </md-switch>
+                    </div>
+
+                </div>
+                </md-card-content>
+                <md-card-actions layout="row" layout-align="end center">
+                <md-button>cancel</md-button>
+                <md-button class="md-raised md-primary">save</md-button>
+                </md-card-actions>
+            </md-card>
+        </div>
+	</md-content>
+</div>

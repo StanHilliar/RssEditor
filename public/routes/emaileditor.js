@@ -74,5 +74,11 @@ angular.module('mean.emaileditor').config(['$stateProvider',
       url: '/:company/emaileditor/module/edit/:newsletterid',
       templateUrl: 'emaileditor/views/emailmodule.html'
     });
+
+    $stateProvider.state('content_app_ediot', 
+    {
+      url: '/:company/emaileditor/contentapp/edit/:newsletterid',
+      templateUrl: 'emaileditor/views/contentapp.html'
+    });
   }
 ]);
