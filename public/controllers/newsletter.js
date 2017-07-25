@@ -315,7 +315,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
         defaultValueIdentifier: 'replyToName',
         init: function()
         {
-          if($scope.entity && (!$scope.entity.senderName  || $scope.entity.senderName .trim() == ''))
+          if($scope.entity && (!$scope.entity.senderName  || $scope.entity.senderName.trim() == ''))
           {
             $scope.entity.senderName = $scope.senderName.default;
           }
