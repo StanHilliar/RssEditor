@@ -87,6 +87,7 @@
 				var isEditMode = true;
 
 				var isDNDInit = false;
+				var isSortableInit = false;
 
 
 				/*var scriptTag = "<script type='text/javascript' src='https://code.jquery.com/jquery-1.11.3.min.js'><";
@@ -376,7 +377,7 @@
 								scope.api.scope.onRemoveModuleFromEmail(evt.item.getAttribute('id'), evt.oldIndex);
 							},
 						});
-
+				
 						for (var i = 0; i < elInner.children.length; i++)
 						{
 							var childrenWithSortable = angular.element(elInner.children[i]).find('.sortable1');

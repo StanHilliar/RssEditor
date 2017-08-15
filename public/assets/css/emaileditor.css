@@ -128,7 +128,7 @@
 
 .trashBin 
 {
-    border: 3px dashed #FFABAB;
+    border: 3px dashed #FFB74D;
     min-height: 80px;
     background: repeating-linear-gradient( -45deg, #ddd, #ddd 10px, #eee 10px, #eee 20px );
 }
@@ -147,4 +147,19 @@
 .trashBin > div > * 
 { 
   display: none; 
+}
+
+md-input-container .md-errors-spacer {
+  min-height: 0;
+}
+
+.emailModule 
+{
+  min-height: 50px;
+  margin: 5px;
+}
+
+.emailModule:hover
+{
+  cursor: move;
 }

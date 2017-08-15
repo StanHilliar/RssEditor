@@ -155,7 +155,8 @@ module.exports = function(circles) {
         {
             NewsletterEntity.findOne(
             {
-                _id: req.params.entityId
+                _id: req.params.entityId,
+                company: req.query.company
             }).exec(function(err, newsletterEntity) 
             {
                 if (err) 
@@ -365,7 +366,7 @@ module.exports = function(circles) {
             console.log(req.params.company);
           
             NewsletterEntity.find(
-                {},
+                { company: req.query.company },
                 'name createdBy createdAt updatedBy updatedAt circles'
             )
             .lean()

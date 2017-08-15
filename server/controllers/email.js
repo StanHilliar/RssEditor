@@ -235,25 +235,25 @@ module.exports = function(circles) {
                 _id: req.params.emailId
             }).exec(function(err, _email) 
             {   
-                _checkNewsletterEntityForCircles(circles, req, _email.newsletterEntity, function(checkAccessErr, hasAccess)
-                {
-                    console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
-                    if(checkAccessErr != null) 
-                    {
-                        return res.status(400).send(checkAccessErr);
-                    }
-                    else
-                    {
-                        if(!hasAccess)
-                        {
-                            return res.status(400).send([
-                            {
-                                msg: 'user doesnt has access to this resource',
-                                param: 'delete email'
-                            }]);
-                        }
-                        else
-                        {
+                // _checkNewsletterEntityForCircles(circles, req, _email.newsletterEntity, function(checkAccessErr, hasAccess)
+                // {
+                //     console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
+                //     if(checkAccessErr != null) 
+                //     {
+                //         return res.status(400).send(checkAccessErr);
+                //     }
+                //     else
+                //     {
+                //         if(!hasAccess)
+                //         {
+                //             return res.status(400).send([
+                //             {
+                //                 msg: 'user doesnt has access to this resource',
+                //                 param: 'delete email'
+                //             }]);
+                //         }
+                //         else
+                //         {
                             _email.remove(function(saveErr)
                             {
                                 if (saveErr) 
@@ -268,9 +268,9 @@ module.exports = function(circles) {
                                     res.jsonp(_email);
                                 }
                             });
-                        }
-                    }
-                });
+                //         }
+                //     }
+                // });
             });
         },
         getEmailById: function(emailId, cb)
@@ -311,25 +311,25 @@ module.exports = function(circles) {
                 {
                     if(email != null)
                     {
-                        _checkNewsletterEntityForCircles(circles, req, email.newsletterEntity, function(checkAccessErr, hasAccess)
-                        {
-                            console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
-                            if(checkAccessErr != null) 
-                            {
-                                return res.status(400).send(checkAccessErr);
-                            }
-                            else
-                            {
-                                if(!hasAccess)
-                                {
-                                    return res.status(400).send([
-                                    {
-                                        msg: 'user doesnt has access to this resource',
-                                        param: 'update email'
-                                    }]);
-                                }
-                                else
-                                {
+                        // _checkNewsletterEntityForCircles(circles, req, email.newsletterEntity, function(checkAccessErr, hasAccess)
+                        // {
+                        //     console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
+                        //     if(checkAccessErr != null) 
+                        //     {
+                        //         return res.status(400).send(checkAccessErr);
+                        //     }
+                        //     else
+                        //     {
+                        //         if(!hasAccess)
+                        //         {
+                        //             return res.status(400).send([
+                        //             {
+                        //                 msg: 'user doesnt has access to this resource',
+                        //                 param: 'update email'
+                        //             }]);
+                        //         }
+                        //         else
+                        //         {
                                     email = _.extend(email, req.body);
                                     console.log('update email cb');
                                 
@@ -344,9 +344,9 @@ module.exports = function(circles) {
                                         
                                         res.jsonp(email);
                                     });
-                                }
-                            }
-                        });
+                        //         }
+                        //     }
+                        // });
                     }
                     else
                     {

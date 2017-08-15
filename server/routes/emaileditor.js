@@ -18,7 +18,7 @@ module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circl
   var emailTemplates      = require('../controllers/emailTemplate')();
   var newsletterEntities  = require('../controllers/newsletterEntity')(circles.controller);
   var emailModules        = require('../controllers/emailModule')(circles.controller);
-  var eloqua              = require('../controllers/eloqua')(amazingEloqua);
+  var eloqua              = require('../controllers/eloqua')(amazingEloqua, circles);
   var email               = require('../controllers/email')(circles.controller);
   var helper              = require('../controllers/helper')();
   var feed                = require('../controllers/feed')();
@@ -77,7 +77,7 @@ module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circl
 
   });
 
-  app.route('/api/emaileditor/segments/:id').get(eloqua.getSegments);
+  app.get('/api/emaileditor/segments/:id', eloqua.getSegments);
   app.route('/api/emaileditor/emailgroups/').get(eloqua.getEmailgroups);
   app.route('/api/emaileditor/emailheaders/').get(eloqua.getEmailHeaders);
   app.route('/api/emaileditor/emailfooters/').get(eloqua.getEmailFooters);

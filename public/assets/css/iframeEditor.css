@@ -2,6 +2,15 @@
 {
 	/*padding-top:15px;*/
 	/*margin: 20px;*/
+	border: 1px solid #000;
+	min-height: 80px;
+	background: repeating-linear-gradient(
+	  -45deg,
+	  #ddd,
+	  #ddd 10px,
+	  #eee 10px,
+	  #eee 20px
+	);
 }
 
 #modulesContainer:empty

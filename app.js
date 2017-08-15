@@ -103,5 +103,7 @@ Emaileditor.register(function(app, auth, database, circles)
     });
     */
 
+  circles.registerCircle(config.emailEditor.identifier);
+
   return Emaileditor;
 });

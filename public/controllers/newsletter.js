@@ -1,8 +1,8 @@
 'use strict';
 
 /* jshint -W098 */
-angular.module('mean.emaileditor').controller('NewsletterEditController', ['$scope', '$q', '$stateParams','$compile', '$interpolate', '$sce', 'Global', 'NewsletterEntity', 'EmailModule', 'EloquaService', 'Circles', 'MeanUser', '$meanConfig',
-  function($scope, $q, $stateParams, $compile, $interpolate, $sce, Global, NewsletterEntity, EmailModule, EloquaService, Circles, MeanUser, $meanConfig) 
+angular.module('mean.emaileditor').controller('NewsletterEditController', ['$scope', '$q', '$stateParams','$compile', '$interpolate', '$sce', 'Global', 'NewsletterEntity', 'EmailModule', 'EloquaService', 'ProductSettings', 'Circles', 'MeanUser', '$meanConfig',
+  function($scope, $q, $stateParams, $compile, $interpolate, $sce, Global, NewsletterEntity, EmailModule, EloquaService, ProductSettings, Circles, MeanUser, $meanConfig) 
   {
     $scope.global = Global;
     $scope.package = 
@@ -41,21 +41,21 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     $scope.entity.preBody               = '';
     $scope.entity.postBody              = '';
     $scope.entity.footer                = '';
-    $scope.entity.eloquaFolder          = $meanConfig.eloqua.emailFolder;
-    $scope.entity.eloquaCampaignFolder  = $meanConfig.eloqua.campaignFolder;
-    $scope.entity.eloquaFooter          = $meanConfig.eloqua.footer;
-    $scope.entity.eloquaHeader          = $meanConfig.eloqua.header;
-    $scope.entity.bounceBackAddress     = $meanConfig.eloqua.bounceBackAddress;
-    $scope.entity.replyToName           = $meanConfig.eloqua.replyToName;
-    $scope.entity.replyToEmail          = $meanConfig.eloqua.replyToEmail;
+    $scope.entity.eloquaFolder          = ''; //$meanConfig.eloqua.emailFolder;
+    $scope.entity.eloquaCampaignFolder  = ''; //$meanConfig.eloqua.campaignFolder;
+    $scope.entity.eloquaFooter          = ''; //$meanConfig.eloqua.footer;
+    $scope.entity.eloquaHeader          = ''; //$meanConfig.eloqua.header;
+    $scope.entity.bounceBackAddress     = ''; //$meanConfig.eloqua.bounceBackAddress;
+    $scope.entity.replyToName           = ''; //$meanConfig.eloqua.replyToName;
+    $scope.entity.replyToEmail          = ''; //$meanConfig.eloqua.replyToEmail;
     $scope.entity.eloquaEmailGroup      = '';
     $scope.entity.segments              = [];
     $scope.entity.circles               = [];
     $scope.entity.modules               = [];
     $scope.entity.dropzoneModules       = [];
     $scope.template                     = '';
-    $scope.defaultReplyToName   = $meanConfig.eloqua.replyToName;
-    $scope.defaultReplyToEmail  = $meanConfig.eloqua.replyToEmail;
+    $scope.defaultReplyToName   = ''; //$meanConfig.eloqua.replyToName;
+    $scope.defaultReplyToEmail  = ''; //$meanConfig.eloqua.replyToEmail;
 
     $scope.newsletterExsists  = false;
     $scope.selectedSegments   = [];
@@ -147,6 +147,11 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
           {
             options.init();
           }
+          
+          if(options.then)
+          {
+            options.then();
+          }
         }); 
       }
     
@@ -178,7 +183,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
           {
             if($scope.entity.bounceBackAddress == undefined || $scope.entity.bounceBackAddress == null)
             {
-              $scope.entity.bounceBackAddress = $meanConfig.eloqua.bounceBackAddress;
+              $scope.entity.bounceBackAddress = '';//$meanConfig.eloqua.bounceBackAddress;
             } 
 
             if($scope.entity.replyToName == undefined || $scope.entity.replyToName == null)
@@ -219,7 +224,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
 
             // removeSelectedSegmentsfromAvailabeleSegments();
             // removeSelectedCirclesfromAvailabeleCircles();
-            removeSelectedDropzoneModulesfromAvailabeleDropzoneModules();
+            // removeSelectedDropzoneModulesfromAvailabeleDropzoneModules();
             $scope.loading.entity = false;
             entityQueryDeferred.resolve();
           }
@@ -235,111 +240,134 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
          entityQueryDeferred.resolve();
       }
 
-      console.log(EloquaService);
-
-      $scope.segments = setup(
+      ProductSettings.byProductName.get({company: $stateParams.company, product: 'EMAILEDITOR'}, function(productSettings)
       {
-        query:  EloquaService.segments().query,
-        queryOptions: {company: $stateParams.company, id: $meanConfig.eloqua.segmentFolder},
-        queryOptions: {company: $stateParams.company, id: $meanConfig.eloqua.segmentFolder},
-        // errorMsg:'error while loading the segments',
-        then: function()
+        console.log(productSettings);
+
+        $scope.entity.eloquaCampaignFolder  = productSettings.defaults.campaignFolder;
+        $scope.entity.eloquaFolder          = productSettings.defaults.emailFolder;
+        $scope.entity.replyToName           = productSettings.defaults.replyToName;
+        $scope.entity.replyToEmail          = productSettings.defaults.replyToEmail;
+        $scope.defaultReplyToName           = productSettings.defaults.replyToName;
+        $scope.defaultReplyToEmail          = productSettings.defaults.replyToEmail;
+
+        console.log(EloquaService);
+
+        $scope.segments = setup(
         {
-          // removeSelectedSegmentsfromAvailabeleSegments();
-          removeSelectedDropzoneModulesfromAvailabeleDropzoneModules();
-        }
-      });
-
-      promises.push($scope.segments.promise);
- 
-      $scope.emailGroups = setup(
-      {
-         query:  EloquaService.emailGroups().query,
-         queryOptions: {company: $stateParams.company},
-      });
-      promises.push($scope.emailGroups.promise);
-
-      $scope.emailEncoding = setup(
-      {
-         query:  EloquaService.eloquaEmailEncoding().query,
-         queryOptions: {company: $stateParams.company},
-      });
-      promises.push($scope.emailEncoding.promise);
-
-      $scope.emailHeader = setup(
-      {
-        query:  EloquaService.emailHeaders().query,
-        queryOptions: {company: $stateParams.company},
-      });
-      promises.push($scope.emailHeader.promise);
-
-     
-      $scope.emailFooter = setup(
-      {
-        query:  EloquaService.emailFooters().query,
-        queryOptions: {company: $stateParams.company},
-      });
-      promises.push($scope.emailFooter.promise);
-
-      $scope.emailConfig = setup(
-      {
-        query:  EloquaService.eloquaEmailConfig().query,
-        queryOptions: {company: $stateParams.company},
-      });
-      promises.push($scope.emailConfig.promise);
-
-      $scope.bouncebackAddresses = setupFacade(
-      {
-        parent: $scope.emailConfig,
-        identifier: 'bouncebackAddresses'
-      });
-      // promises.push($scope.bouncebackAddresses.promise);
-
-      $scope.fromAddress = setupFacade(
-      {
-        parent: $scope.emailConfig,
-        defaultValueIdentifier: 'fromAddress',
-        init: function()
-        {
-          if($scope.entity && (!$scope.entity.fromAddress || $scope.entity.fromAddress.trim() == ''))
+          query:  EloquaService.segments().query,
+          queryOptions: {company: $stateParams.company, id: productSettings.defaults.segmentFolder},
+          // queryOptions: {company: $stateParams.company, id: $meanConfig.eloqua.segmentFolder},
+          // errorMsg:'error while loading the segments',
+          then: function()
           {
-            $scope.entity.fromAddress = $scope.fromAddress.default;    
+            // removeSelectedSegmentsfromAvailabeleSegments();
+            // removeSelectedDropzoneModulesfromAvailabeleDropzoneModules();
           }
-        }
-      });
-      // promises.push($scope.fromAddress.promise);
+        });
+        promises.push($scope.segments.promise);
+      
 
-      $scope.senderName  = setupFacade(
-      {
-        parent: $scope.emailConfig,
-        defaultValueIdentifier: 'replyToName',
-        init: function()
+        $scope.emailGroups = setup(
         {
-          if($scope.entity && (!$scope.entity.senderName  || $scope.entity.senderName.trim() == ''))
+          query:  EloquaService.emailGroups().query,
+          queryOptions: {company: $stateParams.company},
+        });
+        promises.push($scope.emailGroups.promise);
+
+        $scope.emailEncoding = setup(
+        {
+          query:  EloquaService.eloquaEmailEncoding().query,
+          queryOptions: {company: $stateParams.company},
+        });
+        promises.push($scope.emailEncoding.promise);
+
+        $scope.emailHeader = setup(
+        {
+          query:  EloquaService.emailHeaders().query,
+          queryOptions: {company: $stateParams.company},
+        });
+        promises.push($scope.emailHeader.promise);
+
+      
+        $scope.emailFooter = setup(
+        {
+          query:  EloquaService.emailFooters().query,
+          queryOptions: {company: $stateParams.company},
+        });
+        promises.push($scope.emailFooter.promise);
+
+        $scope.emailConfig = setup(
+        {
+          query:  EloquaService.eloquaEmailConfig().query,
+          queryOptions: {company: $stateParams.company},
+        });
+        promises.push($scope.emailConfig.promise);
+
+        $scope.bouncebackAddresses = setupFacade(
+        {
+          parent: $scope.emailConfig,
+          identifier: 'bouncebackAddresses'
+        });
+
+        $scope.bouncebackAddresses.promise.then(function()
+        {
+          console.log('bounceback loaded');
+          console.log($scope.entity.bounceBackAddress);
+          console.log($scope.bouncebackAddresses.data);
+          if(!$scope.entity.bounceBackAddress || $scope.entity.bounceBackAddress=='')
+            {
+              $scope.entity.bounceBackAddress = $scope.bouncebackAddresses.data[0];
+            }
+        });
+        // promises.push($scope.bouncebackAddresses.promise);
+
+        $scope.fromAddress = setupFacade(
+        {
+          parent: $scope.emailConfig,
+          defaultValueIdentifier: 'fromAddress',
+          init: function()
           {
-            $scope.entity.senderName = $scope.senderName.default;
+            if($scope.entity && (!$scope.entity.fromAddress || $scope.entity.fromAddress.trim() == ''))
+            {
+              $scope.entity.fromAddress = $scope.fromAddress.default;    
+            }
           }
-        }
-      });
-      // promises.push($scope.fromAddress.promise);
+        });
+        // promises.push($scope.fromAddress.promise);
 
-      /*
-      $scope.loading.circles = true;
-      Circles.mineCompany({company: $stateParams.company}, function(acl) 
-      { 
-        $scope.availableSecurityCircles = acl.allowed;
-        removeSelectedCirclesfromAvailabeleCircles();
-        $scope.loading.circles = false;
-        mineCompanyDeferred.resolve();
-      });*/
-
-      $q.all(promises).then(function() 
-      {
-        console.log('all DONE!!!')
-        if(cb)
+        $scope.senderName  = setupFacade(
         {
-          return cb();
-        }
+          parent: $scope.emailConfig,
+          defaultValueIdentifier: 'replyToName',
+          init: function()
+          {
+            if($scope.entity && (!$scope.entity.senderName  || $scope.entity.senderName.trim() == ''))
+            {
+              $scope.entity.senderName = $scope.senderName.default;
+            }
+          }
+        });
+        // promises.push($scope.fromAddress.promise);
+
+        /*
+        $scope.loading.circles = true;
+        Circles.mineCompany({company: $stateParams.company}, function(acl) 
+        { 
+          $scope.availableSecurityCircles = acl.allowed;
+          removeSelectedCirclesfromAvailabeleCircles();
+          $scope.loading.circles = false;
+          mineCompanyDeferred.resolve();
+        });*/
+
+        $q.all(promises).then(function() 
+        {
+          console.log('all DONE!!!')
+          if(cb)
+          {
+            return cb();
+          }
+        });
       });
     }; // end load
 
@@ -553,29 +581,29 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
         $scope.entity.footer = $scope.template.substr(_currentPos);
       }
 
-      for( var i = 0; i < $scope.availableSEmailGroups.length; i++)
+      for( var i = 0; i < $scope.emailGroups.data.length; i++)
       {
-        if($scope.availableSEmailGroups[i].id == $scope.entity.eloquaEmailGroup)
+        if($scope.emailGroups.data[i].id == $scope.entity.eloquaEmailGroup)
         {
           if(!$scope.entity.setEloquaHeaderManually)
           {
-            $scope.entity.eloquaHeader = $scope.availableSEmailGroups[i].emailHeaderId;
+            $scope.entity.eloquaHeader = $scope.emailGroups.data[i].emailHeaderId;
           }
           if(!$scope.entity.setEloquaFooterManually)
           {
-            $scope.entity.eloquaFooter = $scope.availableSEmailGroups[i].emailFooterId;
+            $scope.entity.eloquaFooter = $scope.emailGroups.data[i].emailFooterId;
           }
         }
       }
 
-      var _dropzoneModules = [];
-      for(var i = 0; i < $scope.selectedDropzoneModules.length; i++)
-      {
-        _dropzoneModules.push($scope.selectedDropzoneModules[i]._id);
-      }
-      console.log(_dropzoneModules);
+      // var _dropzoneModules = [];
+      // for(var i = 0; i < $scope.selectedDropzoneModules.length; i++)
+      // {
+      //   _dropzoneModules.push($scope.selectedDropzoneModules[i]._id);
+      // }
+      // // console.log(_dropzoneModules);
       
-      $scope.entity.dropzoneModules = _dropzoneModules;
+      // $scope.entity.dropzoneModules = _dropzoneModules;
 
       for(var i = 0; i < $scope.entity.modules.length; i++)
       {
