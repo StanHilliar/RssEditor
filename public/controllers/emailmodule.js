@@ -165,30 +165,33 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
 
     $scope.addAd = function() 
     {
-       $scope.module.ads.push(
-        {
-          _id: '',
-          pos: '',
-          img: '',
-          link: ''
-        });
+      $scope.module.ads.push(
+      {
+        _id: '',
+        pos: '',
+        img: '',
+        link: ''
+      });
     };   
 
     $scope.clickCheckbox = function(index) 
     {
-        //console.log('clickCheckbox');
-        for(var i = 0; i < $scope.module.views.length; i++)
+      console.log('clickCheckbox('+index+')');
+
+      for(var i = 0; i < $scope.module.views.length; i++)
+      {
+        console.log('%s == %s %s',index, i, index == i);
+        if(i == index)
         {
-          if(i == index)
-          {
-            $scope.module.views[i].isDefault = true;
-          }
-          else
-          {
-            $scope.module.views[i].isDefault = false;
-          }
-          console.log($scope.module.views[i].isDefault);
+          // $scope.module.views[i].isDefault = true;
         }
+        else
+        {
+          $scope.module.views[i].isDefault = false;
+        }
+
+        console.log($scope.module.views[i].isDefault);
+      }
     };   
 
     $scope.removeAd = function(index) 

@@ -1,10 +1,11 @@
-<div class="" data-ng-controller="EmailModuleEditController" layout-padding  layout="column" flex="100">
-	<form name="userForm">
+<div class="" data-ng-controller="EmailModuleEditController"  layout="column" flex="100">
+
 		<md-toolbar class="md-table-toolbar md-default">
 			<div class="md-toolbar-tools">
-			<span>EmailModule</span>
+				<span>EmailModule</span>
 			</div>
 		</md-toolbar>  
+	<md-content layout-padding>
 		<md-list data-ng-show="errorMsgs || xmlErrorMsgs">
 			<md-list-item class="md-2-line md-warn" ng-repeat="error in errorMsgs">
 			<md-icon>error</md-icon>
@@ -35,14 +36,6 @@
 						{{type.name}}
 					</md-option>
 				</md-select>
-			
-			</md-input-container>
-		</div>
-
-		<div layout-gt-xs="row">
-			<md-input-container class="md-block" flex-gt-xs ng-if="module.type == '1' || module.type == '2'">
-				<label for="defaultURL">default URL</label>
-				<input type="text" class="form-control" placeholder="" ng-model="module.defaultURL" name="defaultURL">
 			</md-input-container>
 
 			<md-input-container class="md-block" flex-gt-xs>
@@ -52,6 +45,13 @@
 						{{noentries.name}}
 					</md-option>
 				</md-select>
+			</md-input-container>	
+		</div>
+
+		<div layout-gt-xs="row" ng-if="module.type == '1' || module.type == '2'">
+			<md-input-container class="md-block" flex-gt-xs>
+				<label for="defaultURL">default URL</label>
+				<input type="text" class="form-control" placeholder="" ng-model="module.defaultURL" name="defaultURL">
 			</md-input-container>
 		</div>
 
@@ -81,8 +81,13 @@
 			</div>
 		</div>
 		<div layout-gt-xs="row">
-
 			<h2>Views</h2>
+		</div>
+		
+		<div layout-gt-xs="row">
+			<md-button ng-click="addView()" class="md-raised md-accent">
+				<md-icon class="material-icons md-light md-48">add</md-icon>add View
+			</md-button>
 		</div>
 		<div layout-gt-xs="row" data-ng-repeat="view in module.views" flex-offset="5">
 		<div layout-gt-xs="column" flex>
@@ -95,9 +100,9 @@
 					<label for="view_name_{{$index}}" >name</label>
 					<input type="text" id="view_name_{{$index}}" name="view_name_{{$index}}" ng-model="view.name" class="form-control" >			
 				</div>
-				<div flex>		
-					
-					<md-checkbox name="defaultView" ng-model="view.isDefault" value="true" ng-click="clickCheckbox($index)">
+				<div flex>			
+					<!-- <md-checkbox name="defaultView" ng-model="view.isDefault" value="true" ng-click="clickCheckbox($index)"> -->
+					<md-checkbox name="defaultView" ng-model="view.isDefault" ng-click="clickCheckbox($index)">
 						default
 					</md-checkbox>
 				</div>
@@ -128,14 +133,12 @@
 				</div>
 			</md-card-content>
 			<md-card-actions layout="row" layout-align="end center">
-				<md-button ng-click="removeView($index)" class="md-raised"><md-icon class="material-icons md-light md-48">delete_forever</md-icon> remove</md-button>		
+				<md-button ng-click="removeView($index)" class="md-raised md-warn"><md-icon class="material-icons md-light md-48">delete_forever</md-icon> remove</md-button>		
 				<md-button ng-click="parse($index)" class="md-raised"><md-icon class="material-icons md-light md-48">gesture</md-icon> parse</md-button>
 			</md-card-actions>
 		</div>
 		</div>
-		<div layout-gt-xs="row">
-			<md-button ng-click="addView()" class="md-raised"><md-icon class="material-icons md-light md-48">add</md-icon>add View</md-button>
-		</div>
+		
 		<div layout-gt-xs="row">
 			<div flex>
 			after body
@@ -155,6 +158,11 @@
 		<div layout-gt-xs="row">
 			<h2>Ads</h2>
 		</div>
+		<div layout-gt-xs="row">	
+			<md-input-container class="md-block" flex-gt-xs>
+				<md-button ng-click="addAd()" class="md-raised md-accent"><md-icon class="material-icons md-light md-48">add</md-icon>add Ad</md-button>
+			</md-input-container>
+		</div>
 		<div layout-gt-xs="row" data-ng-repeat="ad in module.ads">
 			<md-input-container class="md-block" flex-gt-xs>
 			<h3>{{$index + 1}}</h3>
@@ -173,12 +181,6 @@
 			</md-input-container>
 			<md-input-container class="md-block" flex-gt-xs>
 				<md-button ng-click="removeAd($index)" class="md-raised"><md-icon class="material-icons md-light md-48">delete_forever</md-icon> remove</md-button>
-			</md-input-container>
-		
-		</div>
-		<div layout-gt-xs="row">	
-			<md-input-container class="md-block" flex-gt-xs>
-				<md-button ng-click="addAd()" class="md-raised"><md-icon class="material-icons md-light md-48">add</md-icon>add Ad</md-button>
 			</md-input-container>
 		</div>
 		<div layout-gt-xs="row" data-ng-repeat="view in module.adViews">
@@ -255,14 +257,12 @@
 	
 		<div layout-gt-xs="row">
 			<md-button ng-click="parseAll()" class="md-raised"><md-icon class="material-icons md-light md-48">gesture</md-icon> parse</md-button>
-			<md-button data-ng-if="!moduleExsists && !saveInProgress"  ng-click="save()" class="md-raised md-accent"><md-icon class="material-icons md-light md-48">save</md-icon> save</md-button>
-			<md-button data-ng-if="moduleExsists && !saveInProgress"  ng-click="save()" class="md-raised md-accent"><md-icon class="material-icons md-light md-48">save</md-icon> update</md-button>
-			<md-button data-ng-if="saveInProgress" class="md-raised md-accent">Loading... </md-button>
+			<md-button data-ng-if="!moduleExsists && !saveInProgress"  ng-click="save()" class="md-raised md-primary"><md-icon class="material-icons md-light md-48">save</md-icon> save</md-button>
+			<md-button data-ng-if="moduleExsists && !saveInProgress"  ng-click="save()" class="md-raised md-primary"><md-icon class="material-icons md-light md-48">save</md-icon> update</md-button>
+			<md-button data-ng-if="saveInProgress" class="md-raised md-primary">Loading... </md-button>
 		</div>
 		<div layout-gt-xs="row">
 			<md-progress-linear data-ng-if="saveInProgress"  md-mode="indeterminate"></md-progress-linear>
 		</div>
-
-	</form>
-
+	</md-content>
 </div>

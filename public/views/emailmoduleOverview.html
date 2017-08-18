@@ -22,12 +22,10 @@
         <th md-column>createdAt</th>
         <th md-column>updated by</th>
         <th md-column>updated at</th>
-        <th md-column>status</th>
+        <!-- <th md-column>status</th> -->
         <th md-column>edit</th>
         <th md-column>clone</th>
         <th md-column>delete</th>
-     
-     
       </tr>
     </thead>
     <tbody md-body>
@@ -37,9 +35,9 @@
         <td md-cell>{{module.createdAt | date:'dd.MM.yyyy HH:mm'}}</td>
         <td md-cell>{{module.updatedBy}}</td>
         <td md-cell>{{module.updatedAt | date:'dd.MM.yyyy HH:mm'}}</td>
-        <td md-cell>{{module.currentStatus}}</td>
+        <!-- <td md-cell>{{module.currentStatus}}</td> -->
 		<td md-cell>
-			<md-button class="md-icon-button" aria-label="Edit" ng-href="/{{company}}/emaileditor/module/edit/{{module._id}}">
+			<md-button class="md-icon-button md-accent" aria-label="Edit" ng-href="/{{company}}/emaileditor/module/edit/{{module._id}}">
           <md-icon class="material-icons md-light md-48">edit</md-icon>
       </md-button>
 		</td>
@@ -49,14 +47,14 @@
       </md-button>
 		</td> 
 		<td md-cell>
-			<md-button class="md-icon-button" aria-label="Delete" ng-click="open($event, module)">
+			<md-button class="md-icon-button md-warn" aria-label="Delete" ng-click="open($event, module)">
       		<md-icon class="material-icons md-light md-48">delete_forever</md-icon>
       </md-button>
 		</td> 
       </tr>
     </tbody>
   </table>
-  <md-button ng-click="createModule()" class="md-raised"><md-icon class="material-icons md-light md-48">add</md-icon>Create Module</md-button>
+  <md-button ng-click="createModule()" class="md-raised md-accent"><md-icon class="material-icons md-light md-48">add</md-icon>Create Module</md-button>
 
   <md-progress-linear data-ng-if="loading" md-mode="indeterminate"></md-progress-linear>
 </md-table-container>

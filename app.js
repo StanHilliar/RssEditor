@@ -33,19 +33,20 @@ Emaileditor.register(function(app, auth, database, circles)
     roles: ['RSSEditor', 'RSSAdmin','authenticated'],
     menu: 'main'
   });*/
-  
 
    Emaileditor.menus.add({
     title: 'Emails',
     link: 'email_overview',
-    roles: ['authenticated'],
+    // roles: ['authenticated'],
+    roles: ['EMAILEDITOR'],
     menu: 'main'
    });  
 
    Emaileditor.menus.add({
     title: 'Entities',
     link: 'newsletter overview',
-    roles: ['authenticated'],
+    // roles: ['authenticated'],
+    roles: ['EMAILEDITOR'],
     weight: ['Company_Admin'],
     menu: 'main'
    });   
@@ -53,7 +54,8 @@ Emaileditor.register(function(app, auth, database, circles)
    Emaileditor.menus.add({
     title: 'Modules',
     link: 'emailmodule_overview',
-    roles: ['authenticated'],
+    // roles: ['authenticated'],
+    roles: ['EMAILEDITOR'],
     weight: ['Company_Admin'],
     menu: 'main'
   });

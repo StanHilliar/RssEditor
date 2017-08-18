@@ -16,7 +16,14 @@
 
 	<md-content>
 		<section ng-repeat="newsletter in newsletters track by newsletter._id">
-			<md-subheader class="" ng-click="clickEntity(newsletter._id); newsletter.open = !newsletter.open">{{newsletter.name}} #{{noOfEmailsPerEntity[newsletter._id]}} 	<md-button ng-href="/{{company}}/emaileditor/email/create/{{newsletter._id}}" class="md-raised"><md-icon class="material-icons md-light md-48">add</md-icon> new</md-button>
+			<md-subheader class="accordionHeader" ng-click="clickEntity(newsletter._id); newsletter.open = !newsletter.open" layout="row" flex>
+				<span flex="30">
+					<md-button ng-href="/{{company}}/emaileditor/email/create/{{newsletter._id}}" class="md-fab md-mini md-primary">
+						<md-tooltip md-direction="bottom">create new email for {{newsletter.name}}</md-tooltip>
+						<md-icon class="material-icons md-light md-48">add</md-icon>
+					</md-button></span>
+				<span flex="50">{{newsletter.name}} </span>
+				<span flex="10">#{{noOfEmailsPerEntity[newsletter._id]}} </span>	
 			</md-subheader>
 				
 		<!-- <md-toolbar class="md-accent" ng-click="clickEntity(newsletter._id); newsletter.open = !newsletter.open">
@@ -52,12 +59,12 @@
 							<td md-cell>{{email.updatedBy}}</td>
 							<td md-cell>{{email.updatedAt | date:'dd.MM.yyyy HH:mm'}}</td>
 							<td md-cell>
-								<md-button class="md-icon-button" aria-label="Edit" ng-href="/{{company}}/emaileditor/email/edit/{{newsletter._id}}/{{email._id}}" ng-hide="email.status=='active' && email.scheduledDate < now">
+								<md-button class="md-icon-button md-accent" aria-label="Edit" ng-href="/{{company}}/emaileditor/email/edit/{{newsletter._id}}/{{email._id}}" ng-hide="email.status=='active' && email.scheduledDate < now">
 									<md-icon class="material-icons md-light md-48">edit</md-icon>
 								</md-button>
 							</td>
 							<td md-cell>
-								<md-button class="md-icon-button" aria-label="Delete" ng-click="destroyEntity(newsletter._id, email._id)" ng-show="email.status=='draft'">
+								<md-button class="md-icon-button md-warn" aria-label="Delete" ng-click="destroyEntity(newsletter._id, email._id)" ng-show="email.status=='draft'">
 									<md-icon class="material-icons md-light md-48">delete_forever</md-icon>
 								</md-button>
 							</td> 
@@ -68,6 +75,7 @@
 				<md-progress-linear data-ng-if="loading" md-mode="indeterminate"></md-progress-linear>
 			</md-table-container>
 			</div>
+			<md-divider></md-divider>
 		</section>
 
 		

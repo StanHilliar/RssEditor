@@ -36,7 +36,7 @@
         <td md-cell>{{newsletter.updatedBy}}</td>
         <td md-cell>{{newsletter.updatedAt | date:'dd.MM.yyyy HH:mm'}}</td>
 		    <td md-cell>
-          <md-button class="md-icon-button" aria-label="Edit" ng-href="/{{company}}/emaileditor/newsletter/edit/{{newsletter._id}}">
+          <md-button class="md-icon-button md-accent" aria-label="Edit" ng-href="/{{company}}/emaileditor/newsletter/edit/{{newsletter._id}}">
             <md-icon class="material-icons md-light md-48">edit</md-icon>
           </md-button>
         </td>
@@ -46,7 +46,7 @@
           </md-button>
         </td> 
         <td md-cell>
-          <md-button class="md-icon-button" aria-label="Delete" ng-click="open($event, newsletter)">
+          <md-button class="md-icon-button md-warn" aria-label="Delete" ng-click="open($event, newsletter)">
             <md-icon class="material-icons md-light md-48">delete_forever</md-icon>
           </md-button>
         </td> 
@@ -58,7 +58,7 @@
       </tr>
     </tbody>
   </table>
-  <md-button ng-href="/{{company}}/emaileditor/newsletter/edit/" class="md-raised"><md-icon class="material-icons md-light md-48">add</md-icon>create new Entity</md-button>
+  <md-button ng-href="/{{company}}/emaileditor/newsletter/edit/" class="md-raised md-accent"><md-icon class="material-icons md-light md-48">add</md-icon>create new Entity</md-button>
 
   <md-progress-linear data-ng-if="loading" md-mode="indeterminate"></md-progress-linear>
 </md-table-container>

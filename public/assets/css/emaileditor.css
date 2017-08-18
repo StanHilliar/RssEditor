@@ -163,3 +163,8 @@ md-input-container .md-errors-spacer {
 {
   cursor: move;
 }
+
+.accordionHeader
+{
+  cursor: pointer;
+}

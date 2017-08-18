@@ -1,19 +1,16 @@
 'use strict';
 
-
-
 /* jshint -W098 */
 // The Package is past automatically as first parameter
 module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circles) 
 {
-
   // app.use(circles.controller.loadCircles);
   // app.use(circles.controller.userAcl);
   // app.use('/api/emaileditor/*', circles.controller.companyAcl);
 
-  var requiresAdmin = circles.controller.hasCircle('admin');
+  var requiresAdmin               = circles.controller.hasCircle('admin');
   var requiresCompanyAdminOrAdmin = circles.controller.hasOneOfTheseCircles(['Company_Admin', 'admin']);
-  var requiresLogin = circles.controller.hasCircle('authenticated');
+  var requiresLogin               = circles.controller.hasCircle('authenticated');
 
   var emailTemplates      = require('../controllers/emailTemplate')();
   var newsletterEntities  = require('../controllers/newsletterEntity')(circles.controller);
@@ -23,46 +20,34 @@ module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circl
   var helper              = require('../controllers/helper')();
   var feed                = require('../controllers/feed')();
 
-  app.get('/api/emaileditor/example/anyone', function(req, res, next) {
-    res.send('Anyone can access this');
-  }); 
+  app.post('/api/emaileditor/template/create',  circles.controller.hasCompany(), emailTemplates.create);
+  app.post('/api/emaileditor/template/update',  circles.controller.hasCompany(), emailTemplates.update);
+  app.get( '/api/emaileditor/template/get',     circles.controller.hasCompany(), emailTemplates.getEmailTemplateById);
+  app.get( '/api/emaileditor/template/all',     circles.controller.hasCompany(), emailTemplates.getAllEmailTemplates);
 
-  app.route('/api/emaileditor/template/create').post(emailTemplates.create);
-  app.route('/api/emaileditor/template/update').post(emailTemplates.update);
-  app.route('/api/emaileditor/template/get').get(emailTemplates.getEmailTemplateById);
-  app.route('/api/emaileditor/template/all').get(emailTemplates.getAllEmailTemplates);
+  app.post(  '/api/emaileditor/newsletterentity',               circles.controller.hasCompany(), newsletterEntities.create);
+  app.post(  '/api/emaileditor/newsletterentity/:entityId',     circles.controller.hasCompany(), newsletterEntities.update);
+  app.get(   '/api/emaileditor/newsletterentity/:entityId',     circles.controller.hasCompany(), newsletterEntities.get);
+  app.delete('/api/emaileditor/newsletterentity/:entityId',     circles.controller.hasCompany(), newsletterEntities.destroy);
+  app.get(   '/api/emaileditor/newsletterentity',               circles.controller.hasCompany(), newsletterEntities.list);  
+  app.get(   '/api/emaileditor/newsletterentityfull/:entityId', circles.controller.hasCompany(), newsletterEntities.getfull);
 
-  app.route('/api/emaileditor/newsletterentity').post(newsletterEntities.create);
-  app.route('/api/emaileditor/newsletterentity/:entityId').post(newsletterEntities.update);
-  app.route('/api/emaileditor/newsletterentity/:entityId').get(newsletterEntities.get);
-  app.route('/api/emaileditor/newsletterentity/:entityId').delete(newsletterEntities.destroy);
-  app.route('/api/emaileditor/newsletterentityfull/:entityId').get(newsletterEntities.getfull);
-            //api/emaileditor/newsletterentity/567ebc412f8676f948c8fb65
-  app.get('/api/emaileditor/newsletterentity', circles.controller.hasCompany(), newsletterEntities.list);  
+  app.get('/api/emaileditor/checkadvertisment/:url', helper.isAdvertismentBooked);  
 
-  app.route('/api/emaileditor/checkadvertisment/:url').get(helper.isAdvertismentBooked);  
-
-
-  app.post('/api/emaileditor/emailmodule',              circles.controller.hasCompany(), emailModules.create);
-  app.post('/api/emaileditor/emailmodule/:moduleId',    circles.controller.hasCompany(), emailModules.update);
-  app.get('/api/emaileditor/emailmodule/:moduleId',     circles.controller.hasCompany(), emailModules.get);
+  app.post(  '/api/emaileditor/emailmodule',            circles.controller.hasCompany(), emailModules.create);
+  app.post(  '/api/emaileditor/emailmodule/:moduleId',  circles.controller.hasCompany(), emailModules.update);
+  app.get(   '/api/emaileditor/emailmodule/:moduleId',  circles.controller.hasCompany(), emailModules.get);
   app.delete('/api/emaileditor/emailmodule/:moduleId',  circles.controller.hasCompany(), emailModules.destroy);
-            //api/emaileditor/emailmodule/567ebc412f8676f948c8fb65
-  app.get('/api/emaileditor/emailmodule', circles.controller.hasCompany(), emailModules.list);  
+  app.get(   '/api/emaileditor/emailmodule',            circles.controller.hasCompany(), emailModules.list);  
 
-  app.post('/api/emaileditor/email',          circles.controller.hasCompany(),email.create);
-  app.post('/api/emaileditor/email/:emailId', circles.controller.hasCompany(), email.update);
-  app.route('/api/emaileditor/email/:emailId').get(email.get);
-  app.route('/api/emaileditor/email/:emailId').delete(email.destroy);
-            //api/emaileditor/email/567ebc412f8676f948c8fb65
-  app.route('/api/emaileditor/email').get(email.list);
+  app.post(  '/api/emaileditor/email',          circles.controller.hasCompany(), email.create);
+  app.post(  '/api/emaileditor/email/:emailId', circles.controller.hasCompany(), email.update);
+  app.get(   '/api/emaileditor/email/:emailId', circles.controller.hasCompany(), email.get);
+  app.delete('/api/emaileditor/email/:emailId', circles.controller.hasCompany(), email.destroy);
+  app.get(   '/api/emaileditor/email',          circles.controller.hasCompany(), email.list);
 
-  app.route('/api/emaileditor/emailencoding').get(eloqua.getEmailEncoding);
-  
-  app.route('/api/emaileditor/emailconfig').get(eloqua.getEmailConfig);
-
-  app.route('/api/emaileditor/rss/:url').get(feed.loadRSS);
-  app.route('/api/emaileditor/xml/:url').get(feed.loadXML); 
+  app.get('/api/emaileditor/rss/:url', feed.loadRSS);
+  app.get('/api/emaileditor/xml/:url', feed.loadXML); 
 
 /*
   app.get('/api/admin/newsletterentity', newsletterEntities.list);
@@ -72,33 +57,21 @@ module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circl
   app.put('/api/admin/newsletterentity/:entityId', newsletterEntities.update);*/
 //  app.delete('/api/admin/newsletterentity/:entityId', auth.requiresAdmin, newsletterEntities.destroy);
 
-  app.get('/api/emaileditor/templates', function(req, res, next) 
-  {  
+  app.get('/api/emaileditor/segments/:id',  circles.controller.hasCompany(), eloqua.getSegments);
+  app.get('/api/emaileditor/emailencoding', circles.controller.hasCompany(), eloqua.getEmailEncoding);
+  app.get('/api/emaileditor/emailconfig',   circles.controller.hasCompany(), eloqua.getEmailConfig);
+  app.get('/api/emaileditor/emailgroups/',  circles.controller.hasCompany(), eloqua.getEmailgroups);
+  app.get('/api/emaileditor/emailheaders/', circles.controller.hasCompany(), eloqua.getEmailHeaders);
+  app.get('/api/emaileditor/emailfooters/', circles.controller.hasCompany(), eloqua.getEmailFooters);
 
-  });
-
-  app.get('/api/emaileditor/segments/:id', eloqua.getSegments);
-  app.route('/api/emaileditor/emailgroups/').get(eloqua.getEmailgroups);
-  app.route('/api/emaileditor/emailheaders/').get(eloqua.getEmailHeaders);
-  app.route('/api/emaileditor/emailfooters/').get(eloqua.getEmailFooters);
-
-  app.route('/api/emaileditor/eloquaemail/').post(eloqua.createEmail);
-  app.route('/api/emaileditor/eloquaemail/:eloquaEmailId').post(eloqua.updateEmail);
-  app.route('/api/emaileditor/sendtestemail').post(eloqua.sendTestEmail);
-  app.route('/api/emaileditor/scheduleemail').post(eloqua.scheduleEmail);
-  app.route('/api/emaileditor/scheduleemail/:eloquaCampaignId').post(eloqua.updateEmailSchedule);
-  app.route('/api/emaileditor/unscheduleemail/:eloquaCampaignId').post(eloqua.unscheduleEmail); 
-  app.route('/api/emaileditor/saveemail').post(eloqua.saveEmail);
+  app.post('/api/emaileditor/eloquaemail/',                       circles.controller.hasCompany(),eloqua.createEmail);
+  app.post('/api/emaileditor/eloquaemail/:eloquaEmailId',         circles.controller.hasCompany(),eloqua.updateEmail);
+  app.post('/api/emaileditor/sendtestemail',                      circles.controller.hasCompany(),eloqua.sendTestEmail);
+  app.post('/api/emaileditor/scheduleemail',                      circles.controller.hasCompany(),eloqua.scheduleEmail);
+  app.post('/api/emaileditor/scheduleemail/:eloquaCampaignId',    circles.controller.hasCompany(),eloqua.updateEmailSchedule);
+  app.post('/api/emaileditor/unscheduleemail/:eloquaCampaignId',  circles.controller.hasCompany(),eloqua.unscheduleEmail); 
+  app.post('/api/emaileditor/saveemail',                          circles.controller.hasCompany(),eloqua.saveEmail);
    
-
-  app.get('/api/emaileditor/example/auth', requiresLogin, function(req, res, next) {
-    res.send('Only authenticated users can access this');
-  });
-
-  app.get('/api/emaileditor/example/admin', requiresAdmin, function(req, res, next) {
-    res.send('Only users with Admin role can access this');
-  });
-
   app.get('/api/emaileditor/example/render', function(req, res, next) {
     Emaileditor.render('index', {
       package: 'emaileditor'
