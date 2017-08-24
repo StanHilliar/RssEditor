@@ -26,6 +26,7 @@ var NewsletterEntity      = mongoose.model('NewsletterEntity');
 var request   = require('supertest'); 
 var sinon     = require('sinon'); 
 
+
 /**
  * Globals
  */

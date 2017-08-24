@@ -143,6 +143,33 @@ module.exports = function(amazingEloqua) {
               }
             });   
         },
+        getEmailConfig: function(req, res, next) 
+        { 
+            console.dir('getEmailConfig');
+      
+            amazingEloqua.getEmailConfig('complete', function(err, response)
+            {
+              console.log('getEmailConfig callback');
+              console.log(response);
+
+              if(err != null)
+              {
+                console.error(err);
+                return res.status(400).json(err);
+              }
+              else
+              {
+                if(response != null)
+                {
+                  return res.jsonp(response);
+                }
+                else
+                {
+                  return res.status(400).json('response is null');
+                }
+              }
+            });   
+        },
         createEmail: function(req, res, next) 
         {
           console.log('create');
