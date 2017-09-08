@@ -18,8 +18,8 @@
 							<div class="row">
 								<div class="">
 									<div class="pickUpArea">
-										<div id="sortable" layout="row" layout-padding layout-wrap layout-fill style="padding-bottom: 32px;" ng-cloak>
-											<div class="emailModule md-whiteframe-1dp" md-truncate ng-repeat="module in entity.dropzoneModules" data-module-id="{{module._id}}" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" layout layout-align="center center">
+										<div id="sortable" layout="row" layout-wrap layout-fill style="padding-bottom: 32px;" ng-cloak>
+											<div class="emailModule md-whiteframe-1dp" md-truncate ng-repeat="module in entity.dropzoneModules" data-module-id="{{module._id}}" flex-sm="45" flex-gt-sm="35" flex-gt-md="25" >
 												<div class="thumbnail emailModuleHandle">
 													<!-- <img alt="100%x200" data-src="holder.js/100%x50" style="height: 50px; width: 100%; display: block;" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMjQyIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDI0MiAyMDAiIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiPjwhLS0KU291cmNlIFVSTDogaG9sZGVyLmpzLzEwMCV4MjAwCkNyZWF0ZWQgd2l0aCBIb2xkZXIuanMgMi42LjAuCkxlYXJuIG1vcmUgYXQgaHR0cDovL2hvbGRlcmpzLmNvbQooYykgMjAxMi0yMDE1IEl2YW4gTWFsb3BpbnNreSAtIGh0dHA6Ly9pbXNreS5jbwotLT48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPjwhW0NEQVRBWyNob2xkZXJfMTVhMTM1NzRiZDIgdGV4dCB7IGZpbGw6I0FBQUFBQTtmb250LXdlaWdodDpib2xkO2ZvbnQtZmFtaWx5OkFyaWFsLCBIZWx2ZXRpY2EsIE9wZW4gU2Fucywgc2Fucy1zZXJpZiwgbW9ub3NwYWNlO2ZvbnQtc2l6ZToxMnB0IH0gXV0+PC9zdHlsZT48L2RlZnM+PGcgaWQ9ImhvbGRlcl8xNWExMzU3NGJkMiI+PHJlY3Qgd2lkdGg9IjI0MiIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNFRUVFRUUiLz48Zz48dGV4dCB4PSI4OS44NTAwMDAzODE0Njk3MyIgeT0iMTA1LjciPjI0MngyMDA8L3RleHQ+PC9nPjwvZz48L3N2Zz4=" data-holder-rendered="true"> -->
 													<div class="caption">
@@ -39,6 +39,7 @@
 									</div>
 								</div>
 							</div>
+									
 							</fieldset>
 						</div>
 					</md-tab-body>
@@ -268,13 +269,19 @@
 				</md-tab>
 			</md-tabs>
 			<div layout="row" ng-show="errorMsgs.length > 0">
-					<div class="col-sm-8 col-md-8 col-lg-6">
-						<div class="alert alert-danger alert-dismissible" role="alert" data-ng-repeat="error in errorMsgs">
+				<div class="col-sm-8 col-md-8 col-lg-6">
+					<div class="alert alert-danger alert-dismissible" role="alert" data-ng-repeat="error in errorMsgs">
 						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<strong>{{error.param}}</strong> {{error.msg}} 
-						</div>
 					</div>
 				</div>
+			</div>
+			<div ng-repeat="currentAdData in adData">
+				{{$index}}:
+					<div ng-repeat="subCurrentadData in currentAdData">
+					   &nbsp;-- &nbsp; {{$index}}: {{subCurrentadData}}
+				  </div>
+			   </div>
 		</div>	
 		
 		<div layout="column" class="" flex>				
@@ -290,7 +297,7 @@
 		<div class="md-toolbar-tools ">
 			<h3 flex md-truncate>{{EmailName}}</h3>
 			<!-- {{EmailName| limitTo: 40 }}{{EmailName.length > 40 ? '...' : ''}} -->
-			<h3>status: {{storedEmail.status}}</h3>
+			<h3>status: {{storedEmail.status? storedEmail.status : '---'}}</h3>
 					
 			&nbsp;&nbsp;&nbsp;&nbsp;
 			<md-switch class="md-primary" aria-label="switch Mode" ng-model="isEditMode" ng-change="setMode()">

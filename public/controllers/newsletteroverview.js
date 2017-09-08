@@ -23,6 +23,7 @@ angular.module('mean.emaileditor').controller('NewsletterOverviewController', ['
       //console.log(entityId);
 
       //EmailModule.find({ moduleId: moduleId }).remove().exec();
+      $scope.loading = true;
       
       NewsletterEntity.remove({company: $stateParams.company, entityId: entityId}, function(_newsletterEntity)
       {
@@ -37,6 +38,7 @@ angular.module('mean.emaileditor').controller('NewsletterOverviewController', ['
           }
         }
         $scope.newsletters.splice(_newsletterEntity ,1);
+        $scope.loading = false;
         //_emailModule.remove();
      });
     }; 
@@ -48,6 +50,7 @@ angular.module('mean.emaileditor').controller('NewsletterOverviewController', ['
       //console.log(entityId);
 
       //EmailModule.find({ moduleId: moduleId }).remove().exec();
+      $scope.loading = true;
         
       NewsletterEntity.query({company: $stateParams.company, entityId: entityId}, function(newsletterEntityArray)
       {
@@ -61,12 +64,12 @@ angular.module('mean.emaileditor').controller('NewsletterOverviewController', ['
         newsletterEntityArray[0].$save(function(data, headers) 
         {
           $scope.errorMsgs = null;
-          $scope.saveInProgress = false;
+          $scope.loading = false;
           $scope.newsletters.push(data);
         }, function(data, headers) 
         {
             $scope.errorMsgs = data.data;
-            $scope.saveInProgress = false;
+            $scope.loading = false;
         });
 
       });
@@ -76,12 +79,17 @@ angular.module('mean.emaileditor').controller('NewsletterOverviewController', ['
     $scope.list = function()
     {
       //console.log('listNewsletterEntitiy');
+      $scope.loading = true;
 
       NewsletterEntity.query({company: $stateParams.company},function(response)
       {
-        //console.log('list callback');
         //console.log(response);
+        $scope.loading = false;
         $scope.newsletters = response;
+      }, function(data, headers) 
+      {
+          $scope.errorMsgs = data.data;
+          $scope.loading = false;
       });
     };   
 
@@ -103,7 +111,7 @@ angular.module('mean.emaileditor').controller('NewsletterOverviewController', ['
 
       $mdDialog.show(confirm).then(function() 
       {
-        $scope.destroyEntity(newsLetterEntityId);
+        $scope.destroyEntity(newslettterEntity._id);
       }, 
       function() 
       {

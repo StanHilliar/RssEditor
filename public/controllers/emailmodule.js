@@ -741,8 +741,8 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
           
 
         delete emailModuleArray[0]._id;
-        emailModuleArray[0].name = emailModuleArray[0].name+'_Clone_'+Math.floor(new Date() / 1000);
-        emailModuleArray[0].company =  MeanUser.company.id;
+        emailModuleArray[0].name    = emailModuleArray[0].name+'_Clone_'+Math.floor(new Date() / 1000);
+        emailModuleArray[0].company =  $stateParams.company;
 
         //console.log(emailModuleArray[0]);
         emailModuleArray[0].$save(function(data, headers) 
@@ -779,7 +779,6 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
 
     $scope.open = function (ev, emailModule) 
     {
-
        var confirm = $mdDialog.confirm()
           .title('Delete this module?')
           .textContent('name: '+emailModule.name)
@@ -790,11 +789,12 @@ angular.module('mean.emaileditor').controller('EmailModuleEditController', ['$sc
 
       $mdDialog.show(confirm).then(function() 
       {
-        $scope.status = 'You decided to get rid of your debt.';
+        // $scope.status = 'You decided to get rid of your debt.';
+        $scope.destroyModule(emailModule._id);
       }, 
       function() 
       {
-        $scope.status = 'You decided to keep your debt.';
+        // $scope.status = 'You decided to keep your debt.';
         console.info('Modal dismissed at: ' + new Date());
       });
 

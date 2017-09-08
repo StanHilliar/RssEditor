@@ -113,12 +113,11 @@
 					$body[0].innerHTML = ctrl.$viewValue || '';
 
 
-
 					//scope.feedNumberOfEntries = '1122';
 					//scope.rss = scope.rssData;
-					scope.rssData = scope.api.scope.rssData;
+					scope.rssData 			= scope.api.scope.rssData;
          			scope.hiddenPreviewText = scope.api.scope.hiddenPreviewText;
-					scope.adData = scope.api.scope.adData;
+					scope.adData 			= scope.api.scope.adData;
 
 					$compile($element.contents())(scope);
 
@@ -440,7 +439,7 @@
 							// Element dragging ended
 							onEnd: function (/**Event*/evt)
 							{
-								// console.log('onEnd');
+								console.log('onEnd');
 								evt.oldIndex;  // element's old index within parent
 								evt.newIndex;  // element's new index within parent
 								// console.log(evt.oldIndex);
@@ -448,7 +447,7 @@
 								// var smallerIndex = Math.min(evt.oldIndex, evt.newIndex);
 								// var biggerIndex  = Math.max(evt.oldIndex, evt.newIndex);
 								var order = sortable123.toArray();
-								// console.log(order);
+								console.log(order);
 
 								// console.log(smallerIndex);
 								// console.log(biggerIndex);
@@ -457,8 +456,8 @@
 								for (var i = 0; i < order.length; i++)
 								{
 									// console.log(order[i]);
-									var element = myIFrame.find('#' + order[i]);
-									var staticPos = element.attr('data-static-pos');
+									var element 	= myIFrame.find('#' + order[i]);
+									var staticPos 	= element.attr('data-static-pos');
 									// console.log(staticPos);
 									if (staticPos)
 									{
@@ -476,7 +475,7 @@
 										var indexToSet = -1;
 										for (var i = 0; i < order.length; i++)
 										{
-											console.log('i:' + i)
+											// console.log('i:' + i)
 											if (indexToSet === -1 && alreadyInNewOrder[order[i]] !== true)
 											{
 												indexToSet = i;
@@ -490,7 +489,8 @@
 									}
 								}
 
-								// console.log(newOrder);
+								console.log('-------------');
+								console.log(newOrder);
 								sortable123.sort(newOrder);
 								scope.api.scope.updateFeedPositions(newOrder);
 							},

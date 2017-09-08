@@ -3,7 +3,7 @@
     	<div class="md-toolbar-tools">
       	<span>Entities</span>
     	</div>
-  	</md-toolbar>  
+  </md-toolbar>      
 	<md-list data-ng-show="errors">
     <md-list-item class="md-2-line md-warn" ng-repeat="error in errorMsgs">
       <md-icon>error</md-icon>
@@ -60,6 +60,6 @@
   </table>
   <md-button ng-href="/{{company}}/emaileditor/newsletter/edit/" class="md-raised md-accent"><md-icon class="material-icons md-light md-48">add</md-icon>create new Entity</md-button>
 
-  <md-progress-linear data-ng-if="loading" md-mode="indeterminate"></md-progress-linear>
+  <md-progress-linear data-ng-if="loading" md-mode="query"></md-progress-linear>
 </md-table-container>
 </div>

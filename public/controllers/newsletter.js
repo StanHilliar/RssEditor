@@ -10,6 +10,8 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       name: 'emaileditor'
     };
 
+    $scope.company = $stateParams.company;
+    
     $scope.your_variable = '';
     $scope.rssContent = 'omg';
     $scope.test1234 = 'omg';

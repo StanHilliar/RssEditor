@@ -655,6 +655,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       {
         $scope.feedPositions[modulePos] = _data;
       }
+
     };
 
   
@@ -874,7 +875,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       $scope.api.reinitSortable();
     };
 
-    $scope.generateModule = function (isEdit, currentModule, moduleData, moduleFeedPositions, moduleCounter, moduleDataStr, moduleIdStr)
+    $scope.generateModule = function (isEdit, currentModule, moduleData, moduleAdData, moduleFeedPositions, moduleCounter, moduleDataStr, adDataStr, moduleIdStr)
     {
       console.log('generateModule (' + moduleDataStr + ' / ' + moduleIdStr + ')');
       console.log('moduleFeedPositions.length:' + moduleFeedPositions.length);
@@ -1041,7 +1042,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
           if (_addAd) 
           {
-            _tmpData += _getAdView(isEdit, currentModule, moduleCounter, _adIndex);
+            _tmpData += _getAdView(isEdit, moduleAdData, currentModule, moduleCounter, _adIndex, adDataStr);
           }
 
           //console.log(_tmpData);
@@ -1064,7 +1065,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
               _adIndex = adCounter;
 
-              moduleHtml += _getAdView(isEdit, currentModule, moduleCounter, _adIndex);
+              moduleHtml += _getAdView(isEdit, moduleAdData, currentModule, moduleCounter, _adIndex, adDataStr);
             }
           }
         }
@@ -1102,7 +1103,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       return moduleHtml;
     };
 
-    $scope.generateContainer = function (isEdit, container, data, modulePositions, containerFeedPositions, dataStr, containerIdStr)
+    $scope.generateContainer = function (isEdit, container, data, adData, modulePositions, containerFeedPositions, dataStr, adDataStr, containerIdStr)
     {
       console.log('generateContainer');
       // console.log(modulePositions);
@@ -1111,8 +1112,8 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       for (var moduleCounter = 0; moduleCounter < modulePositions.length; moduleCounter++) 
       {
         // console.log('smodule '+moduleCounter);
-        var indexInDropZoneModules = $scope.dropzoneIdtoIndex[modulePositions[moduleCounter].moduleId];
-        var moduleIndex = modulePositions[moduleCounter].index;
+        var indexInDropZoneModules  = $scope.dropzoneIdtoIndex[modulePositions[moduleCounter].moduleId];
+        var moduleIndex             = modulePositions[moduleCounter].index;
         // console.log('moduleIndex '+moduleIndex);
         // console.log('indexInDropZoneModules '+indexInDropZoneModules);
 
@@ -1127,7 +1128,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           if (moduleState == 1 || isEdit) 
           {
             //console.log( $scope.entity.modules[moduleIndex].childTagName);
-            formatedEntries += $scope.generateModule(isEdit, $scope.entity.dropzoneModules[indexInDropZoneModules], data[moduleIndex], containerFeedPositions[moduleIndex], moduleIndex, dataStr + '[' + moduleIndex + ']', moduleIdStr);
+            formatedEntries += $scope.generateModule(isEdit, $scope.entity.dropzoneModules[indexInDropZoneModules], data[moduleIndex], adData[moduleIndex], containerFeedPositions[moduleIndex], moduleIndex, dataStr + '[' + moduleIndex + ']', adDataStr + '[' + moduleIndex + ']', moduleIdStr);
           } //if (moduleState == 1 || isEdit)
         }
       }
@@ -1149,12 +1150,13 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           var noSkippedEntries = 0;
           var _moduleData = '';
           var dataStr     = 'rssData';
+          var adDataStr   = 'adData';
           var moduleIdStr = '' + moduleCounter;
 
           if($scope.entity.modules[moduleCounter].placeholderType == 'DROPZONE')
           {
               _moduleData += '<div id="modulesContainer" data-dropzone-id=' + moduleIdStr + '>';
-              _moduleData += $scope.generateContainer(isEdit, $scope.entity.modules[moduleCounter], $scope.rssData[moduleCounter], $scope.modulePositions[moduleCounter], $scope.feedPositions[moduleCounter], dataStr + '[' + moduleCounter + ']', moduleIdStr + '_C_');
+              _moduleData += $scope.generateContainer(isEdit, $scope.entity.modules[moduleCounter], $scope.rssData[moduleCounter], $scope.adData[moduleCounter], $scope.modulePositions[moduleCounter], $scope.feedPositions[moduleCounter], dataStr + '[' + moduleCounter + ']', adDataStr + '[' + moduleCounter + ']', moduleIdStr + '_C_');
               _moduleData += '</div>';
           }
           else
@@ -1163,7 +1165,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
               if (moduleState == 1 || isEdit) 
               {
                 //console.log( $scope.entity.modules[moduleCounter].childTagName);
-                _moduleData = $scope.generateModule(isEdit, $scope.entity.modules[moduleCounter],  $scope.rssData[moduleCounter], $scope.feedPositions[moduleCounter], moduleCounter, dataStr + '[' + moduleCounter + ']', moduleIdStr);
+                _moduleData = $scope.generateModule(isEdit, $scope.entity.modules[moduleCounter],  $scope.rssData[moduleCounter], $scope.adData[moduleCounter], $scope.feedPositions[moduleCounter], moduleCounter, dataStr + '[' + moduleCounter + ']', adDataStr + '[' + moduleCounter + ']', moduleIdStr);
               } //if (moduleState == 1 || isEdit)
           }
 
@@ -1195,33 +1197,31 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       return fullEmail;
     };
 
-    function _getAdView(isEdit, currentModule, moduleCounter, _adIndex) 
+    function _getAdView(isEdit, moduleAdData, currentModule, moduleCounter, _adIndex, adDataStr) 
     {
       var _adview = '';
+      console.log('_getAdView');
+      // console.log($scope.adData[moduleCounter][_adIndex]);
+      console.log(moduleAdData );
+      console.log(moduleAdData[_adIndex] );
+      console.log(moduleAdData[_adIndex].booked );
       if (isEdit) 
       {
-        _adview += '<div class="static">';
+        _adview += '<div id="adElement_'+moduleCounter+'_'+_adIndex+'"class="dndelement static" data-static-pos="{{'+ adDataStr+'['+_adIndex+'].pos}}">';
       }
 
-
       _adview += currentModule.adViews[0].source;
-
-      _adview = _adview.replace("[[adLink]]", '{{adData[' + moduleCounter + '][' + _adIndex + '].link}}');
-      _adview = _adview.replace("[[adImage]]", '{{adData[' + moduleCounter + '][' + _adIndex + '].img}}');
-
+      _adview = _adview.replace("[[adLink]]",  '{{'+ adDataStr+'['+_adIndex+'].link}}');
+      _adview = _adview.replace("[[adImage]]", '{{'+ adDataStr+'['+_adIndex+'].img}}');
+      
       if (isEdit) 
       {
         _adview += '</div>';
-      }
-
-
-      if (isEdit) 
-      {
         return _adview;
       }
       else 
       {
-        if ($scope.adData[moduleCounter][_adIndex].booked == true) 
+        if (moduleAdData[_adIndex].booked == true) 
         {
           return _adview;
         }
@@ -1535,48 +1535,72 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       
     }
 
-    $scope.checkAd2 = function (adData, index)
+    $scope.checkAd2 = function (adData, index, subIndex)
     {
-      //console.log('checkAd2 ('+moduleCounter+', '+index+')');
       var deferred = $q.defer();
+      //console.log('checkAd2 ('+moduleCounter+', '+index+')');
       //console.log($scope.adData[moduleCounter][index].img);
 
+      var checkUrl = adData[index].img;
+      if(subIndex)
+      {
+        checkUrl = adData[index][subIndex].img;
+      }
+
       Emaileditor.checkAdvertisment().query(
+      {
+        url: checkUrl
+      },
+      function (dimensions)
+      {
+        console.log('checkAdvertisment');
+        //console.log(dimensions[0].height);
+        var isBooked = false;
+        if (dimensions == null || dimensions.length == 0)
         {
-          url: adData[index].img
-        },
-        function (dimensions)
+          adData[index].booked = false;
+        }
+        else
         {
-          console.log('checkAdvertisment');
-          //console.log(dimensions[0].height);
-          if (dimensions == null || dimensions.length == 0)
+          if (dimensions[0].height == 1)
           {
             adData[index].booked = false;
+            //console.log('yes');
           }
           else
           {
-            if (dimensions[0].height == 1)
-            {
-              adData[index].booked = false;
-              //console.log('yes');
-            }
-            else
-            {
-              adData[index].booked = true;
-              //console.log('no');
-            }
+            adData[index].booked = true;
+            //console.log('no');
           }
-
-          deferred.resolve();
-        },function (error)
-        {
-          console.error('checkAdvertisment error');
-          $scope.errorMsgs = [];
-          $scope.errorMsgs.push({ param: adData[index].img, msg: 'couldnt check if the ad was booked' });
-
-          adData[index].booked = true;
-          deferred.resolve();
         }
+
+        if(subIndex)
+        {
+          adData[index][subIndex].booked = isBooked;
+        }
+        else
+        {
+          adData[index].booked = isBooked;
+        }
+        deferred.resolve();
+      },
+      function (error)
+      {
+        console.error('checkAdvertisment error');
+        $scope.errorMsgs = [];
+        $scope.errorMsgs.push({ param: adData[index].img, msg: 'couldnt check if the ad was booked' });
+
+        if(subIndex)
+        {
+          adData[index][subIndex].booked = true;
+        }
+        else
+        {
+          adData[index].booked = true;
+        }
+        
+        deferred.resolve();
+      }
       );
 
       return deferred.promise;
@@ -1601,8 +1625,10 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           {
             if($scope.adData[moduleCounter].constructor === Array)
             {
-              //TODO
-              console.warn('ads in submodules not yet supported')
+              for(var x = 0; x < $scope.adData[moduleCounter].length; x++)
+              {
+                promises.push($scope.checkAd2($scope.adData[moduleCounter], i, x));
+              }
             }
             else
             {
