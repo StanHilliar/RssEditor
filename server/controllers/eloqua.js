@@ -91,12 +91,12 @@ module.exports = function(amazingEloqua) {
         },
         getEmailgroups: function(req, res, next) 
         { 
-            // console.dir('emailgroups');
+            console.log('emailgroups');
       
-            amazingEloqua.searchEmailGroups('*', '1', '300', 'complete', function(err, response)
+            amazingEloqua.searchEmailGroups('*', '1', '300', 'minimal', function(err, response)
             {
-              // console.log('searchEmailGroups callback');
-              // console.log(response);
+              console.log('searchEmailGroups callback');
+              console.log(response);
 
               if(err != null)
               {
