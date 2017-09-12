@@ -431,7 +431,7 @@
 					var sortable123 = Sortable.create(elementContainer,
 						{
 							draggable: ".dndelement",
-							// filter: ".static",
+							filter: ".static",
 							dataIdAttr: 'id',
 							dragClass: 'emailModuleDrag',
 							ghostClass: 'emailSubModuleGhost',

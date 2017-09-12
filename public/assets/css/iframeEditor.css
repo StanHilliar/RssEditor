@@ -26,13 +26,13 @@
 	);
 }
 
-.dndelement
+.dndelement:not(.static)
 {
 	border: 1px dashed grey;
 	padding: 1px;
 }
 
-.dndelement:hover
+.dndelement:not(.static):hover
 {
 	cursor: move!important;
 }
