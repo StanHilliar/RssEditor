@@ -1232,7 +1232,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       }
     }
 
-
     $scope.initAfterLoad = function() 
     {
       console.log('init');
@@ -1538,14 +1537,28 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     $scope.checkAd2 = function (adData, index, subIndex)
     {
       var deferred = $q.defer();
-      //console.log('checkAd2 ('+moduleCounter+', '+index+')');
+      console.log('checkAd2 ('+index+','+subIndex+')');
+      console.log(adData);
       //console.log($scope.adData[moduleCounter][index].img);
-
+      
+      console.log(adData[index]);
+      console.log(adData[index][0]);
+      console.log(adData[index][subIndex]);
+      console.log(0 == subIndex);
       var checkUrl = adData[index].img;
-      if(subIndex)
+      var hasSubIndex = false;
+      if(subIndex != null || subIndex != undefined)
+      {
+        hasSubIndex = true;
+      }
+
+      if(hasSubIndex)
       {
         checkUrl = adData[index][subIndex].img;
+        console.log(adData[index][subIndex]);
       }
+
+      console.log(checkUrl);
 
       Emaileditor.checkAdvertisment().query(
       {
@@ -1558,23 +1571,25 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         var isBooked = false;
         if (dimensions == null || dimensions.length == 0)
         {
-          adData[index].booked = false;
+          isBooked = false;
         }
         else
         {
           if (dimensions[0].height == 1)
           {
-            adData[index].booked = false;
+            isBooked = false;
             //console.log('yes');
           }
           else
           {
-            adData[index].booked = true;
+            isBooked = true;
             //console.log('no');
           }
         }
 
-        if(subIndex)
+        console.log('isbooked: '+isBooked);
+
+        if(hasSubIndex)
         {
           adData[index][subIndex].booked = isBooked;
         }
@@ -1623,9 +1638,9 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         {
           for (var i = 0; i < $scope.adData[moduleCounter].length; i++)
           {
-            if($scope.adData[moduleCounter].constructor === Array)
+            if($scope.adData[moduleCounter][i].constructor === Array)
             {
-              for(var x = 0; x < $scope.adData[moduleCounter].length; x++)
+              for(var x = 0; x < $scope.adData[moduleCounter][i].length; x++)
               {
                 promises.push($scope.checkAd2($scope.adData[moduleCounter], i, x));
               }
