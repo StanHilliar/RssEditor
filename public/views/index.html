@@ -292,7 +292,7 @@
 			</div>
 		</div>
 	</md-content>
-	<md-progress-linear md-mode="query" ng-show="loading || saveInProgress || scheduleInProgress || testSendingInProgress"></md-progress-linear>
+	<md-progress-linear md-mode="indeterminate" ng-show="loading || loadingNewModule || saveInProgress || scheduleInProgress || testSendingInProgress"></md-progress-linear>
 	<md-toolbar md-colors="{'background': 'primary-50'}">
 		<div class="md-toolbar-tools ">
 			<h3 flex md-truncate>{{EmailName}}</h3>

@@ -247,17 +247,20 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     {
       console.log('setMode ' + $scope.isEditMode);
       $scope.api.setMode($scope.isEditMode);
-
+      $scope.loading = true;
+      
       if ($scope.isEditMode)
       {
         $scope.your_variable = $scope.generateEmail($scope.isEditMode);
         $scope.api.reinitSortable();
+        $scope.loading = false;
       }
       else
       {
         $scope.checkAds(function ()
         {
           $scope.your_variable = $scope.generateEmail($scope.isEditMode);
+          $scope.loading = false;
         });
       }
     };
@@ -664,6 +667,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       console.log('onAddModuleToEmail');
       console.log(moduleId);
       console.log('countModulesInDropzone: '+countModulesInDropzone);
+      $scope.loadingNewModule = true;
       var moduleIndex = -1;
       for (var i = 0; i < $scope.entity.dropzoneModules.length; i++)
       {
@@ -691,7 +695,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           $scope.your_variable = $scope.generateEmail(true);
           if($scope.api.initSortable) $scope.api.initSortable();
           $scope.firstInit = false;
-          $scope.loading = false;
+          $scope.loadingNewModule = false;
         });
         //  $scope.generateEmail($scope.isEditMode);
       }

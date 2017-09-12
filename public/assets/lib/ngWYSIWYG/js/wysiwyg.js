@@ -112,7 +112,6 @@
 
 					$body[0].innerHTML = ctrl.$viewValue || '';
 
-
 					//scope.feedNumberOfEntries = '1122';
 					//scope.rss = scope.rssData;
 					scope.rssData 			= scope.api.scope.rssData;
