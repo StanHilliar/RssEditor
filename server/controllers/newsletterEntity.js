@@ -34,7 +34,6 @@ module.exports = function(circles) {
             req.assert('fromAddress',  'You must enter a valid from-address').isEmail();
             req.assert('senderName',   'You must set a senderName').notEmpty();
 
-
             var errors = req.validationErrors();
             if (errors) {
                 return res.status(400).send(errors);
@@ -190,9 +189,7 @@ module.exports = function(circles) {
                     // console.log('done');
                     
                     res.jsonp([newsletterEntity]);
-                });
-
-               
+                });             
               
             });
         },

@@ -42,7 +42,7 @@ function _getEmailById(id, cb)
 
 function _checkNewsletterEntityForCircles(circles, req, newsletterEntityId, cb)
 { 
-    console.log('_checkNewsletterEntityForCircles');
+    // console.log('_checkNewsletterEntityForCircles');
     NewsletterEntity.findOne(
         {_id: newsletterEntityId},
         'name createdBy createdAt updatedBy updatedAt circles'
@@ -50,8 +50,8 @@ function _checkNewsletterEntityForCircles(circles, req, newsletterEntityId, cb)
     .lean()
     .exec(function(getEntityErr, newsletterEntity) 
     {
-        console.log('findONe');
-        console.log(newsletterEntity);
+        // console.log('findONe');
+        // console.log(newsletterEntity);
         var hasAccess = false;
         var hasAccess = false;
         if(getEntityErr != null)
@@ -106,7 +106,7 @@ module.exports = function(circles) {
 
             _checkNewsletterEntityForCircles(circles, req, req.body.newsletterEntity, function(checkAccessErr, hasAccess)
             {
-                console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
+                // console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
                 if(checkAccessErr != null) 
                 {
                     return res.status(400).send(checkAccessErr);
@@ -193,7 +193,6 @@ module.exports = function(circles) {
                 }
                 if (!email)
                 {
-
                     // console.error('error2');
                     return res.status(500).send('Failed to load email ' + req.params.moduleId);
                 }    
@@ -201,7 +200,7 @@ module.exports = function(circles) {
                 {
                     _checkNewsletterEntityForCircles(circles, req, email.newsletterEntity, function(checkAccessErr, hasAccess)
                     {
-                        console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
+                        // console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
                         if(checkAccessErr != null) 
                         {
                             console.error(checkAccessErr);
@@ -219,7 +218,7 @@ module.exports = function(circles) {
                             }
                             else
                             {
-                                res.jsonp([email]);
+                                return res.jsonp([email]);
                             }
                         }
                     });
@@ -239,7 +238,7 @@ module.exports = function(circles) {
             {   
                 _checkNewsletterEntityForCircles(circles, req, _email.newsletterEntity, function(checkAccessErr, hasAccess)
                 {
-                    console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
+                    // console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
                     if(checkAccessErr != null) 
                     {
                         console.error(checkAccessErr);
@@ -265,7 +264,7 @@ module.exports = function(circles) {
                                     return res.render('error', 
                                     {
                                         status: 500
-                                    });
+                                    }).end();
                                 } 
                                 else 
                                 {
@@ -318,7 +317,7 @@ module.exports = function(circles) {
                     {
                         _checkNewsletterEntityForCircles(circles, req, email.newsletterEntity, function(checkAccessErr, hasAccess)
                         {
-                            console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
+                            // console.log('_checkNewsletterEntityForCircles cb: '+hasAccess);
                             if(checkAccessErr != null) 
                             {
                                 console.error(checkAccessErr);
@@ -337,7 +336,7 @@ module.exports = function(circles) {
                                 else
                                 {
                                     email = _.extend(email, req.body);
-                                    console.log('update email cb');
+                                    // console.log('update email cb');
                                 
                                     email.updatedBy = req.user.username;
 
@@ -346,6 +345,11 @@ module.exports = function(circles) {
                                         if(saveErr != null)
                                         {   
                                             console.error(saveErr);
+                                            return res.status(400).send([
+                                            {
+                                                msg: 'there was an error while updating the email',
+                                                param: 'update email'
+                                            }]);
                                         }
                                         
                                         return res.jsonp(email);
@@ -438,4 +442,3 @@ module.exports = function(circles) {
         }     
     };
 }
-

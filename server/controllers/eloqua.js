@@ -23,7 +23,7 @@ module.exports = function(amazingEloqua) {
       activationOptions = { scheduledFor: req.body.startAt};
     }
     
-    console.log(activationOptions);
+    // console.log(activationOptions);
 
     amazingEloqua.campaign.acitivate(campaignId, activationOptions, function(activationErr, activationRes)
     {
@@ -95,8 +95,8 @@ module.exports = function(amazingEloqua) {
       
             amazingEloqua.searchEmailGroups('*', '1', '300', 'minimal', function(err, response)
             {
-              console.log('searchEmailGroups callback');
-              console.log(response);
+              // console.log('searchEmailGroups callback');
+              // console.log(response);
 
               if(err != null)
               {
@@ -118,12 +118,12 @@ module.exports = function(amazingEloqua) {
         },
         getEmailEncoding: function(req, res, next) 
         { 
-            console.dir('getEmailEncoding');
+            console.log('getEmailEncoding');
       
             amazingEloqua.getEmailEncoding('minimal', function(err, response)
             {
-              console.log('getEmailEncoding callback');
-              console.log(response);
+              // console.log('getEmailEncoding callback');
+              // console.log(response);
 
               if(err != null)
               {
@@ -145,12 +145,12 @@ module.exports = function(amazingEloqua) {
         },
         getEmailConfig: function(req, res, next) 
         { 
-            console.dir('getEmailConfig');
+            console.log('getEmailConfig');
       
             amazingEloqua.getEmailConfig('complete', function(err, response)
             {
-              console.log('getEmailConfig callback');
-              console.log(response);
+              // console.log('getEmailConfig callback');
+              // console.log(response);
 
               if(err != null)
               {
@@ -183,7 +183,7 @@ module.exports = function(amazingEloqua) {
             }
             else
             {
-              console.log(response);
+              // console.log(response);
 
               email.getEmailById(req.body.emailId, function(getEmailByIdErr, email)
               {
@@ -191,7 +191,7 @@ module.exports = function(amazingEloqua) {
                 //console.log(email);
                 if(getEmailByIdErr != null)
                 {
-                  console.loerrorg(getEmailByIdErr);
+                  console.error(getEmailByIdErr);
                   return res.status(400).json(getEmailByIdErr);
                 }
                 else
@@ -240,6 +240,7 @@ module.exports = function(amazingEloqua) {
                 //console.log(email);
                 if(getEmailByIdErr != null)
                 {
+                  console.error('getEmailById:'+ req.body.emailId);
                   console.error(getEmailByIdErr);
                   return res.status(400).json(getEmailByIdErr);
                 }
@@ -339,7 +340,7 @@ module.exports = function(amazingEloqua) {
             }, 
             function(mapErr, mapRes)
             {
-              console.log('map Callback');
+              // console.log('map Callback');
 
               //console.log(mapRes);
 
@@ -364,7 +365,7 @@ module.exports = function(amazingEloqua) {
               {
                 console.error(err);
               }
-              console.error(response);
+              // console.log(response);
 
               if(err !=  null)
               {
@@ -427,7 +428,7 @@ module.exports = function(amazingEloqua) {
               {
                 console.error(activationErr);
               }
-              console.log(activationRes);
+              // console.log(activationRes);
 
               email.getEmailById(req.body.emailId, function(err, email)
               {
@@ -443,7 +444,7 @@ module.exports = function(amazingEloqua) {
                   {
                     console.error(saveErr);
                   }
-                  console.log(saveRes);
+                  // console.log(saveRes);
 
                   return res.jsonp(saveRes);
                 });

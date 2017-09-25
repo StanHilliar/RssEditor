@@ -25,11 +25,12 @@ module.exports = function() {
 				{
 					if(error)
 					{
+						console.error('loadRSS: '+req.params.url);
 						console.error(error);
 					}	
 					else
 					{
-						console.log(response.statusCode);
+						// console.log(response.statusCode);
 					}
 
 				  	if (!error && response.statusCode == 200) 
@@ -80,9 +81,10 @@ module.exports = function() {
 
 				feedparser.on('error', function(error) 
 				{
-				  console.log('feedparser error');
+				//   console.error('feedparser error');
 				  if(error)
 				  {
+					console.error('loadRSS: '+req.params.url);
 				  	console.error(error);
 				  }
 				  feedparserWasSuccessfull = false;
@@ -193,19 +195,21 @@ module.exports = function() {
        	loadXML: function(req, res, next) 
        	{
 			var xml = '';
-
 			if(req != null && req.params != null && req.params.url != null && req.params.url != '')
         	{
+				console.log('loadXML:'+ req.params.url);
 				request(req.params.url, function (error, response, body) 
 				{
 					if(error)
 					{
+						console.error('error loading:'+ req.params.url);
 						console.error(error);
 					}	
 					else
 					{
-						console.log(response.statusCode);
+						// console.log(response.statusCode);
 					}
+
 					if(!error && response.statusCode == 200) 
 				  	{
 				  		try
