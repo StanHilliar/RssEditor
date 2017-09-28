@@ -19,7 +19,7 @@ Emaileditor.register(function(app, auth, database, circles)
   var amazingEloqua = require('amazing-eloqua')();
 
   //var eloqua = amazingEloqua.login('TechnologyPartnerLeadMgtTechSolutionsAB', 'Simon.Diel', '5urcluVIFb8pYkg0', 'https://www02.secure.eloqua.com');
-  var eloqua = amazingEloqua.login(config.eloqua.company, config.eloqua.username, config.eloqua.password, config.eloqua.host);
+  // var eloqua = amazingEloqua.loginc(onfig.eloqua.company, config.eloqua.username, config.eloqua.password, config.eloqua.host);
   //var eloqua = amazingEloqua.login('BonnierBusinessMediaTest', 'Eloqua.Api', 'cX7mquRGww6qW8pBQ1qw1hzJ', 'https://secure.p06.eloqua.com');
   
   //We enable routing. By default the Package Object is passed to the routes

@@ -161,7 +161,7 @@ module.exports = function(circles) {
                                 }
 
                                 //console.log('emailt entity create 888');
-                                return res.status(400);
+                                return res.status(400).end();
                             }
                             else
                             {
