@@ -6,12 +6,14 @@
  * Module dependencies.
  */
 
-var expect = require('expect.js');
-var mongoose = require('mongoose');
-var Email = mongoose.model('Email');
-var NewsletterEntity      = mongoose.model('NewsletterEntity');
-var request = require('supertest');
-var sinon = require('sinon');
+var expect              = require('expect.js');
+var mongoose            = require('mongoose');
+var Email               = mongoose.model('Email');
+var NewsletterEntity    = mongoose.model('NewsletterEntity');
+var request             = require('supertest');
+var sinon               = require('sinon');
+var EmailCtrl           = require('../controllers/email')();
+var CirclesCtrl         = require('../../../../../node_modules/meanio-circles/server/controllers/circles')();
 
 /**
  * Globals
@@ -19,6 +21,66 @@ var sinon = require('sinon');
 var user1, user2;
 
 var url = 'http://127.0.0.1:3001';
+
+function setupRequest(opts)
+{
+  var req = {
+    assert: function(a,b)
+    {
+      var assertThis = {};
+      assertThis.notEmpty = function() 
+      { 
+        if(!req.body[a] || req.body[a] == '')
+        {
+            return b;
+        }
+      };
+
+      return assertThis;
+    },
+    validationErrors: function()
+    {},
+  };
+  if(opts.body)
+  {
+    req.body = opts.body
+  }
+  if(opts.user)
+  {
+    req.user = opts.user
+  }
+  return req;
+}
+
+function setupResponse(opts, cb)
+{
+  return {
+      send: function(r)
+      {
+        console.log(' ------ response SEND ------- ');
+        console.log(r);
+        cb(r);
+      },
+      end: function(){ cb();},
+      json: function(err){
+          console.log("\n : " + err);
+          cb();
+      },
+      jsonp: function(r){
+          console.log(r);
+          cb(r);
+      },
+      status: function(responseStatus) 
+      {
+          expect(responseStatus).to.be(opts.statusCode);
+          // This next line makes it chainable
+          return this; 
+      }
+  };
+
+}
+
+var next = function(){console.log('next');};
 
 /**
  * Test Suites
@@ -29,10 +91,17 @@ describe('email.spec.js', function ()
     {
         var emailStub;
         var newsletterEntityStub;
+        var hasCircleStub;
+        var hasOneOfTheseCirclestub;
+        var hasCompanyStub;
+
         beforeEach(function () 
         {
             emailStub = sinon.stub(Email, 'findOne');
             newsletterEntityStub = sinon.stub(NewsletterEntity, 'findOne');
+            hasCircleStub = sinon.stub(CirclesCtrl, 'hasCircle');
+            hasOneOfTheseCirclestub = sinon.stub(CirclesCtrl, 'hasOneOfTheseCircles');
+            hasCompanyStub = sinon.stub(CirclesCtrl, 'hasCompany');
         });
 
         afterEach(function () 
@@ -62,40 +131,73 @@ describe('email.spec.js', function ()
         it('email api - create - without required params - should fail', function (done) 
         {
             var company = 'fake_company';
-            var newEmail = {};
+            var newEmail = 
+            {
+                user: 
+                {
+                    _id: '1234',
+                    email: 'fake@leadteq.com',
+                    companie:{
+                        fake_company: 
+                        {
+                            name: 'fake_company'
+                        }
+                    }
+                }
+            };
 
             var mockFindOne =
+            {
+                exec: function (callback) 
                 {
-                    exec: function (callback) 
-                    {
-                        callback(null, null);
-                    }
-                };
+                    callback(null, null);
+                }
+            };
 
+            // var req = setupRequest(
+            // {
+            //     body: {},
+            //     user: {username: 'tester'}
+            // });
+
+            // var res = setupResponse({statusCode: 400}, function(data)
+            // {
+            //     console.log('--------------');
+            //     console.log(data);
+            //     expect(data).to.be.an('array');
+            //     expect(data).to.contain('You must enter a type');
+            //     done();
+            // });
+            
+            // EmailCtrl.create(req, res, next);
             //   Email.withArgs({ _id: entityId}).returns(mockFindOne);
+            
+            console.log('-------------------------------------------------------');
+                request(url)
+                    .post('/api/emaileditor/email?company='+company)
+                    .send(newEmail)
+                    //.expect(200)
+                    .end(function (err, res) 
+                    {
+                        // console.log(err);
+                        // console.log(res);
+                        expect(err).to.eql(null);
+                        expect(res.error.status).to.eql(400);
+                        expect(res.body).to.be.an('array');
 
-            request(url)
-                .post('/api/' + company + '/emaileditor/email')
-                .send(newEmail)
-                //.expect(200)
-                .end(function (err, res) 
-                {
-                    // console.log(err);
-                    // console.log(res);
-                    expect(err).to.eql(null);
-                    expect(res.error.status).to.eql(400);
-                    expect(res.body).to.be.an('array');
-                    // expect(res.body).to.contain('You must enter a type');
-                    if (err)
-                    {
-                        console.error(err);
-                    }
-                    if (res.error) 
-                    {
-                        console.error(res.error);
-                    }
-                    done();
-                });
+                        sinon.assert.calledOnce(hasCompanyStub);
+
+                        // expect(res.body).to.contain('You must enter a type');
+                        if (err)
+                        {
+                            console.error(err);
+                        }
+                        if (res.error) 
+                        {
+                            console.error(res.error);
+                        }
+                        done();
+                    });
         });
 
         it.skip('email api - create - with required params - should not fail', function (done) 
@@ -148,6 +250,7 @@ describe('email.spec.js', function ()
                 //.expect(200)
                 .end(function (err, res) 
                 {
+                    
                     console.error(err);
                     console.log(res.body);
                     expect(err).to.eql(null);

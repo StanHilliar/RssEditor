@@ -3,21 +3,19 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-  EmailModule = mongoose.model('EmailModule'),
-  async = require('async'),
-  config = require('meanio').loadConfig(),
-  crypto = require('crypto'),
-  _ = require('lodash'),
-  jwt = require('jsonwebtoken'); //https://npmjs.org/package/node-jsonwebtoken
-  var shortid = require('shortid');
-  var parse5 = require('parse5');
+var mongoose    = require('mongoose');
+var EmailModule = mongoose.model('EmailModule');
+var async       = require('async');
+var config      = require('meanio').getConfig();
+var _           = require('lodash');
+var shortid     = require('shortid');
+var parse5      = require('parse5');
 
 
 function _getModuleById(moduleId, cb)
 {
-    console.log('_getModuleById');
-    console.log(moduleId);
+    // console.log('_getModuleById');
+    // console.log(moduleId);
 
     EmailModule.findOne(
     {
@@ -26,12 +24,12 @@ function _getModuleById(moduleId, cb)
     {
         if (err) 
         {
-            console.error('error1');
+            // console.error('error1');
             return cb(err, null);
         }
         if (!emailModule)
         {
-            console.error('error2');
+            // console.error('error2');
             return cb('Failed to load emailModule ' + moduleId, null);
         }    
 
@@ -43,7 +41,7 @@ function _getModuleById(moduleId, cb)
 function _parseAndUpdateModule(module)
 {
     var emailModule = module;
-    console.log('_parseAndUpdateModule');
+    // console.log('_parseAndUpdateModule');
     if(emailModule.views != null && emailModule.views.length > 0)
     {
         for(var i = 0; i < emailModule.views.length; i++)
@@ -55,23 +53,23 @@ function _parseAndUpdateModule(module)
             }
 
             var source = emailModule.views[i].source;
-            console.log(source);
-            console.log('-----------------------');
+            // console.log(source);
+            // console.log('-----------------------');
             source =  source.replace(/[^\x20-\x7E]+/g, '');
-            console.log(source);
-            console.log('-----------------------');
+            // console.log(source);
+            // console.log('-----------------------');
             source =  source.replace(/\r?\n|\r/g,"");
-            console.log(source);
-            console.log('-----------------------');
-            console.log('-----------------------');
+            // console.log(source);
+            // console.log('-----------------------');
+            // console.log('-----------------------');
             var ser = parse5.serialize(source);
             
             // source =  source.replace(/ /g,'');
-            console.log(ser);
-            console.log('-----------------------');
+            // console.log(ser);
+            // console.log('-----------------------');
 
             var fragment = parse5.parseFragment(source);
-            console.log(fragment);
+            // console.log(fragment);
             emailModule.views[i].childTagName = 'div';
             if(fragment != null)
             {
@@ -83,12 +81,12 @@ function _parseAndUpdateModule(module)
                 {
                     if(fragment.childNodes.length > 1)
                     {   
-                        console.log('childNodes.length >1 ');
+                        // console.log('childNodes.length >1 ');
                         var firstChildTagName = fragment.childNodes[0].tagName;
                         var isTheSameForAllChildren = true;
                         for(var x = 0; x < fragment.childNodes.length; x++)
                         {
-                            console.log(fragment.childNodes[x].tagName+' !== '+firstChildTagName)
+                            // console.log(fragment.childNodes[x].tagName+' !== '+firstChildTagName)
                             if(fragment.childNodes[x].nodeName === '#text' && fragment.childNodes[x].value.trim() === '')
                             {
                                 //ignore empy text elements
@@ -114,7 +112,7 @@ function _parseAndUpdateModule(module)
     }
 
     var _fullHTML = emailModule.preBody+emailModule.postBody;
-    console.log(_fullHTML);
+    // console.log(_fullHTML);
     emailModule.childTagName = 'div';
     if(_fullHTML != '')
     {
@@ -138,11 +136,11 @@ module.exports = function(MeanUser) {
          */
         create: function(req, res, next) 
         {
-            console.log('create');
+            // console.log('create');
             //console.log('newsletter entity create');
             var emailModule = new EmailModule(req.body);
 
-            console.log('1');
+            // console.log('1');
             /*
             if(emailModule.views != null)
             {
@@ -155,19 +153,19 @@ module.exports = function(MeanUser) {
                 }
             }*/
             emailModule = _parseAndUpdateModule(emailModule);
-            console.log('2');
+            // console.log('2');
 
             // because we set our user.provider to local our models/user.js validation will always be true
             req.assert('name', 'You must enter a name').notEmpty();
             req.assert('type', 'You must enter a type').notEmpty();
-            console.log('3');
+            // console.log('3');
 
             var errors = req.validationErrors();
             if (errors) 
             {
                 return res.status(400).send(errors);
             }
-            console.log('4');
+            // console.log('4');
 
             if(req.user)
             {
@@ -177,9 +175,9 @@ module.exports = function(MeanUser) {
                 //console.log('newsletter entity create 1');
                 emailModule.save(function(err, resEmailModule) 
                 {
-                    console.log('5');
-                    console.log(err);
-                    console.log(resEmailModule);
+                    // console.log('5');
+                    // console.log(err);
+                    // console.log(resEmailModule);
                     //console.log('newsletter entity create 222');
                     if (err) 
                     {
@@ -212,7 +210,7 @@ module.exports = function(MeanUser) {
                             }
                         }
 
-                        console.log('newsletter entity create 888');
+                        // console.log('newsletter entity create 888');
                         return res.status(400).end();
                     }
                     else
@@ -314,7 +312,7 @@ module.exports = function(MeanUser) {
         },
         update: function(req, res) 
         {
-            console.log('update email module');
+            // console.log('update email module');
             EmailModule.findOne(
             {
                 _id: req.params.moduleId
@@ -322,7 +320,7 @@ module.exports = function(MeanUser) {
             {
                 emailModule = _.extend(emailModule, req.body);
                 emailModule.updatedBy = req.user.username;
-                console.log('update email module cb');
+                // console.log('update email module cb');
 
                 /*
                 if(emailModule.views != null)
@@ -376,8 +374,8 @@ module.exports = function(MeanUser) {
         },
         list: function(req, res, next) 
         {
-            console.log('list');
-            console.log(req.query.company);
+            // console.log('list');
+            // console.log(req.query.company);
             EmailModule.find(
                 { company: req.query.company },
                 'name company createdBy createdAt updatedBy updatedAt'

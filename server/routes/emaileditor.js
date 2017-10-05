@@ -2,7 +2,7 @@
 
 /* jshint -W098 */
 // The Package is past automatically as first parameter
-module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circles) 
+module.exports = function(Emaileditor, app, auth, database, circles) 
 {
   // app.use(circles.controller.loadCircles);
   // app.use(circles.controller.userAcl);
@@ -15,7 +15,7 @@ module.exports = function(Emaileditor, app, auth, database, amazingEloqua, circl
   var emailTemplates      = require('../controllers/emailTemplate')();
   var newsletterEntities  = require('../controllers/newsletterEntity')(circles.controller);
   var emailModules        = require('../controllers/emailModule')(circles.controller);
-  var eloqua              = require('../controllers/eloqua')(amazingEloqua, circles);
+  var eloqua              = require('../controllers/eloqua')(circles);
   var email               = require('../controllers/email')(circles.controller);
   var helper              = require('../controllers/helper')();
   var feed                = require('../controllers/feed')();

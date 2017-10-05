@@ -10,10 +10,10 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       name: 'emaileditor'
     };
 
-    var dndElementIdentifier = 'dndelement';
-    var clickableElementIdentifier = 'clickableElement';
-    $scope.modalInstance = '';
-    var modalInstance = null;
+    var dndElementIdentifier        = 'dndelement';
+    var clickableElementIdentifier  = 'clickableElement';
+    $scope.modalInstance            = '';
+    var modalInstance               = null;
     var entity = {};
 
     var EloquaEmail               = EloquaService.eloquaEmail();
@@ -21,12 +21,12 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     var EloquaTestEmail           = EloquaService.eloquaTestEmail();
     var EloquaCampaignUnschedule  = EloquaService.eloquaCampaignUnschedule();
 
-    var storedEloquaEmail = null;
-    var storedEloquaCampaign = null;
-    var sendRightNow = false;
+    var storedEloquaEmail     = null;
+    var storedEloquaCampaign  = null;
+    var sendRightNow          = false;
 
-    var emailId = null;
-    $scope.storedEmail = null;
+    var emailId         = null;
+    $scope.storedEmail  = null;
 
     $scope.enableDropZone = false;
 
@@ -35,25 +35,25 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     $scope.EmailName    = '';
     $scope.EmailSubject = '';
 
-    $scope.your_variable = '';
-    $scope.rssContent = 'omg';
-    $scope.test1234 = 'omg';
+    $scope.your_variable  = '';
+    $scope.rssContent     = 'omg';
+    $scope.test1234       = 'omg';
 
     $scope.showSendingOptions = true;
 
-    $scope.feedPositions = [];
-    $scope.modulePositions = [];
-    $scope.skipedEntries = [];
+    $scope.feedPositions      = [];
+    $scope.modulePositions    = [];
+    $scope.skipedEntries      = [];
     $scope.skipedEmailModules = {};
 
     $scope.errorMsgs = [];
 
-    $scope.firstInit = true;
-    $scope.loading = false;
+    $scope.firstInit  = true;
+    $scope.loading    = false;
     var feeds = [];
 
-    $scope.newsletterEntity = '000';
-    $scope.containsHiddenPreview = false;
+    $scope.newsletterEntity       = '000';
+    $scope.containsHiddenPreview  = false;
     
     /*
     $scope.emailSegements = 
@@ -73,9 +73,9 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     $scope.segment = '';
 
-    $scope.isEditMode = true;
-    $scope.isEmailModuleSelected = false;
-    $scope.currentEmailModule = 0;
+    $scope.isEditMode             = true;
+    $scope.isEmailModuleSelected  = false;
+    $scope.currentEmailModule     = 0;
 
     $scope.dateOptions =
     {
@@ -607,6 +607,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     function elementIdToPositions(identifier, identifier2, idStr)
     {
+      // console.log('elementIdToPositions(%s,%s,%s)', identifier, identifier2, idStr);
       var pos = {};
 
       var _tmp  = idStr.replace(identifier + '_', '');
@@ -636,6 +637,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       console.log("updateFeedPositions");
       console.log(data);
       var _data = data.slice(0);
+      console.log(_data);
       var containerId = 0;
       var modulePos = 0;
       for (var i = 0; i < _data.length; i++)
@@ -644,7 +646,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           // var posIdentifier = _data[i].replace(dndElementIdentifier + '_', '').split('_');
           containerId = ids.containerId;
           modulePos   = ids.moduleId;
-          _data[i]   = ids.id;
+          _data[i]    = ids.id;
       }
 
       console.log('containerId:'+containerId);
@@ -658,15 +660,34 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       {
         $scope.feedPositions[modulePos] = _data;
       }
-
     };
 
+    $scope.updateModulePositions = function(dropzoneId, oldIndex, newIndex)
+    {
+      // console.log('-- updateModulePositions --');
+      // console.log(dropzoneId);
+      $scope.modulePositions[dropzoneId]  = moveInArray($scope.modulePositions[dropzoneId],oldIndex, newIndex);
+    };
+
+    function moveInArray(array, old_index, new_index) 
+    {
+      if (new_index >= array.length) 
+      {
+          var k = new_index - array.length;
+          while ((k--) + 1) 
+          {
+            array.push(undefined);
+          }
+      }
+      array.splice(new_index, 0, array.splice(old_index, 1)[0]);
+      return array; // for testing purposes
+  };
   
     $scope.onAddModuleToEmail = function (dropzoneModuleIndex, moduleId, position) 
     {
-      console.log('onAddModuleToEmail');
-      console.log(moduleId);
-      console.log('countModulesInDropzone: '+countModulesInDropzone);
+      // console.log('onAddModuleToEmail');
+      // console.log(moduleId);
+      // console.log('countModulesInDropzone: '+countModulesInDropzone);
       $scope.loadingNewModule = true;
       var moduleIndex = -1;
       for (var i = 0; i < $scope.entity.dropzoneModules.length; i++)
@@ -863,9 +884,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       console.log(moduleData);
       if(moduleData.subModulePos)
       {
-        $scope.rssData[moduleData.modulePos][moduleData.subModulePos].data  = moduleData.entries;
-        $scope.feedPositions[moduleData.modulePos][moduleData.subModulePos] = moduleData.positions;
-
         for(var i = 0; i < moduleData.entries.length; i++) 
         {
           if(moduleData.entries[i])
@@ -975,9 +993,9 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
         if (isEdit) 
         {
-          moduleHtml += '<div data-ng-hide="' + moduleDataStr + '.state==0" id="emailModule_' + moduleIdStr + '" data-ng-class="{emailModule:true, inactiveEmailModule:' + moduleDataStr + '.state==2}">';
-          moduleHtml += '<div class="emailModuleHandle" id="emailModuleHandle_' + moduleIdStr + '"><i class="material-icons md-24">open_with</i></div>';
-          moduleHtml += '<div class="emailModuleSelector" id="emailModuleSelector_' + moduleIdStr + '"><i class="material-icons md-36">settings</i></div>';
+          moduleHtml += '<div data-ng-hide="' + moduleDataStr + '.state==0" id="emailModule_' + moduleIdStr + '" data-module-id="'+currentModule._id+'" data-ng-class="{emailModule:true, inactiveEmailModule:' + moduleDataStr + '.state==2}">';
+          moduleHtml += '<div class="emailModuleHandle" id="emailModuleHandle_' + moduleIdStr + '"><i class="material-icons">open_with</i></div>';
+          moduleHtml += '<div class="emailModuleSelector" id="emailModuleSelector_' + moduleIdStr + '"><i class="material-icons">settings</i></div>';
         }
 
         var preBody = currentModule.preBody;
@@ -990,20 +1008,29 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
             preBody = preBody.replace("{{" + variableName + "}}", '{{' + moduleDataStr + '.bodyData.' + variableName + '}}');
           }
         }
-        moduleHtml += preBody;
+        console.log('preBODY');
+        console.log(preBody);
 
+        //if the preBody is empty add a spacer to be able to drop modules before it
+        if(isEdit && ((preBody && preBody.trim() == '')  || !preBody) )
+        {
+          console.log('ADD spaCer');
+          preBody = '<div class="moduleSpacer"></div>';
+        }
+
+        moduleHtml += preBody;
         if (isEdit && isDraggable) 
         {
           moduleHtml += '<div class="sortable1">';
         }
 
-        console.log(moduleFeedPositions.length + '  '+ moduleData.numberOfEntries);
+        // console.log(moduleFeedPositions.length + '  '+ moduleData.numberOfEntries);
         for (var x = 0; (x < moduleFeedPositions.length && x < moduleData.numberOfEntries); x++) 
         {
-          console.log('feedPositions '+x);
+          // console.log('feedPositions '+x);
           var _tmpData = '';
           var i = moduleFeedPositions[x];
-          console.log(i);
+          // console.log(i);
 
           var entryState = moduleData.data[i].state;
 
@@ -1171,6 +1198,14 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
             postBody = postBody.replace("{{" + variableName + "}}", '{{' + moduleDataStr + '.bodyData.' + variableName + '}}');
           }
         }
+
+         //if the postBody is empty add a spacer to be able to drop modules before it
+         if(isEdit && ((postBody && postBody.trim() == '')  || !postBody) )
+         {
+           console.log('ADD spaCer');
+           postBody = '<div class="moduleSpacer"></div>';
+         }
+
         moduleHtml += postBody;
 
         if (isEdit)
@@ -1191,17 +1226,18 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     $scope.generateContainer = function (isEdit, container, data, adData, modulePositions, containerFeedPositions, dataStr, adDataStr, containerIdStr)
     {
-      console.log('generateContainer');
+      // console.log('generateContainer');
       // console.log(modulePositions);
       var formatedEntries = '';
       
       for (var moduleCounter = 0; moduleCounter < modulePositions.length; moduleCounter++) 
       {
-        // console.log('smodule '+moduleCounter);
+        // console.log('moduleCounter '+moduleCounter);
+        // console.log('moduleId '+modulePositions[moduleCounter].moduleId);
         var indexInDropZoneModules  = $scope.dropzoneIdtoIndex[modulePositions[moduleCounter].moduleId];
         var moduleIndex             = modulePositions[moduleCounter].index;
-        // console.log('moduleIndex '+moduleIndex);
-        // console.log('indexInDropZoneModules '+indexInDropZoneModules);
+        // console.log('moduleIndex '+ moduleIndex);
+        // console.log('indexInDropZoneModules '+ indexInDropZoneModules);         
 
         if(moduleIndex != undefined || moduleIndex != null)
         {          

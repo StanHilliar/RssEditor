@@ -6,7 +6,7 @@
 var mongoose = require('mongoose'),
     EmailModule = mongoose.model('EmailModule'),
     async = require('async'),
-    config = require('meanio').loadConfig();
+    config = require('meanio').getConfig();
     var url = require('url');
     var http = require('http');
     //var sizeOf = require('image-size');

@@ -7,7 +7,7 @@ var mongoose            = require('mongoose');
 var NewsletterEntity    = mongoose.model('NewsletterEntity');
 var emailModules        = require('./emailModule')();
 var async               = require('async');
-var config              = require('meanio').loadConfig();
+var config              = require('meanio').getConfig();
 // var _                   = require('lodash');
 var _                   = require('underscore');
 

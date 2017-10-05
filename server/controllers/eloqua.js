@@ -8,38 +8,39 @@ var email         = require('../controllers/email')();
 var mongoose 		  = require('mongoose');
 var Q           	= require('q');
 var amazingEloqua = require('amazing-eloqua')();
+var EloquaMngr		= require('../../../companies/server/controllers/eloquaManager');
+var eloquaMngr    = new EloquaMngr();
 var Company 		  = mongoose.model('Company');
 
+// function getCompanyById(companyId)
+// {
+// 	var deferred = Q.defer();
 
-function getCompanyById(companyId)
-{
-	var deferred = Q.defer();
+// 	Company.findOne({_id: companyId}, function (err, data) 
+// 	{
+// 		// console.log('findOne');
+// 		// console.log(err);
+// 		// console.log(data);
+// 		if (!err && data) 
+// 		{
+// 			deferred.resolve(data)   
+// 		}
+// 		else
+// 		{
+//       console.error(err);
+// 			deferred.reject(err);
+// 		} 
+// 	});
 
-	Company.findOne({_id: companyId}, function (err, data) 
-	{
-		// console.log('findOne');
-		// console.log(err);
-		// console.log(data);
-		if (!err && data) 
-		{
-			deferred.resolve(data)   
-		}
-		else
-		{
-      console.error(err);
-			deferred.reject(err);
-		} 
-	});
-
-	return deferred.promise;
-}
+// 	return deferred.promise;
+// }
 
 function getAmazingEloqua(companyId)
 {
   var deferred = Q.defer();
   console.log('getAmazingEloqua('+companyId+')');
 
-	getCompanyById(companyId).then(function(company)
+	eloquaMngr.getCompanyById(companyId).then(function(company)
   {
     console.log('getCompanyById cb');
     console.log(company);
@@ -51,7 +52,7 @@ function getAmazingEloqua(companyId)
       elqAccount.company      = company.eloquaAccounts[0].company;
       elqAccount.accessToken  = company.eloquaAccounts[0].accessToken ? true : false;
       elqAccount.refreshToken = company.eloquaAccounts[0].refreshToken ? true : false;
-      var eloqua = amazingEloqua.loginwithToken(company.eloquaAccounts[0].accessToken, company.eloquaAccounts[0].baseUrl);
+      var eloqua = eloquaMngr.loginWithToken(company.eloquaAccounts[0].accessToken, company.eloquaAccounts[0].baseUrl);
       deferred.resolve(eloqua)   
     }
     else
@@ -67,9 +68,9 @@ function getAmazingEloqua(companyId)
 }
 					
 
-module.exports = function(OLDamazingEloqua, circles) {
+module.exports = function(circles) {
   
-  function activateCampaignAndUpdateEmail(response, campaignId,  req, res, next)
+  function activateCampaignAndUpdateEmail(amazingEloqua, response, campaignId,  req, res, next)
   {
     console.log('activateCampaignAndUpdateEmail');
 
@@ -505,7 +506,7 @@ module.exports = function(OLDamazingEloqua, circles) {
               } 
               else
               {
-                activateCampaignAndUpdateEmail(response, response.id,  req,res,next);
+                activateCampaignAndUpdateEmail(amazingEloqua, response, response.id,  req,res,next);
               }
             });   
           });   
@@ -536,7 +537,7 @@ module.exports = function(OLDamazingEloqua, circles) {
               else
               {
                 console.log(response);
-                activateCampaignAndUpdateEmail(response, req.params.eloquaCampaignId, req, res, next);
+                activateCampaignAndUpdateEmail(amazingEloqua, response, req.params.eloquaCampaignId, req, res, next);
               }
             });   
           });   

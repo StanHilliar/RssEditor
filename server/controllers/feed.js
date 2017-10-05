@@ -18,7 +18,7 @@ module.exports = function() {
 
         	if(req != null && req.params != null && req.params.url != null && req.params.url != '')
         	{
-        		console.log('loadRSS: '+req.params.url);
+        		// console.log('loadRSS: '+req.params.url);
 				// var feedReq = request(req.params.url); 
 				var feedparser = new FeedParser();
 
@@ -33,7 +33,7 @@ module.exports = function() {
 					}	
 					else
 					{
-						console.log(response.statusCode);
+						// console.log(response.statusCode);
 					}
 
 				  	if (!error && response.statusCode == 200) 

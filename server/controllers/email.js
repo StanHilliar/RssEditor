@@ -7,7 +7,7 @@ var mongoose            = require('mongoose');
 var Email               = mongoose.model('Email');
 var NewsletterEntity    = mongoose.model('NewsletterEntity');
 var async               = require('async');
-var config              = require('meanio').loadConfig();
+var config              = require('meanio').getConfig();
 var crypto              = require('crypto');
 var _                   = require('lodash');
 var jwt                 = require('jsonwebtoken'); //https://npmjs.org/package/node-jsonwebtoken
@@ -81,9 +81,10 @@ module.exports = function(circles) {
          */
         create: function(req, res, next) 
         {
-            //console.log('newsletter entity create');
+            console.log(' ~~~~~~~~~ newsletter entity create ~~~~~~~~~~~~~~');
             var email = new Email(req.body);
-
+            console.log(req.body);
+            
             // because we set our user.provider to local our models/user.js validation will always be true
             req.assert('name', 'You must enter a name').notEmpty();
             req.assert('segment', 'You must enter a segment').notEmpty();
@@ -96,12 +97,15 @@ module.exports = function(circles) {
             req.assert('bounceBackAddress', 'the email must have a bounceBackAddress - contact an admin').notEmpty();
             req.assert('replyToName', 'the email must have a replyToName - contact an admin').notEmpty();
             req.assert('replyToEmail', 'the email must have a replyToEmail - contact an admin').notEmpty();
-
+            
+            console.log(' ~~~~~~~~~ 1 ~~~~~~~~~~~~~~');
+            console.log(errors);
             var errors = req.validationErrors();
             if (errors) 
             {
                 return res.status(400).send(errors);
             }
+            console.log(' ~~~~~~~~~ 2 ~~~~~~~~~~~~~~');
 
             // _checkNewsletterEntityForCircles(circles, req, req.body.newsletterEntity, function(checkAccessErr, hasAccess)
             // {

@@ -131,9 +131,10 @@
 									<div class="col-xs-12 col-md-12">
 										<h3>email module options</h3>
 										number of elements: {{selectedModule.data.numberOfEntries}}
-										<button type="button" class="btn btn-default btn-sm" ng-click="addEntry(selectedModule.containerId, selectedModule.moduleId)">
-										<span class=" glyphicon glyphicon-plus" aria-hidden="true" ></span> add
-										</button>
+										<md-button ng-click="addEntry(selectedModule.containerId, selectedModule.moduleId)" class="md-fab md-mini md-secondary">
+											<md-tooltip md-direction="bottom">add element</md-tooltip>
+											<md-icon class="material-icons md-light">add</md-icon>
+										</md-button>
 									</div>
 								</div>
 								
@@ -144,16 +145,21 @@
 
 								<div class="row">
 									<div class="col-xs-12 col-md-12">
-										<div class="btn-group" ng-show="selectedModule.module.removeable">
-											<label class="btn btn-primary" ng-model="selectedModule.data.state" uib-btn-radio="1" >active</label>
-											<label class="btn btn-primary" ng-model="selectedModule.data.state" uib-btn-radio="2" >inActive</label>
-											<label class="btn btn-primary" ng-model="selectedModule.data.state" uib-btn-radio="0" >deleted</label>
-										</div>
-										<div class="btn-group" ng-hide="selectedModule.module.removeable">
-											<label class="btn btn-primary disabled" popover-animation="true" popover-title="Why is this not working?" uib-popover="This option has been disabled by the admin for this module.">active</label>
-											<label class="btn btn-primary disabled">inActive</label>
-											<label class="btn btn-primary disabled">deleted</label>
-										</div>
+										<md-radio-group ng-model="selectedModule.data.state">			
+											<md-radio-button value="1" ng-disabled="!selectedModule.module.removeable">
+												<md-tooltip md-direction="left" ng-show="!selectedModule.module.removeable">This option has been disabled by the admin for this module</md-tooltip>
+												active
+											</md-radio-button>
+											<md-radio-button value="2" class="md-warn" ng-disabled="!selectedModule.module.removeable"> 
+												<md-tooltip md-direction="left" ng-show="!selectedModule.module.removeable">This option has been disabled by the admin for this module</md-tooltip>
+												inActive 
+											</md-radio-button>
+											<md-radio-button value="0" class="md-warn" ng-disabled="!selectedModule.module.removeable">
+												<md-tooltip md-direction="left" ng-show="!selectedModule.module.removeable">This option has been disabled by the admin for this module</md-tooltip>
+												deleted
+											</md-radio-button>
+										</md-radio-group>
+										<!--{{selectedModule.data.state}}-->
 									</div>
 								</div>
 							</div>
@@ -276,6 +282,12 @@
 					</div>
 				</div>
 			</div>
+			<!--{{feedPositions}}
+			<br> ---- <br>
+			{{modulePositions}}
+			<br> ---- <br>
+			{{dropzoneIdtoIndex}} -->
+			
 		
 		</div>	
 		

@@ -4,64 +4,8 @@
 
 	angular.module('ngWYSIWYG', ['ngSanitize']);
 	var template = "<div class=\"tinyeditor\">" +
-		"<div class=\"tinyeditor-header\" ng-hide=\"editMode\">" +
-		"<div class=\"tinyeditor-buttons-group\">" +
-		"<div class=\"tinyeditor-control\" title=\"Bold\" style=\"background-position: 34px -120px;\" ng-class=\"{\'pressed\': cursorStyle.bold}\" ng-click=\"execCommand(\'bold\')\"></div>" +
-		"<div class=\"tinyeditor-control\" title=\"Italic\" style=\"background-position: 34px -150px;\" ng-class=\"{\'pressed\': cursorStyle.italic}\" ng-click=\"execCommand(\'italic\')\"></div>" +
-		"<div class=\"tinyeditor-control\" title=\"Underline\" style=\"background-position: 34px -180px;\" ng-class=\"{\'pressed\': cursorStyle.underline}\" ng-click=\"execCommand(\'underline\')\"></div>" +
-		"<div class=\"tinyeditor-control\" title=\"Strikethrough\" style=\"background-position: 34px -210px;\" ng-class=\"{\'pressed\': cursorStyle.strikethrough}\" ng-click=\"execCommand(\'strikethrough\')\"></div>" +
-		"<div class=\"tinyeditor-divider\"></div>" +
-		"<div class=\"tinyeditor-control\" title=\"Subscript\" style=\"background-position: 34px -240px;\" ng-class=\"{\'pressed\': cursorStyle.sub}\"ng-click=\"execCommand(\'subscript\')\"></div>" +
-		"<div class=\"tinyeditor-control\" title=\"Superscript\" style=\"background-position: 34px -270px;\" ng-class=\"{\'pressed\': cursorStyle.super}\" ng-click=\"execCommand(\'superscript\')\"></div>" +
-		"<div class=\"tinyeditor-divider\"></div>" +
-		"<div class=\"tinyeditor-control\" title=\"Left Align\" style=\"background-position: 34px -420px;\" ng-class=\"{\'pressed\': cursorStyle.alignment == 'left'}\" ng-click=\"execCommand(\'justifyleft\')\"></div>" +
-		"<div class=\"tinyeditor-control\" title=\"Center Align\" style=\"background-position: 34px -450px;\" ng-class=\"{\'pressed\': cursorStyle.alignment == 'center'}\" ng-click=\"execCommand(\'justifycenter\')\"></div>" +
-		"<div class=\"tinyeditor-control\" title=\"Right Align\" style=\"background-position: 34px -480px;\" ng-class=\"{\'pressed\': cursorStyle.alignment == 'right'}\" ng-click=\"execCommand(\'justifyright\')\"></div>" +
-		"<div class=\"tinyeditor-control\" title=\"Block Justify\" style=\"background-position: 34px -510px;\" ng-class=\"{\'pressed\': cursorStyle.alignment == 'justify'}\" ng-click=\"execCommand(\'justifyfull\')\"></div>" +
-		"<div class=\"tinyeditor-divider\"></div>" +
-		"</div>" +
-		"<div class=\"tinyeditor-buttons-group\">" +
-		"<div class=\"tinyeditor-control\" title=\"Insert Ordered List\" style=\"background-position: 34px -300px;\" ng-click=\"execCommand(\'insertorderedlist\')\"></div>" +
-		"<div class=\"tinyeditor-control\" title=\"Insert Unordered List\" style=\"background-position: 34px -330px;\" ng-click=\"execCommand(\'insertunorderedlist\')\"></div>" +
-		"<div class=\"tinyeditor-divider\"></div><div class=\"tinyeditor-control\" title=\"Outdent\" style=\"background-position: 34px -360px;\" ng-click=\"execCommand(\'outdent\')\"></div>" +
-		"<div class=\"tinyeditor-control\" title=\"Indent\" style=\"background-position: 34px -390px;\" ng-click=\"execCommand(\'indent\')\"></div>" +
-		"<div class=\"tinyeditor-divider\"></div>" +
-		"</div>" +
-		"<div class=\"tinyeditor-buttons-group\">" +
-		"<div class=\"tinyeditor-control\" title=\"Remove Formatting\" style=\"background-position: 34px -720px;\" ng-click=\"execCommand(\'removeformat\')\"></div>" +
-		"<div class=\"tinyeditor-divider\"></div>" +
-		"<div class=\"tinyeditor-control\" title=\"Undo\" style=\"background-position: 34px -540px;\" ng-click=\"execCommand(\'undo\')\"></div>" +
-		"<div class=\"tinyeditor-control\" title=\"Redo\" style=\"background-position: 34px -570px;\" ng-click=\"execCommand(\'redo\')\"></div>" +
-		"<div class=\"tinyeditor-divider\"></div>" +
-		"</div>" +
-		"<div class=\"tinyeditor-buttons-group\">" +
-		"<div class=\"tinyeditor-control\" title=\"Font Color\" style=\"background-position: 34px -779px; position: relative;\" ng-click=\"showFontColors = !showFontColors\">            <colors-grid show=\"showFontColors\" on-pick=\"setFontColor(color)\"><colors-grid>        </div>" +
-		"<div class=\"tinyeditor-control\" title=\"Background Color\" style=\"background-position: 34px -808px; position: relative;\" ng-click=\"showBgColors = !showBgColors\">            <colors-grid show=\"showBgColors\" on-pick=\"setBgColor(color)\"><colors-grid>        </div>" +
-		"</div>" +
-		"<div class=\"tinyeditor-buttons-group\">" +
-		"<div class=\"tinyeditor-control\" title=\"Insert Image\" style=\"background-position: 34px -600px;\" ng-click=\"insertImage()\"></div>" +
-		"<div class=\"tinyeditor-control\" title=\"Insert Horizontal Rule\" style=\"background-position: 34px -630px;\" ng-click=\"execCommand(\'inserthorizontalrule\')\"></div>" +
-		"<div class=\"tinyeditor-control\" title=\"Insert Special Symbol\" style=\"background-position: 34px -838px; position: relative;\" ng-click=\"showSpecChars = !showSpecChars\">            <symbols-grid show=\"showSpecChars\" on-pick=\"insertSpecChar(symbol)\"><symbols-grid>        </div>" +
-		"<div class=\"tinyeditor-control\" title=\"Insert Hyperlink\" style=\"background-position: 34px -660px;\" ng-click=\"insertLink()\"></div>" +
-		"<div class=\"tinyeditor-control\" title=\"Remove Hyperlink\" style=\"background-position: 34px -690px;\" ng-click=\"execCommand(\'unlink\')\"></div>" +
-		"<div class=\"tinyeditor-divider\"></div>" +
-		"</div>" +
-		"<div class=\"tinyeditor-buttons-group\">" +
-		"<div class=\"tinyeditor-control\" title=\"Print\" style=\"background-position: 34px -750px;\" ng-click=\"execCommand(\'print\')\"></div>" +
-		"</div>" +
-		"<div class=\"tinyeditor-buttons-group\">" +
-		"<select class=\"tinyeditor-font\" ng-model=\"font\" ng-options=\"a as a for a in fonts\" ng-change=\"fontChange()\"><option value=\"\">Font</option></select>" +
-		"<select class=\"tinyeditor-size\" ng-model=\"fontsize\" ng-options=\"a.key as a.name for a in fontsizes\" ng-change=\"sizeChange()\"><option value=\"\">Size</option></select>" +
-		"<select class=\"tinyeditor-style\" ng-model=\"textstyle\" ng-options=\"s.key as s.name for s in styles\" ng-change=\"styleChange()\"><option value=\"\">Style</option></select>" +
-		"</div>" +
-		"<div style=\"clear: both;\"></div>" +
-		"</div>" +
-		"<div class=\"sizer\" ce-resize>" +
-		"<textarea data-placeholder-attr=\"\" style=\"-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; resize: none; width: 100%; height: 100%;\" ng-show=\"editMode\" ng-model=\"content\"></textarea>        <iframe id=\"frame\" style=\"-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; width: 100%; height: 100%;\" ng-hide=\"editMode\" wframe=\"\" ng-model=\"content\"></iframe>    </div>" +
-		"<div class=\"tinyeditor-footer\">" +
-		"<div ng-switch=\"editMode\" ng-click=\"editMode = !editMode\" class=\"toggle\"><span ng-switch-when=\"true\">wysiwyg</span><span ng-switch-default>source</span></div>" +
-		"</div>" +
-		"</div>";
+		"<iframe id=\"frame\" style=\"-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; width: 100%; height: 100%;\" ng-hide=\"editMode\" wframe=\"\" ng-model=\"content\"></iframe>    </div>";
+		
 
 	angular.module('ngWYSIWYG').directive('wframe', ['$compile', '$timeout',
 		function ($compile, $timeout)
@@ -83,37 +27,19 @@
 				var $head = angular.element($element[0].contentDocument.head);
 				//$body.attr('contenteditable', 'true');
 
-				var jQueryUILoaded = false;
-				var isEditMode = true;
-
-				var isDNDInit = false;
-				var isSortableInit = false;
-
-
-				/*var scriptTag = "<script type='text/javascript' src='https://code.jquery.com/jquery-1.11.3.min.js'><";
-				scriptTag +=  "/script>";
-				jQuery("iframe").contents().find("head").append(scriptTag);*/
-
-				/*scriptTag = "<script type='text/javascript' src='https://code.jquery.com/ui/1.11.4/jquery-ui.min.js'><";
-				scriptTag +=  "/script>";
-				jQuery("iframe").contents().find("head").append(scriptTag);*/
-				/*
-				$element.bind('load', function (event) {
-				console.log('iframe loaded');
-				$document.designMode = 'On';
-				});
-				*/
+				var jQueryUILoaded 	= false;
+				var isEditMode 		= true;
+				var isDNDInit 		= false;
+				var isSortableInit 	= false;
 
 				//model --> view
 				ctrl.$render = function ()
 				{
-					console.log('render');
+					// console.log('render');
 					//$body.html(ctrl.$viewValue || ''); //not friendly with jQuery. snap you jQuery
 
 					$body[0].innerHTML = ctrl.$viewValue || '';
 
-					//scope.feedNumberOfEntries = '1122';
-					//scope.rss = scope.rssData;
 					scope.rssData 			= scope.api.scope.rssData;
          			scope.hiddenPreviewText = scope.api.scope.hiddenPreviewText;
 					scope.adData 			= scope.api.scope.adData;
@@ -156,135 +82,17 @@
 					$element[0].contentWindow.foo();
 					angular.element('#frame').ready(function () 
 					{
-						console.log('frame ready');
+						// console.log('frame ready');
 						initSortable();
 					});
 				}
 
 				scope.api.initSortable = function ()
 				{
-					//console.log('11111111111111111  initSortable !!!!!!!!!!!!!!!!!!! _-----------------------');
-					/*
-					jQuery('iframe').on('initSortable', function() 
-					{
-						//console.log('iframe load !!!!!!!!!!!!!!!!!!!!!!!!!!');
-						var win = this.contentWindow,
-							doc = win.document,
-							ibody = doc.body,
-							jQueryLoaded = false,
-							ijQuery;
-		
-						function loadJQueryUI() 
-						{
-							//console.log('loadJQueryUI()');
-							//ibody.removeChild(ijQuery);
-							//ijQuery = null;
-		
-							win.jQuery.ajax(
-							{
-								url: 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js',
-								dataType: 'script',
-								cache: true,
-								success: function () 
-								{
-									jQueryUILoaded = true;
-									var wquery = win.jQuery;
-									//win.jQuery('.sortable1').sortable({ cursor: 'move' });
-								    
-									win.jQuery('.sortable1').sortable(
-									{ 
-										items : '.dndelement:not(.static)',
-										start : function()
-										{
-											//console.log('sortable start');
-											win.jQuery('.static', this).each(function()
-											{
-												var that = wquery(this);
-												that.data('pos', that.index());
-												//console.log(that.index());
-											});
-										},
-										change : function()
-										{
-											//console.log('change');
-											var sortable = wquery(this);
-											var statics = win.jQuery('.static', this).detach();
-											var helper = win.jQuery('<div class="dndelement"></div>').prependTo(this);
-		
-											statics.each(function()
-											{
-												var that = win.jQuery(this);
-												var target = that.data('pos'); 
-									
-												//console.log(target);
-		
-												that.insertAfter(win.jQuery('div.dndelement, div.dndplaceholder, div.static', sortable).eq(target));
-											});
-											helper.remove();
-											//console.log('change done');
-										},
-										stop : function(event, ui)
-										{
-											//console.log('stop');
-											//console.log(wquery(this).attr('id'));
-											//console.log(wquery(this).attr('class'));
-											//scope.lessonClicked({ lesson: '33333' });
-											scope.api.scope.updateFeedPositions(wquery(this).sortable("toArray"));
-										},
-										placeholder: "ui-state-highlight dndplaceholder"
-									});
-		
-									win.jQuery('.pickUpArea').sortable(
-									{ 
-										items : '.dndelement:not(.static)',
-										placeholder: "ui-state-highlight dndplaceholder"
-									});
-		
-									//console.log('SETTING UP ONCLICK !!!!!!!!!!!!!');
-									win.jQuery(".clickableElement").click(function()
-									{
-										//win.jQuery(this).attr('id');
-										//console.log('click');
-										//console.log(win.jQuery(this).attr('id'));
-										scope.api.scope.clickOnElement(win.jQuery(this).attr('id'));
-									}); 
-									win.jQuery(".emailModuleSelector").click(function()
-									{
-										//win.jQuery(this).attr('id');
-										//console.log('click');
-										//console.log(win.jQuery(this).attr('id'));
-										scope.api.scope.clickOnEmailModule(win.jQuery(this).attr('id'));
-									});
-		
-									win.jQuery('a').on('click', function(e) { e.preventDefault(); });
-		
-									win.jQuery(".sortable1 div, #sortable2 li").disableSelection();
-								}
-							});
-						}
-		
-						ijQuery = doc.createElement('script');
-		
-						// based on https://gist.github.com/getify/603980
-						ijQuery.onload = ijQuery.onreadystatechange = function () 
-						{
-							if ((ijQuery.readyState && ijQuery.readyState !== 'complete' && ijQuery.readyState !== 'loaded') || jQueryLoaded) 
-							{
-								return false;
-							}
-							ijQuery.onload = ijQuery.onreadystatechange = null;
-							jQueryLoaded = true;
-							loadJQueryUI();
-						};
-		
-						ijQuery.src = 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js';
-						ibody.appendChild(ijQuery);
-					});
-					jQuery('iframe').trigger( "initSortable" );*/
 					dndEditorCtrl.iFrameLoaded('test');
 
 					initSortable();
-				}
+				};
 
 				function initSortable() 
 				{
@@ -341,7 +149,7 @@
 					var myIFrame = angular.element('#frame').contents();
 					if (elInner)
 					{
-						Sortable.create(elInner,
+						var mainSortable = Sortable.create(elInner,
 						{
 							handle: '.emailModuleHandle',
 							group:
@@ -350,6 +158,7 @@
 								pull: true,
 								put: true
 							},
+							dataIdAttr	: 'data-module-id',
 							draggable	: '.emailModule',
 							ghostClass	: 'emailModuleGhost',
 							dragClass	: 'emailModuleDrag',
@@ -358,7 +167,7 @@
 								var itemEl = evt.item;  // dragged HTMLElement
 								evt.from;  // previous list
 								// + indexes from onEnd
-								console.log('onAdd ('+evt.oldIndex+'/'+evt.newIndex+')');
+								// console.log('onAdd ('+evt.oldIndex+'/'+evt.newIndex+')');
 								// console.log(evt);
 								// console.log(evt.oldIndex);
 								// console.log(evt.newIndex);
@@ -368,12 +177,20 @@
 							onRemove: function (/**Event*/evt) 
 							{
 								// same properties as onUpdate
-								console.log('onRemove ('+evt.oldIndex+'/'+evt.newIndex+')');
+								// console.log('onRemove ('+evt.oldIndex+'/'+evt.newIndex+')');
 								// console.log(evt.item);
 								// console.log(evt.item.attr('id'));
 						
 								scope.api.scope.onRemoveModuleFromEmail(evt.item.getAttribute('id'), evt.oldIndex);
 							},
+							onEnd: function (/**Event*/evt)
+							{		
+								// console.log('-- onEnd -- ');
+								// console.log(evt.oldIndex);
+								// console.log(evt.newIndex);							
+								// scope.api.scope.updateModulePositions(elInner.getAttribute('data-dropzone-id'), mainSortable.toArray());
+								scope.api.scope.updateModulePositions(elInner.getAttribute('data-dropzone-id'), evt.oldIndex, evt.newIndex);
+							}
 						});
 				
 						for (var i = 0; i < elInner.children.length; i++)
@@ -401,14 +218,14 @@
 						// console.log(".clickableElement:");
 						// console.log(myIFrame.find(".dndelement.clickableElement"));
 					}
-					// else
-					// {
+					else
+					{
 						var mySortables = angular.element('#frame').contents().find('.sortable1');
 						for (var x = 0; x < mySortables.length; x++)
 						{						
 							initSubSortable(myIFrame, mySortables[x]);
 						}
-					// }
+					}
 
 					myIFrame.find(".clickableElement").click(function ()
 					{
@@ -425,7 +242,7 @@
 				
 				function initSubSortable(myIFrame, elementContainer)
 				{
-					console.log('initSubSortable(%s,%s)', myIFrame, elementContainer);
+					// console.log('initSubSortable(%s,%s)', myIFrame, elementContainer);
 					// var subSortable = document.getElementById('subsortable');
 					var sortable123 = Sortable.create(elementContainer,
 						{
@@ -446,7 +263,7 @@
 								// var smallerIndex = Math.min(evt.oldIndex, evt.newIndex);
 								// var biggerIndex  = Math.max(evt.oldIndex, evt.newIndex);
 								var order = sortable123.toArray();
-								console.log(order);
+								// console.log(order);
 
 								// console.log(smallerIndex);
 								// console.log(biggerIndex);
@@ -488,22 +305,22 @@
 									}
 								}
 
-								console.log('-------------');
-								console.log(newOrder);
+								// console.log('-------------');
+								// console.log(newOrder);
 								sortable123.sort(newOrder);
 								scope.api.scope.updateFeedPositions(newOrder);
 							},
 							onUpdate: function (/**Event*/evt)
 							{
-								console.log('onUpdate');
+								// console.log('onUpdate');
 								var itemEl = evt.item;  // dragged HTMLElement
 								// + indexes from onEnd
 							},
 							onMove: function (/**Event*/evt, /**Event*/originalEvent)
 							{
-								console.log('onMove');
-								console.log(evt);
-								console.log(originalEvent);
+								// console.log('onMove');
+								// console.log(evt);
+								// console.log(originalEvent);
 								// Example: http://jsbin.com/tuyafe/1/edit?js,output
 								evt.dragged; // dragged HTMLElement
 								evt.draggedRect; // TextRectangle {left, top, right и bottom}
@@ -516,7 +333,7 @@
 							// Called by any change to the list (add / update / remove)
 							onSort: function (/**Event*/evt)
 							{
-								console.log('onSort');
+								// console.log('onSort');
 								// same properties as onUpdate
 							}
 						});
@@ -551,7 +368,7 @@
 							$head = angular.element($element[0].contentDocument.head); $document = $element[0].contentDocument;
 							$document.open(); //damn Firefox. kudos: http://stackoverflow.com/questions/15036514/why-can-i-not-set-innerhtml-of-an-iframe-body-in-firefox
 							//$document.write('<!DOCTYPE html><html><head></head><body contenteditable="true"></body></html>');
-							$document.write('<!DOCTYPE html><html><head><link rel="stylesheet" href="/emaileditor/assets/css/iframeEditor.css"><link rel="stylesheet" href="/theme/assets/fonts/font-awesome/css/font-awesome.css?v=296d368ac8e07ef0e76f4d2df5836ba5"></head><body></body></html>');
+							$document.write('<!DOCTYPE html><html><head><link rel="stylesheet" href="/emaileditor/assets/css/iframeEditor.css"><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"></head><body></body></html>');
 							$document.close();
 							//$document.designMode = 'On';
 							$body = angular.element($element[0].contentDocument.body);
@@ -679,8 +496,8 @@
 
 				scope.$on('execCommand', function (e, cmd)
 				{
-					console.log('execCommand: ');
-					console.log(cmd);
+					// console.log('execCommand: ');
+					// console.log(cmd);
 					$element[0].contentDocument.body.focus();
 					//scope.getSelection();
 					var sel = $document.selection; //http://stackoverflow.com/questions/11329982/how-refocus-when-insert-image-in-contenteditable-divs-in-ie
