@@ -212,6 +212,15 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
                 $scope.your_variable = $scope.generateEmail(true);
                 if($scope.api.initSortable) $scope.api.initSortable();
+
+                if($scope.storedEmail.status == 'active')
+                {
+                  //if email is scheduled, set preview mode and select send tab
+                  $scope.isEditMode = false;
+                  $scope.setMode();
+                  $scope.leftNavTabIndex = 4;
+                }
+
                 if(cb) return cb();
               });
 

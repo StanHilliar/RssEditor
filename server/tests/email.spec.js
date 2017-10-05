@@ -95,6 +95,34 @@ describe('email.spec.js', function ()
         var hasOneOfTheseCirclestub;
         var hasCompanyStub;
 
+        before(function(done)
+        {
+            console.log('--- before -- ');
+            var user = 
+            {
+                email: "simon@thecrftrs.com",
+                password: "keines#44",
+                redirect: false
+            }
+            
+            request(url)
+            .post('/api/login')
+            .send(user)
+            //.expect(200)
+            .end(function (err, res) 
+            {
+                console.log(err);
+                if(res)
+                {
+                    console.log(res.error);
+                    console.log(res.body);
+                }
+                console.log('--- before  done -- ');
+               
+                done();
+            });
+        })
+
         beforeEach(function () 
         {
             emailStub = sinon.stub(Email, 'findOne');

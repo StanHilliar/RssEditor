@@ -22,6 +22,7 @@ describe('EmaileditorController', function ()
             module('mean.circles');
             module('mean.swagger');
             module('mean.users');
+            module('mean.companies');
             module('mean.emaileditor');
         });
 

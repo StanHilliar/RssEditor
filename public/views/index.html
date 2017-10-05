@@ -7,7 +7,7 @@
 				<li role="presentation" ng-class="tabs[2].class" ><a href="#" ng-click="changeTab(2)">Send</a></li>
 			</ul> -->
 			<md-tabs md-selected="leftNavTabIndex" md-dynamic-height="true" md-border-bottom>
-				<md-tab ng-disabled="!enableDropZone">
+				<md-tab ng-disabled="!enableDropZone || storedEmail.status=='active'">
 					<md-tab-label >
 						Add
 					</md-tab-label>
@@ -44,7 +44,7 @@
 						</div>
 					</md-tab-body>
 				</md-tab>
-				<md-tab>
+				<md-tab ng-disabled="storedEmail.status=='active'">
 					<md-tab-label>
 						Edit
 					</md-tab-label>
@@ -166,7 +166,7 @@
 						</div>
 					</md-tab-body>
 				</md-tab>
-				<md-tab>
+				<md-tab ng-disabled="storedEmail.status=='active'">
 					<md-tab-label>
 						Settings
 					</md-tab-label>
@@ -200,7 +200,7 @@
 						</div>
 					</md-tab-body>
 				</md-tab>
-				<md-tab ng-disabled="!storedEmail.eloquaEmail">
+				<md-tab ng-disabled="!storedEmail.eloquaEmail || storedEmail.status=='active'">
 					<md-tab-label>							
 						Test
 					</md-tab-label>
@@ -307,11 +307,11 @@
 			<h3>status: {{storedEmail.status? storedEmail.status : '---'}}</h3>
 					
 			&nbsp;&nbsp;&nbsp;&nbsp;
-			<md-switch class="md-primary" aria-label="switch Mode" ng-model="isEditMode" ng-change="setMode()">
+			<md-switch class="md-primary" aria-label="switch Mode" ng-model="isEditMode" ng-change="setMode()" ng-hide="storedEmail.status=='active'">
 				<span ng-show="isEditMode">Edit</span><span ng-hide="isEditMode">Preview</span> Mode
 			</md-switch>
 			&nbsp;&nbsp;		
-			<md-button data-ng-hide="saveInProgress" ng-click="saveEmail()" class="md-raised md-primary"><md-icon class="material-icons md-light md-48">save</md-icon> save</md-button>
+			<md-button data-ng-hide="saveInProgress || storedEmail.status=='active'" ng-click="saveEmail()" class="md-raised md-primary" ><md-icon class="material-icons md-light md-48" >save</md-icon> save</md-button>
 			<md-button data-ng-show="saveInProgress"  class="md-raised md-primary"><md-icon class="material-icons md-light md-48">save</md-icon> save</md-button>						
 		</div>
 	</md-toolbar>	
