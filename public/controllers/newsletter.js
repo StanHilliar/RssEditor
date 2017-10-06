@@ -77,6 +77,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     
     $scope.saveInProgress     = false;
     $scope.hasDropzone        = false;
+    var isFirstLoad           = true;
     
     function setup(options)
     {
@@ -106,9 +107,23 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
           function(error)
           {
             console.error(error);
-            obj.errorMsg = error;
+            if(error.data)
+            {
+              obj.errorMsg = error.data;
+            }
+            else
+            {
+              obj.errorMsg = error;
+            }
             obj.loading = false;
-            obj.deferred.reject();
+            if(error.data && error.data.code && error.data.code == 401)
+            {
+              obj.deferred.reject('unauthorized');
+            }
+            else
+            {
+              obj.deferred.reject();
+            }
           });
         }
       }
@@ -160,10 +175,10 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       return obj;
     }
     
+    var promises = [];
     $scope.load = function(cb)
     {
       console.log('--------------------load------------------------');
-      var promises = [];
       var entityQueryDeferred         = $q.defer();
       var segmentsDeferred            = $q.defer();
       var mineCompanyDeferred         = $q.defer();
@@ -241,7 +256,17 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       {
          entityQueryDeferred.resolve();
       }
+      
 
+        loadEloquaData();
+        
+      
+    }; // end load
+
+
+    function loadEloquaData()
+    {
+      console.log(EloquaService);
       ProductSettings.byProductName.get({company: $stateParams.company, product: 'EMAILEDITOR'}, function(productSettings)
       {
         console.log(productSettings);
@@ -252,9 +277,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
         $scope.entity.replyToEmail          = productSettings.defaults.replyToEmail;
         $scope.defaultReplyToName           = productSettings.defaults.replyToName;
         $scope.defaultReplyToEmail          = productSettings.defaults.replyToEmail;
-
-        console.log(EloquaService);
-
+      
         $scope.segments = setup(
         {
           query:  EloquaService.segments().query,
@@ -362,16 +385,49 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
           mineCompanyDeferred.resolve();
         });*/
 
-        $q.all(promises).then(function() 
+        $q.all(promises).then(function(values) 
         {
           console.log('all DONE!!!')
+          console.log(values);
+          isFirstLoad = false;
           if(cb)
           {
             return cb();
           }
+        }).catch(function(rejection)
+        {
+          console.log('rejected !!!')
+          console.log(rejection);
+  
+          if(isFirstLoad && rejection == 'unauthorized')
+          {
+            EloquaService.refreshToken().query({company: $stateParams.company}, function(r)
+            {
+
+              console.log('FIRST!!!!! -- now retry');
+              promises = [];
+              isFirstLoad = false;
+              loadEloquaData(false);
+            }, function(e)
+            {
+              console.error('error refreshing token');
+              console.error(e);
+              if(cb)
+              {
+                return cb();
+              }
+            });
+          }
+          else
+          {
+            if(cb)
+            {
+              return cb();
+            }
+          }
         });
       });
-    }; // end load
+    }
 
     function removeSelectedSegmentsfromAvailabeleSegments()
     {

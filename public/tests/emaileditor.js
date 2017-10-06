@@ -20,8 +20,9 @@ describe('EmaileditorController', function ()
             module('mean.system');
             module('mean.admin');
             module('mean.circles');
-            module('mean.swagger');
+            // module('mean.swagger');
             module('mean.users');
+            module('mean.meanStarter');
             module('mean.companies');
             module('mean.emaileditor');
         });
@@ -36,6 +37,19 @@ describe('EmaileditorController', function ()
         //     $controller = _$controller_;
         // }));
         
+        // beforeEach(inject(function(_$controller_, $rootScope, _$q_) 
+        // {
+        //     $scope      = $rootScope.$new();
+        //     q           = _$q_;
+
+        //     // $scope.emailTemplates = $scope.entity;
+
+        //     $controller = _$controller_('EmailModuleEditController', 
+        //     {
+        //         $scope: $scope
+        //     });
+        // }));
+
         beforeEach(inject(function(_$controller_, $rootScope, _$q_, _Emaileditor_) 
         {
             $scope      = $rootScope.$new();
@@ -94,8 +108,10 @@ describe('EmaileditorController', function ()
             module('mean.system');
             module('mean.admin');
             module('mean.circles');
-            module('mean.swagger');
+            // module('mean.swagger');
             module('mean.users');
+            module('mean.meanStarter');
+            module('mean.companies');
             module('mean.emaileditor');
         });
 
@@ -199,8 +215,10 @@ describe('EmaileditorController', function ()
             module('mean.system');
             module('mean.admin');
             module('mean.circles');
-            module('mean.swagger');
+            // module('mean.swagger');
             module('mean.users');
+            module('mean.meanStarter');
+            module('mean.companies');
             module('mean.emaileditor');
             originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
             jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
@@ -318,8 +336,10 @@ describe('EmaileditorController', function ()
             module('mean.system');
             module('mean.admin');
             module('mean.circles');
-            module('mean.swagger');
+            // module('mean.swagger');
             module('mean.users');
+            module('mean.meanStarter');
+            module('mean.companies');
             module('mean.emaileditor');
         });
 

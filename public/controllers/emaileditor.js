@@ -129,8 +129,11 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
               $scope.dropzoneIdtoIndex[$scope.entity.dropzoneModules[i]._id] = i;
             }
           }
-
-          $scope.segment = $scope.entity.segments[0].id;
+          
+          if($scope.entity.segments && $scope.entity.segments[0])
+          {
+            $scope.segment = $scope.entity.segments[0].id;
+          }
 
           // console.log( $scope.your_variable);
           if ($stateParams.emailid != null) 
@@ -457,6 +460,23 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
             $scope.errorMsgs = [];
             $scope.errorMsgs.push({ param: 'email', msg: 'couldnt save email in Eloqua' });
 
+            if(data.code == 401)
+            {
+
+              // EloquaService.refreshToken().query({company: $stateParams.company}, function(r)
+              // {
+              //   $scope.errorMsgs = [];
+              //   $scope.errorMsgs.push({ param: 'email', msg: 'couldnt save email in Eloqua' });
+              // }, function(e)
+              // {
+               
+              //   if(cb)
+              //   {
+              //     return cb();
+              //   }
+              // });
+            }
+
             $scope.saveInProgress = false;
             if (cb) return cb();
           });
@@ -557,24 +577,121 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       {
         $scope.testSendingInProgress = true;
 
-        var campaign = new EloquaTestEmail();
-        campaign.emailAddresses = $scope.testEmailAddresses;
-        campaign.eloquaEmailId = $scope.storedEmail.eloquaEmail;
-        campaign.company = $stateParams.company;
-        campaign.$save(function (data, headers)
-        {
-          // console.log('EloquaTestEmail');
-
-          $scope.errorMsgs = [];
-          $scope.testSendingInProgress = false;
-        },
+        _sendTestEmail(
+          function (data, headers)
+          {
+            // console.log('EloquaTestEmail');
+    
+            $scope.errorMsgs = [];
+            $scope.testSendingInProgress = false;
+          },
           function (data, headers)
           {
             $scope.errorMsgs = data.data;
-            $scope.testSendingInProgress = false;
+            console.log(data.data)
+            if(data && data.data && data.data[0] && data.data[0].code == 401)
+            {
+              console.log('unauthorized')
+              EloquaService.refreshToken().query({company: $stateParams.company}, function(r)
+              {
+                $scope.errorMsgs = [];
+                $scope.errorMsgs.push({ param: 'email', msg: 'couldnt save email in Eloqua' });
+              }, 
+              function(e)
+              {
+                _sendTestEmail(
+                  function (data, headers)
+                  {         
+                    $scope.errorMsgs = [];
+                    $scope.testSendingInProgress = false;
+                  },
+                  function (data, headers)
+                  {
+                    $scope.errorMsgs = data.data;
+                    $scope.testSendingInProgress = false;
+                  });
+              });
+            }
+            else
+            {
+              $scope.testSendingInProgress = false;
+            }
           });
+        
+        // var campaign            = new EloquaTestEmail();
+        // campaign.emailAddresses = $scope.testEmailAddresses;
+        // campaign.eloquaEmailId  = $scope.storedEmail.eloquaEmail;
+        // campaign.company        = $stateParams.company;
+
+        // campaign.$save(function (data, headers)
+        // {
+        //   // console.log('EloquaTestEmail');
+
+        //   $scope.errorMsgs = [];
+        //   $scope.testSendingInProgress = false;
+        // },
+        // function (data, headers)
+        // {
+        //   $scope.errorMsgs = data.data;
+        //   $scope.testSendingInProgress = false;
+        //   if(data.code == 401)
+        //   {
+        //     console.log('unauthorized')
+        //     // EloquaService.refreshToken().query({company: $stateParams.company}, function(r)
+        //     // {
+        //     //   $scope.errorMsgs = [];
+        //     //   $scope.errorMsgs.push({ param: 'email', msg: 'couldnt save email in Eloqua' });
+        //     // }, function(e)
+        //     // {
+             
+        //     //   if(cb)
+        //     //   {
+        //     //     return cb();
+        //     //   }
+        //     // });
+        //   }
+          
+        // });
       }
     };
+
+    function _sendTestEmail(sucessCb, errorCb)
+    {
+      var campaign            = new EloquaTestEmail();
+      campaign.emailAddresses = $scope.testEmailAddresses;
+      campaign.eloquaEmailId  = $scope.storedEmail.eloquaEmail;
+      campaign.company        = $stateParams.company;
+
+      campaign.$save(sucessCb,errorCb);
+       // function (data, headers)
+      // {
+      //   // console.log('EloquaTestEmail');
+
+      //   $scope.errorMsgs = [];
+      //   $scope.testSendingInProgress = false;
+      // },
+      // function (data, headers)
+      // {
+      //   $scope.errorMsgs = data.data;
+      //   $scope.testSendingInProgress = false;
+      //   if(data.code == 401)
+      //   {
+      //     console.log('unauthorized')
+      //     // EloquaService.refreshToken().query({company: $stateParams.company}, function(r)
+      //     // {
+      //     //   $scope.errorMsgs = [];
+      //     //   $scope.errorMsgs.push({ param: 'email', msg: 'couldnt save email in Eloqua' });
+      //     // }, function(e)
+      //     // {
+           
+      //     //   if(cb)
+      //     //   {
+      //     //     return cb();
+      //     //   }
+      //     // });
+      //   }
+      // });
+    }
 
     $scope.changeTab = function(id)
     {

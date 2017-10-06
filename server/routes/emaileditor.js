@@ -63,14 +63,15 @@ module.exports = function(Emaileditor, app, auth, database, circles)
   app.get('/api/emaileditor/emailgroups/',  circles.controller.hasCompany(), eloqua.getEmailgroups);
   app.get('/api/emaileditor/emailheaders/', circles.controller.hasCompany(), eloqua.getEmailHeaders);
   app.get('/api/emaileditor/emailfooters/', circles.controller.hasCompany(), eloqua.getEmailFooters);
+  app.get('/api/emaileditor/refreshtoken',  circles.controller.hasCompany(), eloqua.refreshToken);
 
-  app.post('/api/emaileditor/eloquaemail/',                       circles.controller.hasCompany(),eloqua.createEmail);
-  app.post('/api/emaileditor/eloquaemail/:eloquaEmailId',         circles.controller.hasCompany(),eloqua.updateEmail);
-  app.post('/api/emaileditor/sendtestemail',                      circles.controller.hasCompany(),eloqua.sendTestEmail);
-  app.post('/api/emaileditor/scheduleemail',                      circles.controller.hasCompany(),eloqua.scheduleEmail);
-  app.post('/api/emaileditor/scheduleemail/:eloquaCampaignId',    circles.controller.hasCompany(),eloqua.updateEmailSchedule);
-  app.post('/api/emaileditor/unscheduleemail/:eloquaCampaignId',  circles.controller.hasCompany(),eloqua.unscheduleEmail); 
-  app.post('/api/emaileditor/saveemail',                          circles.controller.hasCompany(),eloqua.saveEmail);
+  app.post('/api/emaileditor/eloquaemail/',                       circles.controller.hasCompany(), eloqua.createEmail);
+  app.post('/api/emaileditor/eloquaemail/:eloquaEmailId',         circles.controller.hasCompany(), eloqua.updateEmail);
+  app.post('/api/emaileditor/sendtestemail',                      circles.controller.hasCompany(), eloqua.sendTestEmail);
+  app.post('/api/emaileditor/scheduleemail',                      circles.controller.hasCompany(), eloqua.scheduleEmail);
+  app.post('/api/emaileditor/scheduleemail/:eloquaCampaignId',    circles.controller.hasCompany(), eloqua.updateEmailSchedule);
+  app.post('/api/emaileditor/unscheduleemail/:eloquaCampaignId',  circles.controller.hasCompany(), eloqua.unscheduleEmail); 
+  app.post('/api/emaileditor/saveemail',                          circles.controller.hasCompany(), eloqua.saveEmail);
    
   app.get('/api/emaileditor/example/render', function(req, res, next) {
     Emaileditor.render('index', {

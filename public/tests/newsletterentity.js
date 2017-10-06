@@ -21,13 +21,15 @@ describe('Entity', function ()
             module('mean.system');
             module('mean.admin');
             module('mean.circles');
-            module('mean.swagger');
+            // module('mean.swagger');
             module('mean.users');
+            module('mean.meanStarter');
+            module('mean.companies');
             module('mean.emaileditor');
         });
 
         var $controller;
-        var $scope, NewsletterEntity, Eloqua, Circles, $timeout, $httpBackend;
+        var $scope, NewsletterEntity, EloquaService, Eloqua, Circles, $timeout, $httpBackend;
         var q;
         var entity1 = 
         [
@@ -76,12 +78,12 @@ describe('Entity', function ()
             }
         ];    
         
-        beforeEach(inject(function(_$controller_, $rootScope, _$httpBackend_ ,_$q_, _$timeout_, _NewsletterEntity_, _Eloqua_, _Circles_) 
+        beforeEach(inject(function(_$controller_, $rootScope, _$httpBackend_ ,_$q_, _$timeout_, _NewsletterEntity_, _EloquaService_, _Circles_) 
         {
             $scope              = $rootScope.$new();
             $timeout            = _$timeout_;
             NewsletterEntity    = _NewsletterEntity_;
-            Eloqua              = _Eloqua_;
+            EloquaService       = _EloquaService_;
             Circles             = _Circles_;
             $httpBackend        = _$httpBackend_;
             q                   = _$q_;
@@ -112,7 +114,7 @@ describe('Entity', function ()
                 return cb(entity1);
             });
 
-            spyOn(Eloqua, 'segments').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'segments').and.callFake(function(a, cb) 
             {
                 var  mySpy = {};
                 mySpy.query = function(a,cb) 
@@ -122,7 +124,7 @@ describe('Entity', function ()
                 return mySpy;
             });
 
-            spyOn(Eloqua, 'emailGroups').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'emailGroups').and.callFake(function(a, cb) 
             {
                 var  mySpy = {};
                 mySpy.query = function(a,cb) 
@@ -132,7 +134,7 @@ describe('Entity', function ()
                 return mySpy;
             });
 
-            spyOn(Eloqua, 'emailHeaders').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'emailHeaders').and.callFake(function(a, cb) 
             {
                 var  mySpy = {};
                 mySpy.query = function(a,cb) 
@@ -142,7 +144,7 @@ describe('Entity', function ()
                 return mySpy;
             });
 
-            spyOn(Eloqua, 'emailFooters').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'emailFooters').and.callFake(function(a, cb) 
             {
                 var  mySpy = {};
                 mySpy.query = function(a,cb) 
@@ -151,7 +153,7 @@ describe('Entity', function ()
                 };
                 return mySpy;
             });
-            spyOn(Eloqua, 'eloquaEmailEncoding').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'eloquaEmailEncoding').and.callFake(function(a, cb) 
             {
                 var  mySpy = {};
                 mySpy.query = function(a,cb) 
@@ -161,7 +163,7 @@ describe('Entity', function ()
                 return mySpy;
             });
 
-            spyOn(Eloqua, 'eloquaEmailConfig').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'eloquaEmailConfig').and.callFake(function(a, cb) 
             {
                 // console.log('eloquaEmailConfig -----------!!!!!!!!!!!-----------');
                 var  mySpy = {};
@@ -172,10 +174,10 @@ describe('Entity', function ()
                 return mySpy;
             });
 
-            spyOn(Circles, 'mineCompany').and.callFake(function(a, cb) 
-            {
-                return cb(mineCompany);
-            });
+            // spyOn(Circles, 'mineCompany').and.callFake(function(a, cb) 
+            // {
+            //     return cb(mineCompany);
+            // });
 
             $httpBackend.when('GET', 'system/views/index.html').respond('<section data-ng-controller="IndexController"></section>');
             $httpBackend.when('GET', '/api/users/me').respond({});
@@ -185,10 +187,10 @@ describe('Entity', function ()
             {
                 // $scope.init();
                 expect(NewsletterEntity.query).toHaveBeenCalled();
-                expect(Eloqua.segments).toHaveBeenCalled();
-                expect(Eloqua.emailGroups).toHaveBeenCalled();
-                expect(Eloqua.eloquaEmailEncoding).toHaveBeenCalled();
-                expect(Eloqua.eloquaEmailConfig).toHaveBeenCalled();
+                expect(EloquaService.segments).toHaveBeenCalled();
+                expect(EloquaService.emailGroups).toHaveBeenCalled();
+                expect(EloquaService.eloquaEmailEncoding).toHaveBeenCalled();
+                expect(EloquaService.eloquaEmailConfig).toHaveBeenCalled();
                 expect(Circles.mineCompany).toHaveBeenCalled();
 
                 expect($scope.entity).not.toBe(null);
@@ -217,14 +219,14 @@ describe('Entity', function ()
             var encoding    = [{"type":"EmailEncoding","id":"4","name":"Arabic"},{"type":"EmailEncoding","id":"5","name":"Bulgarian"},{"type":"EmailEncoding","id":"6","name":"Catalan"},{"type":"EmailEncoding","id":"7","name":"Chinese (Simplified)"},{"type":"EmailEncoding","id":"8","name":"Chinese (Traditional)"},{"type":"EmailEncoding","id":"9","name":"Croatian"},{"type":"EmailEncoding","id":"10","name":"Czech"},{"type":"EmailEncoding","id":"11","name":"Danish"},{"type":"EmailEncoding","id":"12","name":"Dutch"},{"type":"EmailEncoding","id":"1","name":"English"},{"type":"EmailEncoding","id":"13","name":"Estonian"},{"type":"EmailEncoding","id":"14","name":"Finnish"},{"type":"EmailEncoding","id":"2","name":"French"},{"type":"EmailEncoding","id":"15","name":"German"},{"type":"EmailEncoding","id":"16","name":"Greek"},{"type":"EmailEncoding","id":"17","name":"Hebrew"},{"type":"EmailEncoding","id":"18","name":"Hungarian"},{"type":"EmailEncoding","id":"19","name":"Icelandic"},{"type":"EmailEncoding","id":"20","name":"Indonesian"},{"type":"EmailEncoding","id":"21","name":"Italian"},{"type":"EmailEncoding","id":"22","name":"Japanese"},{"type":"EmailEncoding","id":"23","name":"Korean"},{"type":"EmailEncoding","id":"24","name":"Latvian"},{"type":"EmailEncoding","id":"25","name":"Lithuanian"},{"type":"EmailEncoding","id":"26","name":"Norwegian"},{"type":"EmailEncoding","id":"27","name":"Polish"},{"type":"EmailEncoding","id":"28","name":"Portuguese"},{"type":"EmailEncoding","id":"29","name":"Romanian"},{"type":"EmailEncoding","id":"30","name":"Russian"},{"type":"EmailEncoding","id":"31","name":"Serbian"},{"type":"EmailEncoding","id":"32","name":"Slovak"},{"type":"EmailEncoding","id":"33","name":"Slovenian"},{"type":"EmailEncoding","id":"34","name":"Spanish"},{"type":"EmailEncoding","id":"35","name":"Swedish"},{"type":"EmailEncoding","id":"37","name":"Thai"},{"type":"EmailEncoding","id":"36","name":"Turkish"},{"type":"EmailEncoding","id":"3","name":"Unicode (UTF-8)"}];
             var emailConfig = {"type":"EmailConfig","bouncebackAddresses":["TechnologyPartnerLeadMgtTechSolutionsAB@s1926145509.m.en25.com"],"fromAddress":"newclient@en25.com","replyToAddress":"newclient@en25.com","replyToName":"Technology Partner - Lead Mgt Tech Solutions AB","subscriptionLandingPageId":"1","unsubscriptionLandingPageId":"3"};
             var mineCompany = {"allowed":["Company_Admin","RSSAPP"],"descendants":{"Company_Admin":[],"RSSAPP":[]}};
-               var emailHeader = [{"type":"EmailHeader","id":"1","depth":"complete","folderId":"315","name":"Default - Show Email Link","permissions":"fullControl","updatedAt":"1243267870","body":"<TABLE width=550 class=\"emailheader\" align=center>  <TBODY>  <TR>  <TD align=middle><FONT face=Arial size=1>If you are having trouble reading this email, <A href=\"http://now.eloqua.com/es.asp?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqEmailSaveGUID</span>&elq=<span class=eloquaemail>recipientid</span>\">read the online version</A>. </FONT></TD></TR></TBODY></TABLE><BR>","fieldMerges":[],"hyperlinks":[{"type":"Hyperlink","id":"-1","name":"read the online version","href":"http://now.eloqua.com/es.asp?s=~~eloqua..type--emailfield..syntax--siteid..innerText--siteid..encodeFor--url~~&e=~~eloqua..type--emailfield..syntax--elqEmailSaveGUID..innerText--elqEmailSaveGUID..encodeFor--url~~&elqTrackId=5b0c65074e3145ce8f404f8cc0a7558e"}],"text":"If you have trouble viewing this email, read the online version.\r\n[http://s1926145509.t.en25.com/e/es.aspx?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqemailsaveguid</span>&elq=<span class=eloquaemail>recipientid</span>]     "},{"type":"EmailHeader","id":"3","depth":"complete","folderId":"315","name":"BP - Show Email Link II","permissions":"fullControl","updatedAt":"1243267766","body":"<TABLE width=650 align=center>\r\n<TBODY>\r\n<TR>\r\n<TD align=middle><FONT face=Arial size=1><A href=\"http://s1926145509.t.en25.com/e/es.aspx?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqemailsaveguid</span>&elq=<span class=eloquaemail>recipientid</span>\">If you have trouble displaying this email, view it as a web page.</A></FONT> </TD></TR></TBODY></TABLE>","fieldMerges":[],"hyperlinks":[{"type":"Hyperlink","id":"-1","name":"If you have trouble displaying this email, view it as a web page.","href":"http://<elqDomain type=1/>/e/es.aspx?s=~~eloqua..type--emailfield..syntax--siteid..innerText--siteid..encodeFor--url~~&e=~~eloqua..type--emailfield..syntax--elqemailsaveguid..innerText--elqemailsaveguid..encodeFor--url~~&elqTrackId=705b39fa4ad94ab393cdbc2ed47d3b8a"}],"text":"If you have trouble displaying this email, view it as a web page.\r\n[http://s1926145509.t.en25.com/e/es.aspx?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqemailsaveguid</span>&elq=<span class=eloquaemail>recipientid</span>]"},{"type":"EmailHeader","id":"4","createdAt":"1210815116","depth":"complete","folderId":"315","name":"BP - Show Email Link w/ Safe Senders Message","permissions":"fullControl","updatedAt":"1243267810","body":"<TABLE width=650 align=center>\r\n<TBODY>\r\n<TR>\r\n<TD align=middle><FONT face=Arial size=1>To ensure you continue to receive&nbsp;COMPANYNAME's communications in a timely manner and also directly into your inbox, <BR>please add&nbsp;EMAILADDRESS to your safe senders list or address book within your email client.</FONT><BR><FONT face=Arial size=1>If you&nbsp;have trouble reading this email, </FONT><A href=\"http://s1926145509.t.en25.com/e/es.aspx?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqemailsaveguid</span>&elq=<span class=eloquaemail>recipientid</span>\"><FONT face=Arial size=1>read the online version</FONT></A><FONT face=Arial size=1>.</FONT> </TD></TR></TBODY></TABLE>","fieldMerges":[],"hyperlinks":[{"type":"Hyperlink","id":"-1","name":"read the online version","href":"http://<elqDomain type=1/>/e/es.aspx?s=~~eloqua..type--emailfield..syntax--siteid..innerText--siteid..encodeFor--url~~&e=~~eloqua..type--emailfield..syntax--elqemailsaveguid..innerText--elqemailsaveguid..encodeFor--url~~&elqTrackId=372ec109e946425db18c4d2445772956"}],"text":"To ensure you continue to receive COMPANYNAME's communications in a timely manner and also directly into your inbox, \r\nplease add EMAILADDRESS to your safe senders list or address book within your email client.\r\n\r\nIf you have trouble reading this email, read the online version.\r\n[http://s1926145509.t.en25.com/e/es.aspx?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqemailsaveguid</span>&elq=<span class=eloquaemail>recipientid</span>]"},{"type":"EmailHeader","id":"5","createdAt":"1243263534","depth":"complete","folderId":"315","name":"BP - View on Mobile","permissions":"fullControl","updatedAt":"1243267815","body":"<TABLE width=650 align=center>\r\n<TBODY>\r\n<TR>\r\n<TD align=middle><FONT face=Arial size=1><A href=\"http://s1926145509.t.en25.com/e/es.aspx?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqemailsaveguid</span>&elq=<span class=eloquaemail>recipientid</span>\">View on Mobile Phone</A> | <A href=\"http://s1926145509.t.en25.com/e/es.aspx?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqemailsaveguid</span>&elq=<span class=eloquaemail>recipientid</span>\">View as Web page</A> </FONT></TD></TR></TBODY></TABLE><BR>","fieldMerges":[],"hyperlinks":[{"type":"Hyperlink","id":"-1","name":"View on Mobile Phone","href":"http://<elqDomain type=1/>/e/es.aspx?s=~~eloqua..type--emailfield..syntax--siteid..innerText--siteid..encodeFor--url~~&e=~~eloqua..type--emailfield..syntax--elqemailsaveguid..innerText--elqemailsaveguid..encodeFor--url~~&elqTrackId=d2808d4ab6014c8098d1d495907b82a9"},{"type":"Hyperlink","id":"-2","name":"View as Web page","href":"http://<elqDomain type=1/>/e/es.aspx?s=~~eloqua..type--emailfield..syntax--siteid..innerText--siteid..encodeFor--url~~&e=~~eloqua..type--emailfield..syntax--elqemailsaveguid..innerText--elqemailsaveguid..encodeFor--url~~&elqTrackId=24e165a4973c404fbe5801c0ac44a0ad"}],"text":"To view on a mobile phone or to view as a web page, please cut and paste the following link into a browser.\r\n[http://s1926145509.t.en25.com/e/es.aspx?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqemailsaveguid</span>&elq=<span class=eloquaemail>recipientid</span>]"},{"type":"EmailHeader","id":"7","createdAt":"1459409934","createdBy":"12","depth":"complete","folderId":"315","name":"RSS_APP_HEADER","permissions":"fullControl","updatedAt":"1493067847","updatedBy":"12","body":"","fieldMerges":[],"hyperlinks":[],"text":""}];
+            var emailHeader = [{"type":"EmailHeader","id":"1","depth":"complete","folderId":"315","name":"Default - Show Email Link","permissions":"fullControl","updatedAt":"1243267870","body":"<TABLE width=550 class=\"emailheader\" align=center>  <TBODY>  <TR>  <TD align=middle><FONT face=Arial size=1>If you are having trouble reading this email, <A href=\"http://now.eloqua.com/es.asp?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqEmailSaveGUID</span>&elq=<span class=eloquaemail>recipientid</span>\">read the online version</A>. </FONT></TD></TR></TBODY></TABLE><BR>","fieldMerges":[],"hyperlinks":[{"type":"Hyperlink","id":"-1","name":"read the online version","href":"http://now.eloqua.com/es.asp?s=~~eloqua..type--emailfield..syntax--siteid..innerText--siteid..encodeFor--url~~&e=~~eloqua..type--emailfield..syntax--elqEmailSaveGUID..innerText--elqEmailSaveGUID..encodeFor--url~~&elqTrackId=5b0c65074e3145ce8f404f8cc0a7558e"}],"text":"If you have trouble viewing this email, read the online version.\r\n[http://s1926145509.t.en25.com/e/es.aspx?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqemailsaveguid</span>&elq=<span class=eloquaemail>recipientid</span>]     "},{"type":"EmailHeader","id":"3","depth":"complete","folderId":"315","name":"BP - Show Email Link II","permissions":"fullControl","updatedAt":"1243267766","body":"<TABLE width=650 align=center>\r\n<TBODY>\r\n<TR>\r\n<TD align=middle><FONT face=Arial size=1><A href=\"http://s1926145509.t.en25.com/e/es.aspx?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqemailsaveguid</span>&elq=<span class=eloquaemail>recipientid</span>\">If you have trouble displaying this email, view it as a web page.</A></FONT> </TD></TR></TBODY></TABLE>","fieldMerges":[],"hyperlinks":[{"type":"Hyperlink","id":"-1","name":"If you have trouble displaying this email, view it as a web page.","href":"http://<elqDomain type=1/>/e/es.aspx?s=~~eloqua..type--emailfield..syntax--siteid..innerText--siteid..encodeFor--url~~&e=~~eloqua..type--emailfield..syntax--elqemailsaveguid..innerText--elqemailsaveguid..encodeFor--url~~&elqTrackId=705b39fa4ad94ab393cdbc2ed47d3b8a"}],"text":"If you have trouble displaying this email, view it as a web page.\r\n[http://s1926145509.t.en25.com/e/es.aspx?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqemailsaveguid</span>&elq=<span class=eloquaemail>recipientid</span>]"},{"type":"EmailHeader","id":"4","createdAt":"1210815116","depth":"complete","folderId":"315","name":"BP - Show Email Link w/ Safe Senders Message","permissions":"fullControl","updatedAt":"1243267810","body":"<TABLE width=650 align=center>\r\n<TBODY>\r\n<TR>\r\n<TD align=middle><FONT face=Arial size=1>To ensure you continue to receive&nbsp;COMPANYNAME's communications in a timely manner and also directly into your inbox, <BR>please add&nbsp;EMAILADDRESS to your safe senders list or address book within your email client.</FONT><BR><FONT face=Arial size=1>If you&nbsp;have trouble reading this email, </FONT><A href=\"http://s1926145509.t.en25.com/e/es.aspx?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqemailsaveguid</span>&elq=<span class=eloquaemail>recipientid</span>\"><FONT face=Arial size=1>read the online version</FONT></A><FONT face=Arial size=1>.</FONT> </TD></TR></TBODY></TABLE>","fieldMerges":[],"hyperlinks":[{"type":"Hyperlink","id":"-1","name":"read the online version","href":"http://<elqDomain type=1/>/e/es.aspx?s=~~eloqua..type--emailfield..syntax--siteid..innerText--siteid..encodeFor--url~~&e=~~eloqua..type--emailfield..syntax--elqemailsaveguid..innerText--elqemailsaveguid..encodeFor--url~~&elqTrackId=372ec109e946425db18c4d2445772956"}],"text":"To ensure you continue to receive COMPANYNAME's communications in a timely manner and also directly into your inbox, \r\nplease add EMAILADDRESS to your safe senders list or address book within your email client.\r\n\r\nIf you have trouble reading this email, read the online version.\r\n[http://s1926145509.t.en25.com/e/es.aspx?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqemailsaveguid</span>&elq=<span class=eloquaemail>recipientid</span>]"},{"type":"EmailHeader","id":"5","createdAt":"1243263534","depth":"complete","folderId":"315","name":"BP - View on Mobile","permissions":"fullControl","updatedAt":"1243267815","body":"<TABLE width=650 align=center>\r\n<TBODY>\r\n<TR>\r\n<TD align=middle><FONT face=Arial size=1><A href=\"http://s1926145509.t.en25.com/e/es.aspx?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqemailsaveguid</span>&elq=<span class=eloquaemail>recipientid</span>\">View on Mobile Phone</A> | <A href=\"http://s1926145509.t.en25.com/e/es.aspx?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqemailsaveguid</span>&elq=<span class=eloquaemail>recipientid</span>\">View as Web page</A> </FONT></TD></TR></TBODY></TABLE><BR>","fieldMerges":[],"hyperlinks":[{"type":"Hyperlink","id":"-1","name":"View on Mobile Phone","href":"http://<elqDomain type=1/>/e/es.aspx?s=~~eloqua..type--emailfield..syntax--siteid..innerText--siteid..encodeFor--url~~&e=~~eloqua..type--emailfield..syntax--elqemailsaveguid..innerText--elqemailsaveguid..encodeFor--url~~&elqTrackId=d2808d4ab6014c8098d1d495907b82a9"},{"type":"Hyperlink","id":"-2","name":"View as Web page","href":"http://<elqDomain type=1/>/e/es.aspx?s=~~eloqua..type--emailfield..syntax--siteid..innerText--siteid..encodeFor--url~~&e=~~eloqua..type--emailfield..syntax--elqemailsaveguid..innerText--elqemailsaveguid..encodeFor--url~~&elqTrackId=24e165a4973c404fbe5801c0ac44a0ad"}],"text":"To view on a mobile phone or to view as a web page, please cut and paste the following link into a browser.\r\n[http://s1926145509.t.en25.com/e/es.aspx?s=<span class=eloquaemail>siteid</span>&e=<span class=eloquaemail>elqemailsaveguid</span>&elq=<span class=eloquaemail>recipientid</span>]"},{"type":"EmailHeader","id":"7","createdAt":"1459409934","createdBy":"12","depth":"complete","folderId":"315","name":"RSS_APP_HEADER","permissions":"fullControl","updatedAt":"1493067847","updatedBy":"12","body":"","fieldMerges":[],"hyperlinks":[],"text":""}];
             var emailFooter = [{"type":"EmailFooter","id":"1","depth":"complete","description":"","folderId":"317","name":"Default - Global unsubscribe","permissions":"fullControl","updatedAt":"1266873936","body":"<TABLE style=\"WIDTH: 650px\" align=center>\r\n<TBODY>\r\n<TR>\r\n<TD>\r\n<CENTER><BR>To unsubscribe from future emails or to update your email preferences <A href=\"http://s1926145509.t.en25.com/e/u.aspx?s=<span class=eloquaemail>siteid</span>&elq=<span class=eloquaemail>recipientid</span>\">click here</A>. <BR><BR>Your Company Name<BR>Your Company Address<BR>Your Company City and State</CENTER>\r\n<CENTER>Your Company Postal Code/Zip Code<BR>Your Business Phone<BR><A href=\"LINK TO CLIENT PRIVACY POLICY GOES HERE\">Privacy Policy</A></FONT> </CENTER></TD></TR></TBODY></TABLE>","fieldMerges":[],"hyperlinks":[{"type":"Hyperlink","id":"-1","name":"click here","href":"http://<elqdomain type=1/>/e/u.aspx?s=~~eloqua..type--emailfield..syntax--siteid..innerText--siteid..encodeFor--url~~"},{"type":"Hyperlink","id":"-2","name":"Privacy Policy","href":"LINK TO CLIENT PRIVACY POLICY GOES HERE"}],"text":"To unsubscribe from future emails or to update your email preferences, please cut and paste this link into the browser. \r\n[http://s1926145509.t.en25.com/e/u.aspx?s=<span class=eloquaemail>siteid</span>&elq=<span class=eloquaemail>recipientid</span>]\r\n\r\nYour Company Name\r\nYour Company Address\r\nYour Company City and State\r\nYour Company Postal Code/Zip Code\r\nYour Company Phone\r\n\r\nPrivacy Policy\r\n[LINK TO CLIENT PRIVACY POLICY GOES HERE]"},{"type":"EmailFooter","id":"5","depth":"complete","description":"","folderId":"317","name":"BP - Manage your subscriptions","permissions":"fullControl","updatedAt":"1266872997","body":"<TABLE style=\"WIDTH: 650px\" align=center>\r\n<TBODY>\r\n<TR>\r\n<TD>\r\n<CENTER><BR>To unsubscribe from future emails or to update your e-mail preferences <A href=\"http://s1926145509.t.en25.com/e/sl.aspx?s=<span class=eloquaemail>siteid</span>&elq=<span class=eloquaemail>recipientid</span>\">click here</A>. <BR><BR>Your Company Name Here<BR>Your Company Address<BR>Your City and State<BR>Your Postal Code/Zip Code<BR>Your Business Phone<BR><A href=\"LINK TO CLIENT PRIVACY POLICY GOES HERE\">Privacy Policy</A></FONT> </CENTER></TD></TR></TBODY></TABLE>","fieldMerges":[],"hyperlinks":[{"type":"Hyperlink","id":"-1","name":"click here","href":"http://<elqdomain type=1/>/e/sl.aspx?s=~~eloqua..type--emailfield..syntax--siteid..innerText--siteid..encodeFor--url~~"},{"type":"Hyperlink","id":"-2","name":"Privacy Policy","href":"LINK TO CLIENT PRIVACY POLICY GOES HERE"}],"text":"To unsubscribe from future emails or to update your email preferences, please cut and paste the link into your browser. \r\n[http://s1926145509.t.en25.com/e/sl.aspx?s=<span class=eloquaemail>siteid</span>&elq=<span class=eloquaemail>recipientid</span>]\r\n\r\nYour Company Name\r\nYour Company Address\r\nYour Company City and State\r\nYour Company Postal Code/Zip Code\r\nYour Company Business Phone Number\r\n\r\nPrivacy Policy\r\n[LINK TO CLIENT PRIVACY POLICY GOES HERE]"},{"type":"EmailFooter","id":"8","createdAt":"1184865128","depth":"complete","description":"","folderId":"317","name":"BP - Unsubscribe from similar communications","permissions":"fullControl","updatedAt":"1266873812","body":"<TABLE style=\"WIDTH: 650px\" align=center>\r\n<TBODY>\r\n<TR>\r\n<TD><BR>\r\n<CENTER>If you wish to unsubscribe from similar <SPAN class=eloquaemail>Company</SPAN> email communications, <A href=\"http://s1926145509.t.en25.com/e/cu.aspx?s=<span class=eloquaemail>siteid</span>&elqc=<span class=eloquaemail>campaignid</span>&elq=<span class=eloquaemail>recipientid</span>\">click here</A>. <BR>If you wish to unsubscribe from all <SPAN class=eloquaemail>Company</SPAN> email, <A href=\"http://s1926145509.t.en25.com/e/u.aspx?s=<span class=eloquaemail>siteid</span>&elq=<span class=eloquaemail>recipientid</span>\">click here</A>. <BR><BR>Your Company Name<BR>Your Company Address<BR>Your Company City and State<BR>Your Postal Code/Zip Code<BR><BR><A href=\"LINK TO CLIENT PRIVACY POLICY GOES HERE\">Privacy Policy</A></FONT> </CENTER></TD></TR></TBODY></TABLE>","fieldMerges":[],"hyperlinks":[{"type":"Hyperlink","id":"-1","name":"click here","href":"http://<elqdomain type=1/>/e/cu.aspx?s=~~eloqua..type--emailfield..syntax--siteid..innerText--siteid..encodeFor--url~~&elqc=~~eloqua..type--emailfield..syntax--campaignid..innerText--campaignid..encodeFor--url~~"},{"type":"Hyperlink","id":"-2","name":"click here","href":"http://<elqdomain type=1/>/e/u.aspx?s=~~eloqua..type--emailfield..syntax--siteid..innerText--siteid..encodeFor--url~~"},{"type":"Hyperlink","id":"-3","name":"Privacy Policy","href":"LINK TO CLIENT PRIVACY POLICY GOES HERE"}],"text":"\r\nIf you wish to unsubscribe from similar <span class=\"eloquaemail\">Company</span>\r\nemail communications, click here.\r\n[http://s1926145509.t.en25.com/e/cu.aspx?s=<span class=eloquaemail>siteid</span>&elqc=<span class=eloquaemail>campaignid</span>&elq=<span class=eloquaemail>recipientid</span>]\r\n\r\n\r\nIf you wish to unsubscribe from all <span class=\"eloquaemail\">Company</span> email, click here.\r\n[http://s1926145509.t.en25.com/e/u.aspx?s=<span class=eloquaemail>siteid</span>&elq=<span class=eloquaemail>recipientid</span>]\r\n\r\nYour Company Name\r\nYour Company Address\r\nYour Company City and State\r\nYour Company Postal Code/Zip Code\r\nYour Company Phone Number\r\n\r\nPrivacy Policy\r\n[LINK TO CLIENT PRIVACY POLICY GOES HERE]"},{"type":"EmailFooter","id":"10","createdAt":"1459409969","createdBy":"12","depth":"complete","folderId":"316","name":"RSS_APP_FOOTER","permissions":"fullControl","updatedAt":"1459409969","updatedBy":"12","body":"","fieldMerges":[],"hyperlinks":[],"text":""},{"type":"EmailFooter","id":"11","createdAt":"1465285757","createdBy":"12","depth":"complete","folderId":"316","name":"subscription_managment","permissions":"fullControl","updatedAt":"1465286140","updatedBy":"12","body":"<div style=\"text-align: center;\"><a data-targettype=\"sysaction\" href=\"http://s1926145509.t.en25.com/e/sl?s=~~eloqua..type--emailfield..syntax--siteid..encodeFor--url~~&elq=~~eloqua..type--emailfield..syntax--recipientid..encodeFor--url~~\">subscriptions</a></div>\r\n","fieldMerges":[],"hyperlinks":[{"type":"Hyperlink","id":"-1","name":"subscriptions","href":"http://<elqdomain type=1/>/e/sl?s=~~eloqua..type--emailfield..syntax--siteid..encodeFor--url~~"}],"text":"\r\nsubscriptions <http://s1926145509.t.en25.com/e/sl?s=~~eloqua..type--emailfield..syntax--siteid..encodeFor--url~~&elq=~~eloqua..type--emailfield..syntax--recipientid..encodeFor--url~~>\r\n\r\n"}];
             spyOn(NewsletterEntity, 'query').and.callFake(function(a, cb) 
             {
                 return cb([]);
             });
 
-            spyOn(Eloqua, 'segments').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'segments').and.callFake(function(a, cb) 
             {
                 var  mySpy = {};
                 mySpy.query = function(a,cb) 
@@ -234,7 +236,7 @@ describe('Entity', function ()
                 return mySpy;
             });
 
-            spyOn(Eloqua, 'emailGroups').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'emailGroups').and.callFake(function(a, cb) 
             {
                 var  mySpy = {};
                 mySpy.query = function(a,cb) 
@@ -244,7 +246,7 @@ describe('Entity', function ()
                 return mySpy;
             });
 
-            spyOn(Eloqua, 'emailHeaders').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'emailHeaders').and.callFake(function(a, cb) 
             {
                 var  mySpy = {};
                 mySpy.query = function(a,cb) 
@@ -254,7 +256,7 @@ describe('Entity', function ()
                 return mySpy;
             });
 
-            spyOn(Eloqua, 'emailFooters').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'emailFooters').and.callFake(function(a, cb) 
             {
                 var  mySpy = {};
                 mySpy.query = function(a,cb) 
@@ -263,7 +265,7 @@ describe('Entity', function ()
                 };
                 return mySpy;
             });
-            spyOn(Eloqua, 'eloquaEmailEncoding').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'eloquaEmailEncoding').and.callFake(function(a, cb) 
             {
                 var  mySpy = {};
                 mySpy.query = function(a,cb) 
@@ -273,7 +275,7 @@ describe('Entity', function ()
                 return mySpy;
             });
 
-            spyOn(Eloqua, 'eloquaEmailConfig').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'eloquaEmailConfig').and.callFake(function(a, cb) 
             {
                 // console.log('eloquaEmailConfig -----------!!!!!!!!!!!-----------');
                 var  mySpy = {};
@@ -284,10 +286,10 @@ describe('Entity', function ()
                 return mySpy;
             });
 
-            spyOn(Circles, 'mineCompany').and.callFake(function(a, cb) 
-            {
-               return cb(mineCompany);
-            });
+            // spyOn(Circles, 'mineCompany').and.callFake(function(a, cb) 
+            // {
+            //    return cb(mineCompany);
+            // });
 
             $httpBackend.when('GET', 'system/views/index.html').respond('<section data-ng-controller="IndexController"></section>');
             $httpBackend.when('GET', '/api/users/me').respond({});
@@ -297,10 +299,10 @@ describe('Entity', function ()
             {
                 // $scope.init();
                 expect(NewsletterEntity.query).toHaveBeenCalled();
-                expect(Eloqua.segments).toHaveBeenCalled();
-                expect(Eloqua.emailGroups).toHaveBeenCalled();
-                expect(Eloqua.eloquaEmailEncoding).toHaveBeenCalled();
-                expect(Eloqua.eloquaEmailConfig).toHaveBeenCalled();
+                expect(EloquaService.segments).toHaveBeenCalled();
+                expect(EloquaService.emailGroups).toHaveBeenCalled();
+                expect(EloquaService.eloquaEmailEncoding).toHaveBeenCalled();
+                expect(EloquaService.eloquaEmailConfig).toHaveBeenCalled();
                 expect(Circles.mineCompany).toHaveBeenCalled();
 
                 expect($scope.entity).not.toBe(null);
@@ -328,13 +330,15 @@ describe('Entity', function ()
             module('mean.system');
             module('mean.admin');
             module('mean.circles');
-            module('mean.swagger');
+            // module('mean.swagger');
             module('mean.users');
+            module('mean.meanStarter');
+            module('mean.companies');
             module('mean.emaileditor');
         });
 
         var $controller;
-        var $scope, NewsletterEntity, Eloqua, Circles, $timeout, $httpBackend;
+        var $scope, NewsletterEntity, EloquaService, Circles, $timeout, $httpBackend;
         var q;
         var entity1 = 
         [
@@ -397,12 +401,12 @@ describe('Entity', function ()
             }
         }
         
-        beforeEach(inject(function(_$controller_, $rootScope, _$httpBackend_ ,_$q_, _$timeout_, _NewsletterEntity_, _Eloqua_, _Circles_) 
+        beforeEach(inject(function(_$controller_, $rootScope, _$httpBackend_ ,_$q_, _$timeout_, _NewsletterEntity_, _EloquaService_, _Circles_) 
         {
             $scope              = $rootScope.$new();
             $timeout            = _$timeout_;
             NewsletterEntity    = _NewsletterEntity_;
-            Eloqua              = _Eloqua_;
+            EloquaService       = _EloquaService_;
             Circles             = _Circles_;
             $httpBackend        = _$httpBackend_;
             q                   = _$q_;
@@ -433,7 +437,7 @@ describe('Entity', function ()
                 return cb([]);
             });
 
-            spyOn(Eloqua, 'segments').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'segments').and.callFake(function(a, cb) 
             {
                 var  mySpy = {};
                 mySpy.query = function(a,cb) 
@@ -443,7 +447,7 @@ describe('Entity', function ()
                 return mySpy;
             });
 
-            spyOn(Eloqua, 'emailGroups').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'emailGroups').and.callFake(function(a, cb) 
             {
                 var  mySpy = {};
                 mySpy.query = function(a,cb) 
@@ -453,7 +457,7 @@ describe('Entity', function ()
                 return mySpy;
             });
 
-            spyOn(Eloqua, 'emailHeaders').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'emailHeaders').and.callFake(function(a, cb) 
             {
                 var  mySpy = {};
                 mySpy.query = function(a,cb) 
@@ -463,7 +467,7 @@ describe('Entity', function ()
                 return mySpy;
             });
 
-            spyOn(Eloqua, 'emailFooters').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'emailFooters').and.callFake(function(a, cb) 
             {
                 var  mySpy = {};
                 mySpy.query = function(a,cb) 
@@ -473,7 +477,7 @@ describe('Entity', function ()
                 return mySpy;
             });
 
-            spyOn(Eloqua, 'eloquaEmailEncoding').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'eloquaEmailEncoding').and.callFake(function(a, cb) 
             {
                 var  mySpy = {};
                 mySpy.query = function(a,cb) 
@@ -483,7 +487,7 @@ describe('Entity', function ()
                 return mySpy;
             });
 
-            spyOn(Eloqua, 'eloquaEmailConfig').and.callFake(function(a, cb) 
+            spyOn(EloquaService, 'eloquaEmailConfig').and.callFake(function(a, cb) 
             {
                 // console.log('eloquaEmailConfig -----------!!!!!!!!!!!-----------');
                 var  mySpy = {};
@@ -494,10 +498,10 @@ describe('Entity', function ()
                 return mySpy;
             });
 
-            spyOn(Circles, 'mineCompany').and.callFake(function(a, cb) 
-            {
-               return cb(mineCompany);
-            });
+            // spyOn(Circles, 'mineCompany').and.callFake(function(a, cb) 
+            // {
+            //    return cb(mineCompany);
+            // });
 
             $httpBackend.when('GET', 'system/views/index.html').respond('<section data-ng-controller="IndexController"></section>');
             $httpBackend.when('GET', '/api/users/me').respond({});
@@ -506,10 +510,10 @@ describe('Entity', function ()
             $scope.load(function()
             {
                 expect(NewsletterEntity.query).not.toHaveBeenCalled();
-                expect(Eloqua.segments).toHaveBeenCalled();
-                expect(Eloqua.emailGroups).toHaveBeenCalled();
-                expect(Eloqua.eloquaEmailEncoding).toHaveBeenCalled();
-                expect(Eloqua.eloquaEmailConfig).toHaveBeenCalled();
+                expect(EloquaService.segments).toHaveBeenCalled();
+                expect(EloquaService.emailGroups).toHaveBeenCalled();
+                expect(EloquaService.eloquaEmailEncoding).toHaveBeenCalled();
+                expect(EloquaService.eloquaEmailConfig).toHaveBeenCalled();
                 expect(Circles.mineCompany).toHaveBeenCalled();
 
                 expect($scope.entity).not.toBe(null);

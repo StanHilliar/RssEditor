@@ -445,11 +445,23 @@ module.exports = function(circles) {
                   }
                   else
                   {
-                    return cb({
-                    param: emailAddress,
-                    msg: 'search emailAddress error',
-                    value: emailAddress
-                  });
+                    if(contactErr.code && contactErr.code == 401)
+                    {
+                      return cb({
+                        param: 401,
+                        code: 401,
+                        msg: 'unauthorized'
+                      });
+                    }
+                    else
+                    {
+
+                      return cb({
+                        param: emailAddress,
+                        msg: 'search emailAddress error',
+                        value: emailAddress
+                      });
+                    }
                   }
                 });
               }
@@ -632,8 +644,33 @@ module.exports = function(circles) {
               });*/
             
         },
-
-     
+        refreshToken: function(req, res, next)
+        {
+          eloquaMngr.getCompanyById(req.query.company).then(function(company)
+          {
+            eloquaMngr.refreshToken(company, function(err, response)
+            {
+              if(err != null)
+              {
+                res.status(400).json(err);
+              }
+              else
+              {
+                if(response != null)
+                {
+                  res.status(200).end();
+                }
+                else
+                {
+                  res.status(400).json('response is null');
+                }
+              }
+            });
+          }).catch(function(e)
+          {
+            res.status(400).json(e);
+          });
+      }      
     };
 }
 

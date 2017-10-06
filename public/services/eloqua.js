@@ -76,6 +76,7 @@ angular.module('mean.emaileditor').factory("EloquaService", ['$resource',
                 company: '@company'
             });
         }   
+        
         function eloquaCampaignUnschedule()
         {
            return $resource('/api/emaileditor/unscheduleemail/:eloquaCampaignId/', 
@@ -108,6 +109,14 @@ angular.module('mean.emaileditor').factory("EloquaService", ['$resource',
             });
         }
 
+        function refreshToken()
+        {
+            return $resource('/api/emaileditor/refreshtoken',
+            {
+                company: '@company'
+            });
+        }    
+
         return {
             emailModule             : getEmailModule,
             segments                : getSegments,
@@ -119,6 +128,7 @@ angular.module('mean.emaileditor').factory("EloquaService", ['$resource',
             eloquaTestEmail         : eloquaTestEmail,
             eloquaCampaignUnschedule: eloquaCampaignUnschedule,
             eloquaEmailEncoding     : eloquaEmailEncoding,
+            refreshToken            : refreshToken,
             eloquaEmailConfig       : eloquaEmailConfig
         };
     }
