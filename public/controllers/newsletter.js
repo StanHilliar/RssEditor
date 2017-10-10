@@ -4,6 +4,7 @@
 angular.module('mean.emaileditor').controller('NewsletterEditController', ['$scope', '$q', '$stateParams','$compile', '$interpolate', '$sce', 'Global', 'NewsletterEntity', 'EmailModule', 'EloquaService', 'ProductSettings', 'Circles', 'MeanUser', '$meanConfig',
   function($scope, $q, $stateParams, $compile, $interpolate, $sce, Global, NewsletterEntity, EmailModule, EloquaService, ProductSettings, Circles, MeanUser, $meanConfig) 
   {
+    console.log('---INIT NewsletterEditController ---');
     $scope.global = Global;
     $scope.package = 
     {
@@ -181,10 +182,10 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       console.log('--------------------load------------------------');
       var entityQueryDeferred         = $q.defer();
       var segmentsDeferred            = $q.defer();
-      var mineCompanyDeferred         = $q.defer();
+      // var mineCompanyDeferred         = $q.defer();
  
-      promises.push(entityQueryDeferred.promise);
-      promises.push(mineCompanyDeferred.promise);
+      // promises.push(entityQueryDeferred.promise);
+      // promises.push(mineCompanyDeferred.promise);
 
       if($stateParams.newsletterid)
       {
@@ -192,10 +193,19 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
           
         console.log('loadNewsletterEntitiy');
         $scope.loading.entity = true;
-
+        
         NewsletterEntity.query({company: $stateParams.company, entityId: $stateParams.newsletterid}, function(newsletterEntityArray)
         {
-          $scope.entity = newsletterEntityArray[0];
+          console.log('loadNewsletterEntitiy cb');
+          if(newsletterEntityArray && newsletterEntityArray.length == 1)
+          {
+            $scope.entity = newsletterEntityArray[0];
+          }
+          else
+          {
+            // $scope.entity = undefined;
+          }
+
           if($scope.entity)
           {
             if($scope.entity.bounceBackAddress == undefined || $scope.entity.bounceBackAddress == null)
@@ -257,18 +267,17 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
          entityQueryDeferred.resolve();
       }
       
-
-        loadEloquaData();
-        
-      
+      loadEloquaData(cb);   
     }; // end load
 
 
-    function loadEloquaData()
+    function loadEloquaData(cb)
     {
-      console.log(EloquaService);
+      console.log('loadEloquaData');
+      // console.log(EloquaService);
       ProductSettings.byProductName.get({company: $stateParams.company, product: 'EMAILEDITOR'}, function(productSettings)
       {
+        console.log('---- productsettings cb ----');
         console.log(productSettings);
 
         $scope.entity.eloquaCampaignFolder  = productSettings.defaults.campaignFolder;
@@ -291,28 +300,29 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
           }
         });
         promises.push($scope.segments.promise);
-      
 
         $scope.emailGroups = setup(
         {
           query:  EloquaService.emailGroups().query,
           queryOptions: {company: $stateParams.company},
         });
-        promises.push($scope.emailGroups.promise);
+        // promises.push($scope.emailGroups.promise);
 
         $scope.emailEncoding = setup(
         {
           query:  EloquaService.eloquaEmailEncoding().query,
           queryOptions: {company: $stateParams.company},
         });
-        promises.push($scope.emailEncoding.promise);
+        // promises.push($scope.emailEncoding.promise);
+
+    
 
         $scope.emailHeader = setup(
         {
           query:  EloquaService.emailHeaders().query,
           queryOptions: {company: $stateParams.company},
         });
-        promises.push($scope.emailHeader.promise);
+        // promises.push($scope.emailHeader.promise);
 
       
         $scope.emailFooter = setup(
@@ -320,14 +330,15 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
           query:  EloquaService.emailFooters().query,
           queryOptions: {company: $stateParams.company},
         });
-        promises.push($scope.emailFooter.promise);
+        // promises.push($scope.emailFooter.promise);
 
         $scope.emailConfig = setup(
         {
           query:  EloquaService.eloquaEmailConfig().query,
           queryOptions: {company: $stateParams.company},
         });
-        promises.push($scope.emailConfig.promise);
+        // promises.push($scope.emailConfig.promise);
+
 
         $scope.bouncebackAddresses = setupFacade(
         {
@@ -337,9 +348,9 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
 
         $scope.bouncebackAddresses.promise.then(function()
         {
-          console.log('bounceback loaded');
-          console.log($scope.entity.bounceBackAddress);
-          console.log($scope.bouncebackAddresses.data);
+          // console.log('bounceback loaded');
+          // console.log($scope.entity.bounceBackAddress);
+          // console.log($scope.bouncebackAddresses.data);
           if(!$scope.entity.bounceBackAddress || $scope.entity.bounceBackAddress=='')
             {
               $scope.entity.bounceBackAddress = $scope.bouncebackAddresses.data[0];
@@ -387,7 +398,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
 
         $q.all(promises).then(function(values) 
         {
-          console.log('all DONE!!!')
+          console.log('~~~~~~ all DONE!!! ~~~~~~')
           console.log(values);
           isFirstLoad = false;
           if(cb)
@@ -396,19 +407,19 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
           }
         }).catch(function(rejection)
         {
-          console.log('rejected !!!')
+          console.log('+++++ rejected !!! ++++')
           console.log(rejection);
   
           if(isFirstLoad && rejection == 'unauthorized')
           {
             EloquaService.refreshToken().query({company: $stateParams.company}, function(r)
             {
-
               console.log('FIRST!!!!! -- now retry');
               promises = [];
               isFirstLoad = false;
               loadEloquaData(false);
-            }, function(e)
+            }, 
+            function(e)
             {
               console.error('error refreshing token');
               console.error(e);
@@ -427,6 +438,16 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
           }
         });
       });
+    }
+
+    function _inspectPromises(myPromises)
+    {
+      console.log('-------------INSPECT--------');
+      for(var i = 0; i < myPromises.length; i++)
+      {
+        console.log(myPromises[i]);
+      }
+      console.log('-------------INSPECTEND--------');
     }
 
     function removeSelectedSegmentsfromAvailabeleSegments()
