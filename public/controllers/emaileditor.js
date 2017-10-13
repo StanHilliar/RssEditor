@@ -1455,14 +1455,14 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
           if($scope.entity.modules[moduleCounter].placeholderType == 'DROPZONE')
           {
-            if (moduleState == 1 || isEdit) 
+            if (isEdit) 
             {
               _moduleData += '<div id="modulesContainer" data-dropzone-id=' + moduleIdStr + '>';
             }
            
             _moduleData += $scope.generateContainer(isEdit, $scope.entity.modules[moduleCounter], $scope.rssData[moduleCounter], $scope.adData[moduleCounter], $scope.modulePositions[moduleCounter], $scope.feedPositions[moduleCounter], dataStr + '[' + moduleCounter + ']', adDataStr + '[' + moduleCounter + ']', moduleIdStr + '_C_');
            
-              if (moduleState == 1 || isEdit) 
+            if (isEdit) 
             {
               _moduleData += '</div>';
             }
