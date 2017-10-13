@@ -749,10 +749,10 @@ describe('Entity', function ()
             $httpBackend.when('GET', '/api/companies/settings/product/EMAILEDITOR').respond({});
             $httpBackend.when('GET', 'meanStarter/views/system/index.html').respond({});
 
-            console.log('---LOAD---');
+            // console.log('---LOAD---');
             $scope.load(function()
             {
-                console.log('---LOAD CB---');
+                // console.log('---LOAD CB---');
                 expect(NewsletterEntity.query).not.toHaveBeenCalled();
                 expect(EloquaService.segments).toHaveBeenCalled();
                 expect(EloquaService.emailGroups).toHaveBeenCalled();

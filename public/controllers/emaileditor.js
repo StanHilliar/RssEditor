@@ -282,7 +282,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     ***/
     $scope.saveEmail = function (cb) 
     {
-      console.log('saveEmail');
+      console.log('--- saveEmail ---');
       //console.log($scope.rssData);
       // console.log($scope.EmailName);
       // console.log($scope.EmailSubject);
@@ -376,26 +376,32 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       console.log('++++++++++++++++++++++++');
       console.log($scope.storedEmail);
       console.log('++++++++++++++++++++++++');
-
+      console.log('next --> company setting');
+      
       $scope.storedEmail.company = $stateParams.company;
-
+      
+      console.log('next storedEmail.$save');
       $scope.storedEmail.$save(function (data, headers) 
       {
+        console.log('storedEmail.$save cb');
+        
         $scope.module         = data;
         $scope.errorMsgs      = [];
         $scope.moduleExsists  = true;
-        saveEloquaEmail(cb);
+        saveEloquaEmail(cb ,true);
       },
-        function (data, headers) 
-        {
-          $scope.errorMsgs = data.data;
-          $scope.saveInProgress = false;
-          if (cb) return cb();
-        });
+      function (data, headers) 
+      {
+        console.log('storedEmail.$save ERROR cb');
+        $scope.errorMsgs = data.data;
+        $scope.saveInProgress = false;
+       if (cb) return cb();
+      });
     };
 
-    function saveEloquaEmail(cb) 
+    function saveEloquaEmail(cb, firstTry) 
     {
+      console.log('--- saveEloquaEmail ---');
       $scope.checkAds(function () 
       {
         if (storedEloquaEmail == null) 
@@ -457,24 +463,40 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           function (data, headers) 
           {
 
+            console.log('----> error')
             $scope.errorMsgs = [];
             $scope.errorMsgs.push({ param: 'email', msg: 'couldnt save email in Eloqua' });
 
-            if(data.code == 401)
+            if(data && data.data && data.data.code == 401)
             {
+              if(firstTry)
+              {
 
-              // EloquaService.refreshToken().query({company: $stateParams.company}, function(r)
-              // {
-              //   $scope.errorMsgs = [];
-              //   $scope.errorMsgs.push({ param: 'email', msg: 'couldnt save email in Eloqua' });
-              // }, function(e)
-              // {
-               
-              //   if(cb)
-              //   {
-              //     return cb();
-              //   }
-              // });
+                EloquaService.refreshToken().query({company: $stateParams.company}, function(r)
+                {
+                  saveEloquaEmail(cb, false); 
+                }, 
+                function(e)
+                {  
+                  $scope.errorMsgs = [];
+                  $scope.errorMsgs.push({ param: 'email', msg: 'couldnt save email in Eloqua' });
+                  $scope.saveInProgress = false;
+                  if(cb)
+                  {
+                    return cb();
+                  }
+                });
+              }
+              else
+              {
+                $scope.errorMsgs = [];
+                $scope.errorMsgs.push({ param: 'email', msg: 'couldnt save email in Eloqua' });
+                $scope.saveInProgress = false;
+                if(cb)
+                {
+                  return cb();
+                }
+              }
             }
 
             $scope.saveInProgress = false;
@@ -543,7 +565,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
       });
     };
 
-    $scope.unscheduleEmail = function () 
+    $scope.unscheduleEmail = function (firstTry) 
     {
       $scope.scheduleInProgress = true;
       var campaign       = new EloquaCampaignUnschedule();
@@ -558,12 +580,43 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         $scope.scheduleInProgress = false;
         $scope.storedEmail.status = 'draft';
       },
-        function (data, headers) 
+      function (data, headers) 
+      {
+        console.log('unscheduleEmail CB - error');
+        $scope.errorMsgs = data.data;
+        
+        if(data && data.data && data.data.code == 401)
         {
-          console.log('unscheduleEmail CB - error');
-          $scope.errorMsgs = data.data;
-          $scope.scheduleInProgress = false;
-        });
+          if(firstTry)
+          {
+
+            EloquaService.refreshToken().query({company: $stateParams.company}, function(r)
+            {
+              $scope.unscheduleEmail(false); 
+            }, 
+            function(e)
+            {  
+              $scope.errorMsgs = [];
+              $scope.errorMsgs.push({ param: 'email', msg: 'couldnt save email in Eloqua' });
+              $scope.scheduleInProgress = false;
+              if(cb)
+              {
+                return cb();
+              }
+            });
+          }
+          else
+          {
+            $scope.errorMsgs = [];
+            $scope.errorMsgs.push({ param: 'email', msg: 'couldnt save email in Eloqua' });
+            $scope.scheduleInProgress = false;
+            if(cb)
+            {
+              return cb();
+            }
+          }
+        }
+      });
     };
 
     $scope.sendTestEmail = function () 
@@ -730,7 +783,6 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
     
     $scope.changeTab(2);
 
-
     function elementIdToPositions(identifier, identifier2, idStr)
     {
       // console.log('elementIdToPositions(%s,%s,%s)', identifier, identifier2, idStr);
@@ -760,10 +812,10 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     $scope.updateFeedPositions = function (data)
     {
-      console.log("updateFeedPositions");
-      console.log(data);
+      // console.log("updateFeedPositions");
+      // console.log(data);
       var _data = data.slice(0);
-      console.log(_data);
+      // console.log(_data);
       var containerId = 0;
       var modulePos = 0;
       for (var i = 0; i < _data.length; i++)
@@ -775,8 +827,8 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           _data[i]    = ids.id;
       }
 
-      console.log('containerId:'+containerId);
-      console.log('modulePos:'+modulePos);
+      // console.log('containerId:'+containerId);
+      // console.log('modulePos:'+modulePos);
       //console.log(_data);
       if(containerId)
       {

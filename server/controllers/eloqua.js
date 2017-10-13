@@ -306,7 +306,7 @@ module.exports = function(circles) {
               if(err)
               {
                 console.error(err);
-                res.status(400).json(err.msg);
+                res.status(400).json(err);
               }
               else
               {
@@ -565,28 +565,35 @@ module.exports = function(circles) {
               console.log(activationErr);
               console.log(activationRes);
 
-              email.getEmailById(req.body.emailId, function(err, email)
+              if(activationErr)
               {
-                console.log('getEmailById callback');
-                //console.log(err);
-                //console.log(email);
-
-                email.status = 'draft';
-                email.save(function(saveErr, saveRes)
+                res.status(400).json(activationErr);
+              }
+              else
+              { 
+                email.getEmailById(req.body.emailId, function(err, email)
                 {
-                  console.log('save callback');
-                  console.log(saveErr);
-                  console.log(saveRes);
-
-                  res.jsonp(saveRes);
+                  console.log('getEmailById callback');
+                  //console.log(err);
+                  //console.log(email);
+                  
+                  email.status = 'draft';
+                  email.save(function(saveErr, saveRes)
+                  {
+                    console.log('save callback');
+                    console.log(saveErr);
+                    console.log(saveRes);
+                    
+                    res.jsonp(saveRes);
+                  });
                 });
-              });
+              }
             });
           });
         }, 
         saveEmail: function(req, res, next)
         {
-            console.dir('saveemail');
+            console.log('saveemail');
             //console.dir(req.body.source);
             
             var contacts = [  

@@ -48,7 +48,7 @@ Emaileditor.register(function(app, auth, database, circles)
     // roles: ['authenticated'],
     roles: ['EMAILEDITOR'],
     weight: ['Company_Admin'],
-    menu: 'main'
+    menu: 'Company_Admin'
    });   
 
    Emaileditor.menus.add({
@@ -57,7 +57,7 @@ Emaileditor.register(function(app, auth, database, circles)
     // roles: ['authenticated'],
     roles: ['EMAILEDITOR'],
     weight: ['Company_Admin'],
-    menu: 'main'
+    menu: 'Company_Admin'
   });
 
   /*

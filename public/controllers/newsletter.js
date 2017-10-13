@@ -4,7 +4,7 @@
 angular.module('mean.emaileditor').controller('NewsletterEditController', ['$scope', '$q', '$stateParams','$compile', '$interpolate', '$sce', 'Global', 'NewsletterEntity', 'EmailModule', 'EloquaService', 'ProductSettings', 'Circles', 'MeanUser', '$meanConfig',
   function($scope, $q, $stateParams, $compile, $interpolate, $sce, Global, NewsletterEntity, EmailModule, EloquaService, ProductSettings, Circles, MeanUser, $meanConfig) 
   {
-    console.log('---INIT NewsletterEditController ---');
+    // console.log('---INIT NewsletterEditController ---');
     $scope.global = Global;
     $scope.package = 
     {
@@ -179,7 +179,7 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
     var promises = [];
     $scope.load = function(cb)
     {
-      console.log('--------------------load------------------------');
+      // console.log('--------------------load------------------------');
       var entityQueryDeferred         = $q.defer();
       var segmentsDeferred            = $q.defer();
       // var mineCompanyDeferred         = $q.defer();
@@ -191,12 +191,12 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
       {
         $scope.newsletterExsists = true;
           
-        console.log('loadNewsletterEntitiy');
+        // console.log('loadNewsletterEntitiy');
         $scope.loading.entity = true;
         
         NewsletterEntity.query({company: $stateParams.company, entityId: $stateParams.newsletterid}, function(newsletterEntityArray)
         {
-          console.log('loadNewsletterEntitiy cb');
+          // console.log('loadNewsletterEntitiy cb');
           if(newsletterEntityArray && newsletterEntityArray.length == 1)
           {
             $scope.entity = newsletterEntityArray[0];
@@ -273,11 +273,11 @@ angular.module('mean.emaileditor').controller('NewsletterEditController', ['$sco
 
     function loadEloquaData(cb)
     {
-      console.log('loadEloquaData');
+      // console.log('loadEloquaData');
       // console.log(EloquaService);
       ProductSettings.byProductName.get({company: $stateParams.company, product: 'EMAILEDITOR'}, function(productSettings)
       {
-        console.log('---- productsettings cb ----');
+        // console.log('---- productsettings cb ----');
         console.log(productSettings);
 
         $scope.entity.eloquaCampaignFolder  = productSettings.defaults.campaignFolder;

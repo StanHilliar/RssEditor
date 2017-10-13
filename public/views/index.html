@@ -265,7 +265,7 @@
 									<md-button data-ng-show="storedEmail.status =='draft' && storedEmail.eloquaEmail && !scheduleInProgress" class="md-raised md-accent" ng-click="scheduleEmail()"><md-icon class="material-icons md-light md-48">watch_later</md-icon> schedule</md-button>
 									<md-button data-ng-show="storedEmail.status =='draft' && storedEmail.eloquaEmail && !scheduleInProgress" class="md-accent" ng-click="sendEmailRightNow()"><md-icon class="material-icons md-light md-48">send</md-icon> send right now</md-button>
 							
-									<md-button data-ng-show="storedEmail.status =='active' && storedEmail.eloquaEmail && !scheduleInProgres" class="md-warn" ng-click="unscheduleEmail()"><md-icon class="material-icons md-light md-48">alarm_off</md-icon> unschedule</md-button>				
+									<md-button data-ng-show="storedEmail.status =='active' && storedEmail.eloquaEmail && !scheduleInProgres" class="md-warn" ng-click="unscheduleEmail(true)"><md-icon class="material-icons md-light md-48">alarm_off</md-icon> unschedule</md-button>				
 									
 									<md-button data-ng-show="scheduleInProgress" class="md-raised md-accent">scheduling</md-button>
 								</div>

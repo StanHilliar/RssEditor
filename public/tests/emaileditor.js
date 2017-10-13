@@ -565,4 +565,94 @@ describe('EmaileditorController', function ()
         });
     });
 
+    describe('EloquaEmail saveEmail', function ()
+    {
+        beforeEach(function()
+        {   
+            module('mean');
+            module('mean.system');
+            module('mean.admin');
+            module('mean.circles');
+            // module('mean.swagger');
+            module('mean.users');
+            module('mean.meanStarter');
+            module('mean.companies');
+            module('mean.emaileditor');
+        });
+
+        var $controller;
+        var EloquaService;
+
+        beforeEach(inject(function (_$controller_, _EloquaService_)
+        {
+            // The injector unwraps the underscores (_) from around the parameter names when matching
+            $controller = _$controller_;
+            EloquaService = _EloquaService_;
+        }));
+
+
+        it('with one manual module - save', function (done)
+        {
+            var $scope = {};
+            $scope.entity = 
+            {
+                header: '<html><head></head><body>',
+                modules: 
+                [
+                    {
+                        defaultNumberOfEntries: 1,
+                        type: '3',
+                        preBody:'',
+                        postBody:'',
+                        preModule:'',
+                        postModule:'',
+                        ads: [],
+                        variables: [],
+                        bodyVariables: [],
+                        views: 
+                        [
+                            {
+                                name: 'defaultView',
+                                source: '<div></div>',
+                                childTagName: 'div',
+                            }
+                        ]
+                    }
+                ],
+                footer: '</body></html>'
+            };
+
+            spyOn(EloquaService.eloquaEmail().prototype, '$save').and.callFake(function(a, cb) 
+            {
+                console.log('$save -----------!!!!!!!!!!!-----------');
+                // var  mySpy = {};
+                // mySpy.prototype.$save = function(a,cb, errCB) 
+                // {
+                    return cb({issue:true});
+                // };
+                // return mySpy;
+            });
+
+            $scope.emailTemplates = $scope.entity;
+            
+            var controller = $controller('EmaileditorController', { $scope: $scope });
+
+            // $scope.password = 'longerthaneightchars';
+            // $scope.grade();
+            $scope.init(function()
+            {
+                // var email = $scope.generateEmail(false);
+                // expect(email).toEqual('<html><head></head><body><div></div></body></html>');
+                $scope.saveEmail(function(res)
+                {
+                    expect(res).toEqual(undefined);
+                    expect($scope.storedEmail.eloquaEmail).toEqual('4');
+                    expect($scope.errorMsgs).toEqual([]);
+                    expect(true).toEqual(false);
+                    done();
+                });
+            });
+            // expect($scope.clickableElementIdentifier).toEqual('dndelement');
+        });
+    });
 });

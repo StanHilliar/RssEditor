@@ -30,7 +30,10 @@ angular.module('mean.emaileditor').config(['$stateProvider',
     $stateProvider.state('email_overview', 
     {
       url: '/:company/emaileditor/emails',
-      templateUrl: 'emaileditor/views/emailOverview.html'
+      templateUrl: 'emaileditor/views/emailOverview.html',
+      // requiredCircles: {
+      //   circles: ['authenticated']
+      // }
     });
 
     $stateProvider.state('template_overview', 
