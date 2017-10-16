@@ -421,6 +421,38 @@ describe('EmaileditorController', function ()
             // expect($scope.clickableElementIdentifier).toEqual('dndelement');
         });
 
+        it('with dropzone', function ()
+        {
+            var $scope = {};
+            $scope.entity = 
+            {
+                header: '<html><head></head><body>',
+                modules: [{
+                    "moduleIdentifier" : "Dropzone",
+                    "templatePos" : 2169,
+                    "templatePosEnd" : 2183,
+                    "_id" : "59cdf663a363ec118478f89d",
+                    "placeholderType" : "DROPZONE",
+                    "removeable" : true
+                }],
+                footer: '</body></html>'
+            };
+            $scope.emailTemplates = $scope.entity;
+
+            var controller = $controller('EmaileditorController', { $scope: $scope });
+
+            // $scope.password = 'longerthaneightchars';
+            // $scope.grade();
+            expect($scope.rssContent).toEqual('omg');
+            $scope.init(function()
+            {
+                var email = $scope.generateEmail(false);
+                expect(email).toEqual('<html><head></head><body></body></html>');
+            });
+
+            // expect($scope.clickableElementIdentifier).toEqual('dndelement');
+        });
+
         it('hiddenPreviewText - empty', function ()
         {
             var $scope = {};
@@ -565,7 +597,7 @@ describe('EmaileditorController', function ()
         });
     });
 
-    describe('EloquaEmail saveEmail', function ()
+    xdescribe('EloquaEmail saveEmail', function ()
     {
         beforeEach(function()
         {   
@@ -591,7 +623,7 @@ describe('EmaileditorController', function ()
         }));
 
 
-        it('with one manual module - save', function (done)
+        xit('with one manual module - save', function (done)
         {
             var $scope = {};
             $scope.entity = 

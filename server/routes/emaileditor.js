@@ -28,29 +28,29 @@ module.exports = function(Emaileditor, app, auth, database, circles)
   // app.get( '/api/emaileditor/template/get',     circles.controller.hasCompany(), emailTemplates.getEmailTemplateById);
   // app.get( '/api/emaileditor/template/all',     circles.controller.hasCompany(), emailTemplates.getAllEmailTemplates);
 
-  app.post(  '/api/emaileditor/newsletterentity',               requiresLogin, circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, newsletterEntities.create);
-  app.post(  '/api/emaileditor/newsletterentity/:entityId',     requiresLogin, circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, newsletterEntities.update);
-  app.get(   '/api/emaileditor/newsletterentity/:entityId',     requiresLogin, circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, newsletterEntities.get);
-  app.delete('/api/emaileditor/newsletterentity/:entityId',     requiresLogin, circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, newsletterEntities.destroy);
+  app.post(  '/api/emaileditor/newsletterentity',               circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, newsletterEntities.create);
+  app.post(  '/api/emaileditor/newsletterentity/:entityId',     circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, newsletterEntities.update);
+  app.get(   '/api/emaileditor/newsletterentity/:entityId',     circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, newsletterEntities.get);
+  app.delete('/api/emaileditor/newsletterentity/:entityId',     circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, newsletterEntities.destroy);
   app.get(   '/api/emaileditor/newsletterentity',               circles.controller.hasCompany(), newsletterEntities.list);  
-  app.get(   '/api/emaileditor/newsletterentityfull/:entityId', requiresLogin, circles.controller.hasCompany(), newsletterEntities.getfull);
+  app.get(   '/api/emaileditor/newsletterentityfull/:entityId', circles.controller.hasCompany(), newsletterEntities.getfull);
 
-  app.get('/api/emaileditor/checkadvertisment/:url', requiresLogin, helper.isAdvertismentBooked);  
+  app.get('/api/emaileditor/checkadvertisment/:url', helper.isAdvertismentBooked);  
 
-  app.post(  '/api/emaileditor/emailmodule',            requiresLogin, circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, emailModules.create);
-  app.post(  '/api/emaileditor/emailmodule/:moduleId',  requiresLogin, circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, emailModules.update);
-  app.get(   '/api/emaileditor/emailmodule/:moduleId',  requiresLogin, circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, emailModules.get);
-  app.delete('/api/emaileditor/emailmodule/:moduleId',  requiresLogin, circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, emailModules.destroy);
-  app.get(   '/api/emaileditor/emailmodule',            requiresLogin, circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, emailModules.list);  
+  app.post(  '/api/emaileditor/emailmodule',            circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, emailModules.create);
+  app.post(  '/api/emaileditor/emailmodule/:moduleId',  circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, emailModules.update);
+  app.get(   '/api/emaileditor/emailmodule/:moduleId',  circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, emailModules.get);
+  app.delete('/api/emaileditor/emailmodule/:moduleId',  circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, emailModules.destroy);
+  app.get(   '/api/emaileditor/emailmodule',            circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, emailModules.list);  
 
-  app.post(  '/api/emaileditor/email',          requiresLogin, circles.controller.hasCompany(), email.create);
-  app.post(  '/api/emaileditor/email/:emailId', requiresLogin, circles.controller.hasCompany(), email.update);
-  app.get(   '/api/emaileditor/email/:emailId', requiresLogin, circles.controller.hasCompany(), email.get);
-  app.delete('/api/emaileditor/email/:emailId', requiresLogin, circles.controller.hasCompany(), email.destroy);
+  app.post(  '/api/emaileditor/email',          circles.controller.hasCompany(), email.create);
+  app.post(  '/api/emaileditor/email/:emailId', circles.controller.hasCompany(), email.update);
+  app.get(   '/api/emaileditor/email/:emailId', circles.controller.hasCompany(), email.get);
+  app.delete('/api/emaileditor/email/:emailId', circles.controller.hasCompany(), email.destroy);
   app.get(   '/api/emaileditor/email',          circles.controller.hasCompany(), email.list);
 
-  app.get('/api/emaileditor/rss/:url', requiresLogin, feed.loadRSS);
-  app.get('/api/emaileditor/xml/:url', requiresLogin, feed.loadXML); 
+  app.get('/api/emaileditor/rss/:url', feed.loadRSS);
+  app.get('/api/emaileditor/xml/:url', feed.loadXML); 
 
 /*
   app.get('/api/admin/newsletterentity', newsletterEntities.list);
