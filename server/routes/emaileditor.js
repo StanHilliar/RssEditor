@@ -32,7 +32,7 @@ module.exports = function(Emaileditor, app, auth, database, circles)
   app.post(  '/api/emaileditor/newsletterentity/:entityId',     requiresLogin, circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, newsletterEntities.update);
   app.get(   '/api/emaileditor/newsletterentity/:entityId',     requiresLogin, circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, newsletterEntities.get);
   app.delete('/api/emaileditor/newsletterentity/:entityId',     requiresLogin, circles.controller.hasCompany(), requiresCompanyAdminOrAdmin, newsletterEntities.destroy);
-  app.get(   '/api/emaileditor/newsletterentity',               requiresLogin, circles.controller.hasCompany(), newsletterEntities.list);  
+  app.get(   '/api/emaileditor/newsletterentity',               circles.controller.hasCompany(), newsletterEntities.list);  
   app.get(   '/api/emaileditor/newsletterentityfull/:entityId', requiresLogin, circles.controller.hasCompany(), newsletterEntities.getfull);
 
   app.get('/api/emaileditor/checkadvertisment/:url', requiresLogin, helper.isAdvertismentBooked);  
@@ -47,7 +47,7 @@ module.exports = function(Emaileditor, app, auth, database, circles)
   app.post(  '/api/emaileditor/email/:emailId', requiresLogin, circles.controller.hasCompany(), email.update);
   app.get(   '/api/emaileditor/email/:emailId', requiresLogin, circles.controller.hasCompany(), email.get);
   app.delete('/api/emaileditor/email/:emailId', requiresLogin, circles.controller.hasCompany(), email.destroy);
-  app.get(   '/api/emaileditor/email',          requiresLogin, circles.controller.hasCompany(), email.list);
+  app.get(   '/api/emaileditor/email',          circles.controller.hasCompany(), email.list);
 
   app.get('/api/emaileditor/rss/:url', requiresLogin, feed.loadRSS);
   app.get('/api/emaileditor/xml/:url', requiresLogin, feed.loadXML); 
