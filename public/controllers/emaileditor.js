@@ -249,8 +249,12 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
      
       if($scope.isEditMode)
       {
-        $scope.your_variable  = $scope.generateEmail($scope.isEditMode);
-        $scope.api.reinitSortable();
+		//Stan - Question regarding ads in the RSS APP
+		$scope.checkAds(function()
+        {
+			$scope.your_variable  = $scope.generateEmail($scope.isEditMode);
+			$scope.api.reinitSortable();
+		});
       }
       else
       {
