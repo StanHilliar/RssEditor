@@ -249,12 +249,12 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
      
       if($scope.isEditMode)
       {
-		//Stan - Question regarding ads in the RSS APP
-		$scope.checkAds(function()
+        //Stan - Question regarding ads in the RSS APP
+        $scope.checkAds(function()
         {
-			$scope.your_variable  = $scope.generateEmail($scope.isEditMode);
-			$scope.api.reinitSortable();
-		});
+          $scope.your_variable  = $scope.generateEmail($scope.isEditMode);
+          $scope.api.reinitSortable();
+        });
       }
       else
       {
@@ -1004,7 +1004,16 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
       if(isEdit)
       {
-        return _adview;
+        //console.log("booked: " +$scope.adData[moduleCounter][_adIndex].booked);
+        //Stan - Question regarding ads in the RSS APP
+        if($scope.adData[moduleCounter][_adIndex].booked == true)
+        {
+          return _adview;
+        }
+        else
+        {
+          return '';
+        }
       }
       else
       {
@@ -1192,6 +1201,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         function(dimensions)
         { 
           console.log('checkAdvertisment');
+          console.log('dimensions = ' + dimensions[0].height);
           //console.log(dimensions[0].height);
           if(dimensions == null || dimensions.length == 0)
           {
@@ -1202,12 +1212,12 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
             if( dimensions[0].height == 1)
             {
               $scope.adData[moduleCounter][index].booked = false;
-              //console.log('yes');
+              console.log('was booked false');
             }
             else
             {
               $scope.adData[moduleCounter][index].booked = true;
-              //console.log('no');
+              console.log('was booked true');
             }
           }
         
@@ -1228,7 +1238,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
 
     $scope.checkAds = function(cb)
     {
-        //console.log('checkAds');
+        console.log('checkAds');
    
         var defer = $q.defer();
         var promises = [];
