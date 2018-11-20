@@ -367,8 +367,8 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
             emailId: $scope.storedEmail._id,            
             id: $scope.storedEmail.eloquaEmail,  
             eloquaFolder: $scope.storedEmail.eloquaFolder,
-            eloquaHeader: $scope.storedEmail.eloquaHeader,
-            eloquaFooter: $scope.storedEmail.eloquaFooter,
+            eloquaHeader: null,  //$scope.storedEmail.eloquaHeader,  //SCH
+            eloquaFooter: null,  //$scope.storedEmail.eloquaFooter,  //SCH
             eloquaEmailGroup: $scope.storedEmail.eloquaEmailGroup,
             eloquaEmailEncoding: $scope.storedEmail.eloquaEmailEncoding,
             bounceBackAddress: $scope.storedEmail.bounceBackAddress,
@@ -386,8 +386,8 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
           storedEloquaEmail.emailId = $scope.storedEmail._id;        
           storedEloquaEmail.id = $scope.storedEmail.eloquaEmail;  
           storedEloquaEmail.eloquaFolder = $scope.storedEmail.eloquaFolder;
-          storedEloquaEmail.eloquaHeader = $scope.storedEmail.eloquaHeader;
-          storedEloquaEmail.eloquaFooter = $scope.storedEmail.eloquaFooter;
+          storedEloquaEmail.eloquaHeader = null;  //$scope.storedEmail.eloquaHeader;  //SCH
+          storedEloquaEmail.eloquaFooter = null;  //$scope.storedEmail.eloquaFooter;  //SCH
           storedEloquaEmail.eloquaEmailGroup = $scope.storedEmail.eloquaEmailGroup;
           storedEloquaEmail.eloquaEmailEncoding = $scope.storedEmail.eloquaEmailEncoding;
           storedEloquaEmail.bounceBackAddress = $scope.storedEmail.bounceBackAddress;
@@ -400,7 +400,7 @@ angular.module('mean.emaileditor').controller('EmaileditorController', ['$scope'
         }
 
         // console.log(storedEloquaEmail.html);
-
+        console.log(JSON.stringify(storedEloquaEmail,null,4));  //SCH
         storedEloquaEmail.company = MeanUser.company.id;
         storedEloquaEmail.$save(function(data, headers) 
         {
